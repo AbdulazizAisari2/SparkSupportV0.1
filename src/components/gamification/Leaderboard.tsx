@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trophy, Medal, Award, Star, Zap, Target, Crown, TrendingUp, Calendar, Users, Sparkles, Gift, Fire, Clock } from 'lucide-react';
+import { Trophy, Medal, Award, Star, Zap, Target, Crown, TrendingUp, Calendar, Users, Sparkles, Gift, Flame, Clock } from 'lucide-react';
 import { User } from '../../types';
 import { Achievement } from '../ui/Badge';
 
@@ -213,7 +213,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                     <span>{staffOfTheMonth.customerSatisfaction.toFixed(1)} rating</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <Fire className="w-4 h-4" />
+                    <Flame className="w-4 h-4" />
                     <span>{staffOfTheMonth.streak} day streak</span>
                   </div>
                 </div>
