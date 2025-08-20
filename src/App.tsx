@@ -24,6 +24,7 @@ import { AdminCategories } from './pages/admin/AdminCategories';
 import { AdminPriorities } from './pages/admin/AdminPriorities';
 import { AdminStaff } from './pages/admin/AdminStaff';
 import { NotificationsPage } from './pages/NotificationsPage';
+import { AISupport } from './pages/AISupport';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -165,6 +166,16 @@ function App() {
                   } 
                 />
                 <Route 
+                  path="/staff/ai-support" 
+                  element={
+                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                      <AppShell>
+                        <AISupport />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
                   path="/staff/leaderboard" 
                   element={
                     <ProtectedRoute allowedRoles={['staff', 'admin']}>
@@ -212,6 +223,16 @@ function App() {
                     <ProtectedRoute allowedRoles={['admin']}>
                       <AppShell>
                         <AdminStaff />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/ai-support" 
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AppShell>
+                        <AISupport />
                       </AppShell>
                     </ProtectedRoute>
                   } 

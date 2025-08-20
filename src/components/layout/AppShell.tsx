@@ -19,7 +19,8 @@ import {
   Shield,
   Star,
   Zap,
-  Award
+  Award,
+  Bot
 } from 'lucide-react';
 import { RoleBadge } from '../ui/Badge';
 import { SimpleThemeToggle } from '../ui/SimpleThemeToggle';
@@ -76,6 +77,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         return [
           { path: '/staff/tickets', label: 'All Tickets', icon: Ticket },
           { path: '/staff/dashboard', label: 'Dashboard', icon: BarChart3 },
+          { path: '/staff/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/staff/leaderboard', label: 'Leaderboard', icon: Trophy },
           { path: '/staff/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
         ];
@@ -84,6 +86,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           { path: '/admin/categories', label: 'Categories', icon: Tags },
           { path: '/admin/priorities', label: 'Priorities', icon: AlertTriangle },
           { path: '/admin/staff', label: 'Staff', icon: Users },
+          { path: '/admin/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/admin/leaderboard', label: 'Leaderboard', icon: Trophy },
           { path: '/admin/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
         ];
@@ -292,15 +295,15 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                     <Icon className={`w-5 h-5 mr-3 transition-transform duration-200 ${isActive ? 'animate-bounce-gentle' : 'group-hover:scale-110'}`} />
                     {item.label}
                   </div>
-                  {item.badge && item.badge > 0 && (
+                  {item.badge && (
                     <span className={`
-                      px-2 py-1 rounded-full text-xs font-bold animate-pulse
-                      ${isActive 
-                        ? 'bg-white/20 text-white' 
-                        : 'bg-red-500 text-white shadow-lg'
+                      px-2 py-1 rounded-full text-xs font-bold
+                      ${typeof item.badge === 'string'
+                        ? `animate-pulse ${isActive ? 'bg-white/20 text-white' : 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'}`
+                        : `animate-pulse ${isActive ? 'bg-white/20 text-white' : 'bg-red-500 text-white shadow-lg'}`
                       }
                     `}>
-                      {item.badge > 9 ? '9+' : item.badge}
+                      {typeof item.badge === 'string' ? item.badge : (item.badge > 9 ? '9+' : item.badge)}
                     </span>
                   )}
                 </Link>
