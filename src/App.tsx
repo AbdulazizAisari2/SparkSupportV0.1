@@ -22,6 +22,7 @@ import { StaffDashboard } from './pages/staff/StaffDashboard';
 import { AdminCategories } from './pages/admin/AdminCategories';
 import { AdminPriorities } from './pages/admin/AdminPriorities';
 import { AdminStaff } from './pages/admin/AdminStaff';
+import { NotificationsPage } from './pages/NotificationsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -120,6 +121,16 @@ function App() {
                     </ProtectedRoute>
                   } 
                 />
+                <Route 
+                  path="/my/notifications" 
+                  element={
+                    <ProtectedRoute allowedRoles={['customer']}>
+                      <AppShell>
+                        <NotificationsPage />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
 
                 {/* Staff Routes */}
                 <Route 
@@ -152,6 +163,16 @@ function App() {
                     </ProtectedRoute>
                   } 
                 />
+                <Route 
+                  path="/staff/notifications" 
+                  element={
+                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                      <AppShell>
+                        <NotificationsPage />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
 
                 {/* Admin Routes */}
                 <Route 
@@ -180,6 +201,16 @@ function App() {
                     <ProtectedRoute allowedRoles={['admin']}>
                       <AppShell>
                         <AdminStaff />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/notifications" 
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AppShell>
+                        <NotificationsPage />
                       </AppShell>
                     </ProtectedRoute>
                   } 

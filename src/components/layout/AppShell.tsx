@@ -11,11 +11,13 @@ import {
   MessageSquare,
   BarChart3,
   Tags,
-  AlertTriangle
+  AlertTriangle,
+  Bell
 } from 'lucide-react';
 import { RoleBadge } from '../ui/Badge';
 import { ThemeToggle } from '../ui/ThemeToggle';
-import { NotificationBell, useNotifications } from '../../context/NotificationContext';
+import { useNotifications } from '../../context/NotificationContext';
+import { FloatingNotificationButton } from '../ui/FloatingNotificationButton';
 
 interface AppShellProps {
   children: ReactNode;
@@ -23,20 +25,48 @@ interface AppShellProps {
 
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const { user, logout } = useAuth();
-  const { addNotification } = useNotifications();
+  const { addNotification, unreadCount } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Add a welcome notification on first load
+  // Add sample notifications on first load
   React.useEffect(() => {
     if (user) {
+      // Welcome notification
       addNotification({
-        type: 'info',
+        type: 'success',
         title: `Welcome back, ${user.name}!`,
-        message: 'Your dashboard is ready. Check out the new dark theme toggle!',
+        message: 'Your dashboard is ready. Check out the new notifications page!',
       });
+
+      // Add some sample notifications based on role
+      setTimeout(() => {
+        if (user.role === 'customer') {
+          addNotification({
+            type: 'info',
+            title: 'Ticket Update',
+            message: 'Your support ticket #T001 has been assigned to our technical team.',
+          });
+        } else if (user.role === 'staff') {
+          addNotification({
+            type: 'warning',
+            title: 'High Priority Ticket',
+            message: 'New urgent ticket requires immediate attention.',
+            action: {
+              label: 'View Ticket',
+              onClick: () => navigate('/staff/tickets')
+            }
+          });
+        } else if (user.role === 'admin') {
+          addNotification({
+            type: 'error',
+            title: 'System Alert',
+            message: 'Server maintenance scheduled for tonight at 2 AM.',
+          });
+        }
+      }, 2000);
     }
-  }, [user, addNotification]);
+  }, [user, addNotification, navigate]);
 
   if (!user) {
     return <div>{children}</div>;
@@ -53,17 +83,20 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         return [
           { path: '/my/tickets', label: 'My Tickets', icon: Ticket },
           { path: '/my/tickets/new', label: 'New Ticket', icon: Plus },
+          { path: '/my/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
         ];
       case 'staff':
         return [
           { path: '/staff/tickets', label: 'All Tickets', icon: Ticket },
           { path: '/staff/dashboard', label: 'Dashboard', icon: BarChart3 },
+          { path: '/staff/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
         ];
       case 'admin':
         return [
           { path: '/admin/categories', label: 'Categories', icon: Tags },
           { path: '/admin/priorities', label: 'Priorities', icon: AlertTriangle },
           { path: '/admin/staff', label: 'Staff', icon: Users },
+          { path: '/admin/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
         ];
       default:
         return [];
@@ -92,7 +125,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <NotificationBell />
               <ThemeToggle variant="minimal" />
             </div>
           </div>
@@ -130,15 +162,28 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                   key={item.path}
                   to={item.path}
                   className={`
-                    flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group relative overflow-hidden
+                    flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group relative overflow-hidden
                     ${isActive
                       ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg transform scale-105'
                       : 'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-dark-700/50 hover:text-gray-900 dark:hover:text-gray-100 hover:shadow-md backdrop-blur-sm'
                     }
                   `}
                 >
-                  <Icon className={`w-5 h-5 mr-3 transition-transform duration-200 ${isActive ? 'animate-bounce-gentle' : 'group-hover:scale-110'}`} />
-                  {item.label}
+                  <div className="flex items-center">
+                    <Icon className={`w-5 h-5 mr-3 transition-transform duration-200 ${isActive ? 'animate-bounce-gentle' : 'group-hover:scale-110'}`} />
+                    {item.label}
+                  </div>
+                  {item.badge && item.badge > 0 && (
+                    <span className={`
+                      px-2 py-1 rounded-full text-xs font-bold animate-pulse
+                      ${isActive 
+                        ? 'bg-white/20 text-white' 
+                        : 'bg-red-500 text-white shadow-lg'
+                      }
+                    `}>
+                      {item.badge > 9 ? '9+' : item.badge}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -166,6 +211,9 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
             </div>
           </div>
         </main>
+        
+        {/* Floating Notification Button */}
+        <FloatingNotificationButton />
       </div>
     </div>
   );
