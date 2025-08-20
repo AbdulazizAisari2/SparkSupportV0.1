@@ -24,7 +24,7 @@ export const mockUsers: User[] = [
   },
   {
     id: '4',
-    name: 'Ahmed',
+    name: 'Abdulaziz',
     email: 'admin@example.com',
     role: 'admin',
     department: 'IT'

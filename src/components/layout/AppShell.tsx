@@ -61,39 +61,53 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const navItems = getNavItems();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-800 transition-all duration-300">
       {/* Sidebar */}
-      <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg transition-colors duration-200">
+      <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white/80 dark:bg-dark-800/80 backdrop-blur-xl shadow-2xl border-r border-gray-200/50 dark:border-dark-700/50 transition-all duration-300">
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center space-x-2">
-              <MessageSquare className="w-8 h-8 text-blue-600" />
-              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Support Desk</h1>
+          <div className="flex items-center justify-between p-4 border-b border-gray-200/50 dark:border-dark-700/50 bg-gradient-to-r from-primary-500/5 to-purple-500/5 dark:from-primary-900/20 dark:to-purple-900/20">
+            <div className="flex items-center space-x-3">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary-400 to-primary-600 rounded-xl blur opacity-75 animate-glow"></div>
+                <div className="relative bg-white dark:bg-dark-800 p-2 rounded-xl shadow-lg">
+                  <MessageSquare className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                </div>
+              </div>
+              <div>
+                <h1 className="text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-800 dark:from-primary-400 dark:to-primary-300 bg-clip-text text-transparent">SparkSupport</h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Support Dashboard</p>
+              </div>
             </div>
             <div className="flex items-center space-x-2">
               <NotificationBell />
-              <ThemeToggle />
+              <ThemeToggle variant="minimal" />
             </div>
           </div>
 
           {/* User Info */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-4 border-b border-gray-200/50 dark:border-dark-700/50 bg-gradient-to-r from-white/50 to-primary-50/30 dark:from-dark-800/50 dark:to-primary-900/10">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                  {user.name.charAt(0).toUpperCase()}
-                </span>
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary-400 to-purple-500 rounded-full blur opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative w-12 h-12 bg-gradient-to-r from-primary-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-105 transition-transform duration-200">
+                  <span className="text-sm font-bold text-white">
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name}</p>
-                <RoleBadge role={user.role} />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{user.name}</p>
+                <RoleBadge role={user.role} className="mt-1" />
+                {user.department && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{user.department}</p>
+                )}
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-4 space-y-2">
+          <nav className="flex-1 px-4 py-6 space-y-3 bg-gradient-to-b from-transparent to-white/20 dark:to-dark-800/20">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path || 
@@ -104,14 +118,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                   key={item.path}
                   to={item.path}
                   className={`
-                    flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                    flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group relative overflow-hidden
                     ${isActive
-                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100'
+                      ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg transform scale-105'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-dark-700/50 hover:text-gray-900 dark:hover:text-gray-100 hover:shadow-md backdrop-blur-sm'
                     }
                   `}
                 >
-                  <Icon className="w-5 h-5 mr-3" />
+                  <Icon className={`w-5 h-5 mr-3 transition-transform duration-200 ${isActive ? 'animate-bounce-gentle' : 'group-hover:scale-110'}`} />
                   {item.label}
                 </Link>
               );
@@ -119,13 +133,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="p-4 border-t border-gray-200/50 dark:border-dark-700/50 bg-gradient-to-r from-white/30 to-gray-50/30 dark:from-dark-800/30 dark:to-dark-700/30">
             <button
               onClick={handleLogout}
-              className="flex items-center w-full px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+              className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 group hover:shadow-md backdrop-blur-sm border border-transparent hover:border-red-200 dark:hover:border-red-800"
             >
-              <LogOut className="w-5 h-5 mr-3" />
-              Logout
+              <LogOut className="w-5 h-5 mr-3 group-hover:animate-bounce-gentle" />
+              <span>Logout</span>
             </button>
           </div>
         </div>
@@ -133,9 +147,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
       {/* Main Content */}
       <div className="ml-64">
-        <main className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
+        <main className="p-8 min-h-screen transition-all duration-300">
           <div className="animate-fade-in">
-            {children}
+            <div className="max-w-7xl mx-auto">
+              {children}
+            </div>
           </div>
         </main>
       </div>

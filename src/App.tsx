@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { MessageSquare } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
@@ -36,8 +37,23 @@ const RoleBasedRedirect: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-800">
+        <div className="text-center">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-400 to-purple-600 rounded-full blur opacity-75 animate-glow"></div>
+            <div className="relative w-16 h-16 bg-gradient-to-r from-primary-500 to-purple-600 rounded-full flex items-center justify-center animate-pulse">
+              <MessageSquare className="w-8 h-8 text-white" />
+            </div>
+          </div>
+          <div className="mt-6">
+            <div className="flex justify-center space-x-1">
+              <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+              <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            </div>
+            <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">Loading SparkSupport...</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -66,7 +82,7 @@ function App() {
           <AuthProvider>
             <ToastProvider>
             <Router>
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+            <div className="min-h-screen transition-all duration-300">
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
