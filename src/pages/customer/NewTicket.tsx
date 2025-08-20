@@ -82,7 +82,7 @@ export const NewTicket: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create New Ticket</h1>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white dark:bg-dark-800 rounded-lg border border-gray-200 p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Category */}
           <div>
@@ -94,7 +94,7 @@ export const NewTicket: React.FC = () => {
               id="categoryId"
               className={`
                 w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                ${errors.categoryId ? 'border-red-300' : 'border-gray-300'}
+                ${errors.categoryId ? 'border-red-300' : 'border-gray-300 dark:border-dark-600'}
               `}
             >
               <option value="">Select a category</option>
@@ -119,7 +119,7 @@ export const NewTicket: React.FC = () => {
               id="priority"
               className={`
                 w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                ${errors.priority ? 'border-red-300' : 'border-gray-300'}
+                ${errors.priority ? 'border-red-300' : 'border-gray-300 dark:border-dark-600'}
               `}
             >
               <option value="low">Low</option>
@@ -144,7 +144,7 @@ export const NewTicket: React.FC = () => {
               placeholder="Brief description of the issue"
               className={`
                 w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                ${errors.subject ? 'border-red-300' : 'border-gray-300'}
+                ${errors.subject ? 'border-red-300' : 'border-gray-300 dark:border-dark-600'}
               `}
             />
             {errors.subject && (
@@ -164,7 +164,7 @@ export const NewTicket: React.FC = () => {
               placeholder="Provide detailed information about your issue..."
               className={`
                 w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none
-                ${errors.description ? 'border-red-300' : 'border-gray-300'}
+                ${errors.description ? 'border-red-300' : 'border-gray-300 dark:border-dark-600'}
               `}
             />
             {errors.description && (

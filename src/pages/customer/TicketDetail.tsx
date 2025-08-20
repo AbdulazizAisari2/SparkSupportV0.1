@@ -59,7 +59,7 @@ export const TicketDetail: React.FC = () => {
           <Skeleton className="h-8 w-8" />
           <Skeleton className="h-8 w-64" />
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+        <div className="bg-white dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-600 p-6 space-y-4">
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-3/4" />
@@ -76,7 +76,7 @@ export const TicketDetail: React.FC = () => {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Error Loading Ticket</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
+        <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-8">
           There was an error loading ticket {id}. Please try again.
         </p>
         <div className="text-sm text-red-600 dark:text-red-400 mb-4">
@@ -96,7 +96,7 @@ export const TicketDetail: React.FC = () => {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Ticket Not Found</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
+        <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-4">
           Ticket {id} doesn't exist or you don't have access to it.
         </p>
         <div className="text-sm text-gray-500 dark:text-gray-500 mb-8">
@@ -121,13 +121,13 @@ export const TicketDetail: React.FC = () => {
       <div className="flex items-center space-x-4">
         <button
           onClick={() => navigate('/my/tickets')}
-          className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+          className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ticket {ticket.id}</h1>
-          <p className="text-gray-600">{ticket.subject}</p>
+          <p className="text-gray-600 dark:text-gray-400">{ticket.subject}</p>
         </div>
       </div>
 
@@ -135,13 +135,13 @@ export const TicketDetail: React.FC = () => {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Thread */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-white dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-600 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Conversation</h2>
             <Thread messages={messages} users={users} />
           </div>
 
           {/* Reply Box */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-white dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-600 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Reply</h2>
             <ReplyBox
               onSubmit={handleReply}
@@ -154,29 +154,29 @@ export const TicketDetail: React.FC = () => {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Ticket Info */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-white dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-600 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Ticket Details</h3>
             
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Status</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">Status</span>
                 <StatusBadge status={ticket.status} />
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Priority</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">Priority</span>
                 <PriorityBadge priority={ticket.priority} />
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Category</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">Category</span>
                 <span className="text-sm font-medium text-gray-900">
                   {category?.name || 'Unknown'}
                 </span>
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Assigned to</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">Assigned to</span>
                 <span className="text-sm font-medium text-gray-900">
                   {assignedUser?.name || 'Unassigned'}
                 </span>
@@ -185,12 +185,12 @@ export const TicketDetail: React.FC = () => {
               <hr className="my-4" />
 
               <div className="space-y-3">
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                   <Clock className="w-4 h-4" />
                   <span>Created {formatDistanceToNow(new Date(ticket.createdAt), { addSuffix: true })}</span>
                 </div>
 
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                   <Clock className="w-4 h-4" />
                   <span>Updated {formatDistanceToNow(new Date(ticket.updatedAt), { addSuffix: true })}</span>
                 </div>
