@@ -14,9 +14,7 @@ export const SimpleThemeToggle: React.FC<SimpleThemeToggleProps> = ({
   const { theme, toggleTheme } = useTheme();
   
   const handleToggle = () => {
-    console.log('Theme toggle clicked, current theme:', theme);
     toggleTheme();
-    console.log('Theme should now be:', theme === 'light' ? 'dark' : 'light');
   };
 
   return (
