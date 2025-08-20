@@ -3,7 +3,7 @@ import { Grid, List } from 'lucide-react';
 import { useTickets, useCategories, useUsers } from '../../hooks/useApi';
 import { FiltersBar } from '../../components/tickets/FiltersBar';
 import { TicketTable } from '../../components/tickets/TicketTable';
-import { KanbanBoard } from '../../components/tickets/KanbanBoard';
+import { KanbanBoardSimple } from '../../components/tickets/KanbanBoardSimple';
 import { TicketSkeleton } from '../../components/ui/Loading';
 
 export const StaffTickets: React.FC = () => {
@@ -109,7 +109,7 @@ export const StaffTickets: React.FC = () => {
           linkPrefix="/staff/tickets"
         />
       ) : (
-        <KanbanBoard
+        <KanbanBoardSimple
           tickets={filteredTickets}
           users={users}
           categories={categories}
