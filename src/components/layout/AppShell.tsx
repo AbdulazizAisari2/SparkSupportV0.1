@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { RoleBadge } from '../ui/Badge';
 import { ThemeToggle } from '../ui/ThemeToggle';
+import { NotificationBell } from '../../context/NotificationContext';
 
 interface AppShellProps {
   children: ReactNode;
@@ -70,7 +71,10 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
               <MessageSquare className="w-8 h-8 text-blue-600" />
               <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Support Desk</h1>
             </div>
-            <ThemeToggle className="ml-2" />
+            <div className="flex items-center space-x-2">
+              <NotificationBell />
+              <ThemeToggle />
+            </div>
           </div>
 
           {/* User Info */}
