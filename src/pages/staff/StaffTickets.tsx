@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Grid, List } from 'lucide-react';
-import { useTickets, useCategories, useUsers } from '../../hooks/useApi';
+import { useTickets, useCategories, useUsers, useUpdateTicket } from '../../hooks/useApi';
+import { useToast } from '../../context/ToastContext';
 import { FiltersBar } from '../../components/tickets/FiltersBar';
 import { TicketTable } from '../../components/tickets/TicketTable';
 import { KanbanBoardSimple } from '../../components/tickets/KanbanBoardSimple';
@@ -13,6 +14,9 @@ export const StaffTickets: React.FC = () => {
   const [priority, setPriority] = useState('');
   const [assignee, setAssignee] = useState('');
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
+  
+  const updateTicketMutation = useUpdateTicket();
+  const { addToast } = useToast();
 
   const { 
     data: tickets = [], 
@@ -113,9 +117,16 @@ export const StaffTickets: React.FC = () => {
           tickets={filteredTickets}
           users={users}
           categories={categories}
-          onTicketUpdate={(ticketId, updates) => {
-            // In real app, this would call an API to update the ticket
-            console.log('Updating ticket:', ticketId, updates);
+          onTicketUpdate={async (ticketId, updates) => {
+            try {
+              await updateTicketMutation.mutateAsync({
+                id: ticketId,
+                data: updates
+              });
+              addToast('Ticket updated successfully!', 'success');
+            } catch (error) {
+              addToast('Failed to update ticket', 'error');
+            }
           }}
           linkPrefix="/staff/tickets"
         />

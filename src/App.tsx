@@ -217,6 +217,16 @@ function App() {
                   } 
                 />
                 <Route 
+                  path="/admin/leaderboard" 
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AppShell>
+                        <StaffLeaderboard />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
                   path="/admin/notifications" 
                   element={
                     <ProtectedRoute allowedRoles={['admin']}>

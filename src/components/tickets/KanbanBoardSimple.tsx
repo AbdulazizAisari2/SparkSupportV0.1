@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Ticket, User, Category, Status } from '../../types';
 import { StatusBadge, PriorityBadge } from '../ui/Badge';
-import { Clock, User as UserIcon, Plus, ArrowRight } from 'lucide-react';
+import { Clock, User as UserIcon, Plus, ArrowRight, ArrowLeft } from 'lucide-react';
+import { useUpdateTicket } from '../../hooks/useApi';
+import { useToast } from '../../context/ToastContext';
 
 interface KanbanBoardSimpleProps {
   tickets: Ticket[];
@@ -61,6 +63,8 @@ const statusConfig = {
 
 const KanbanTicketCard: React.FC<KanbanTicketCardProps> = ({ ticket, users, categories, onTicketUpdate, linkPrefix }) => {
   const [showActions, setShowActions] = useState(false);
+  const updateTicketMutation = useUpdateTicket();
+  const { addToast } = useToast();
 
   const getUserName = (userId?: string) => {
     if (!userId) return 'Unassigned';
@@ -104,6 +108,19 @@ const KanbanTicketCard: React.FC<KanbanTicketCardProps> = ({ ticket, users, cate
 
   const nextStatus = getNextStatus(ticket.status);
   const prevStatus = getPreviousStatus(ticket.status);
+
+  const handleStatusChange = async (newStatus: Status) => {
+    try {
+      await updateTicketMutation.mutateAsync({
+        id: ticket.id,
+        data: { status: newStatus }
+      });
+      addToast(`Ticket moved to ${newStatus.replace('_', ' ')}!`, 'success');
+      onTicketUpdate(ticket.id, { status: newStatus });
+    } catch (error) {
+      addToast('Failed to update ticket status', 'error');
+    }
+  };
 
   return (
     <div
@@ -150,19 +167,23 @@ const KanbanTicketCard: React.FC<KanbanTicketCardProps> = ({ ticket, users, cate
             <div className="flex items-center space-x-1 animate-slide-up">
               {prevStatus && (
                 <button
-                  onClick={() => onTicketUpdate(ticket.id, { status: prevStatus })}
-                  className="px-2 py-1 bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 rounded text-xs hover:bg-gray-200 dark:hover:bg-dark-600 transition-colors"
+                  onClick={() => handleStatusChange(prevStatus)}
+                  className="px-2 py-1 bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-dark-600 transition-all duration-200 hover:scale-110 flex items-center space-x-1"
                   title={`Move to ${prevStatus.replace('_', ' ')}`}
+                  disabled={updateTicketMutation.isPending}
                 >
-                  ←
+                  <ArrowLeft className="w-3 h-3" />
+                  <span>Back</span>
                 </button>
               )}
               {nextStatus && (
                 <button
-                  onClick={() => onTicketUpdate(ticket.id, { status: nextStatus })}
-                  className="px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded text-xs hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-colors flex items-center space-x-1"
+                  onClick={() => handleStatusChange(nextStatus)}
+                  className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-lg text-xs hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-all duration-200 hover:scale-110 flex items-center space-x-1 font-medium"
                   title={`Move to ${nextStatus.replace('_', ' ')}`}
+                  disabled={updateTicketMutation.isPending}
                 >
+                  <span>Next</span>
                   <ArrowRight className="w-3 h-3" />
                 </button>
               )}

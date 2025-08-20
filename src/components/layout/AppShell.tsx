@@ -75,6 +75,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           { path: '/admin/categories', label: 'Categories', icon: Tags },
           { path: '/admin/priorities', label: 'Priorities', icon: AlertTriangle },
           { path: '/admin/staff', label: 'Staff', icon: Users },
+          { path: '/admin/leaderboard', label: 'Leaderboard', icon: Trophy },
           { path: '/admin/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
         ];
       default:
