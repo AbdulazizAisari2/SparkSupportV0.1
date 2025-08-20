@@ -80,7 +80,8 @@ export const StaffTickets: React.FC = () => {
             </button>
           </div>
           <div className="text-sm text-gray-600 dark:text-gray-400">
-          {filteredTickets.length} ticket{filteredTickets.length !== 1 ? 's' : ''}
+            {filteredTickets.length} ticket{filteredTickets.length !== 1 ? 's' : ''}
+          </div>
         </div>
       </div>
 
