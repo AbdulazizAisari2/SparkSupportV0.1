@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { mockUsers, mockCategories, mockPriorities, mockTickets, mockMessages } from './data';
-import { User, Ticket, TicketMessage } from '../types';
+import { User, Ticket, TicketMessage, Role } from '../types';
 
 // In-memory storage for runtime data
 let users = [...mockUsers];
@@ -23,6 +23,38 @@ export const handlers = [
     }
     
     return HttpResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+  }),
+
+  http.post('/api/signup', async ({ request }) => {
+    const { name, email, phone, role } = await request.json() as { 
+      name: string; 
+      email: string; 
+      phone?: string; 
+      role: string;
+    };
+    
+    // Check if user already exists
+    const existingUser = users.find(u => u.email === email);
+    if (existingUser) {
+      return HttpResponse.json({ error: 'User with this email already exists' }, { status: 409 });
+    }
+    
+    // Create new user
+    const newUser: User = {
+      id: Date.now().toString(),
+      name,
+      email,
+      phone,
+      role: role as Role,
+      department: role === 'staff' ? 'General Support' : undefined
+    };
+    
+    users.push(newUser);
+    
+    return HttpResponse.json({
+      token: `fake-token-${newUser.id}`,
+      user: newUser
+    }, { status: 201 });
   }),
 
   http.get('/api/me', ({ request }) => {

@@ -8,6 +8,7 @@ interface AuthState {
 
 interface AuthContextType extends AuthState {
   login: (token: string, user: User) => void;
+  signup: (token: string, user: User) => void;
   logout: () => void;
   isLoading: boolean;
 }
@@ -43,13 +44,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.setItem('auth', JSON.stringify(newState));
   };
 
+  const signup = (token: string, user: User) => {
+    const newState = { token, user };
+    setState(newState);
+    localStorage.setItem('auth', JSON.stringify(newState));
+  };
+
   const logout = () => {
     setState({ token: null, user: null });
     localStorage.removeItem('auth');
   };
 
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ ...state, login, signup, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

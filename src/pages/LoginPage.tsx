@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -192,6 +192,18 @@ export const LoginPage: React.FC = () => {
             
             <p className="mt-2 text-xs text-gray-500 text-center">
               Click a demo account to fill credentials, then sign in
+            </p>
+          </div>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{' '}
+              <Link
+                to="/signup"
+                className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
+              >
+                Sign up here
+              </Link>
             </p>
           </div>
         </form>
