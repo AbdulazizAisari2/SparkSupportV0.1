@@ -4,7 +4,7 @@ import { useTickets, useCategories, useUsers, useUpdateTicket } from '../../hook
 import { useToast } from '../../context/ToastContext';
 import { FiltersBar } from '../../components/tickets/FiltersBar';
 import { TicketTable } from '../../components/tickets/TicketTable';
-import { KanbanBoardSimple } from '../../components/tickets/KanbanBoardSimple';
+import { KanbanBoardBasic } from '../../components/tickets/KanbanBoardBasic';
 import { TicketSkeleton } from '../../components/ui/Loading';
 
 export const StaffTickets: React.FC = () => {
@@ -113,7 +113,7 @@ export const StaffTickets: React.FC = () => {
           linkPrefix="/staff/tickets"
         />
       ) : (
-        <KanbanBoardSimple
+        <KanbanBoardBasic
           tickets={filteredTickets}
           users={users}
           categories={categories}

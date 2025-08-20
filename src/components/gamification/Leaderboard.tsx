@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Trophy, Medal, Award, Star, Zap, Target, Crown, TrendingUp, Calendar, Users, Sparkles, Gift, Fire, Clock } from 'lucide-react';
 import { User } from '../../types';
-import { AchievementBadge, Achievement } from '../ui/Badge';
+import { Achievement } from '../ui/Badge';
 
 export interface StaffStats {
   userId: string;
@@ -500,12 +500,13 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                       <div className="text-xs text-gray-500 dark:text-gray-400 text-center font-medium">Achievements</div>
                       <div className="flex flex-wrap justify-center gap-2">
                         {staff.achievements.map((achievement) => (
-                          <AchievementBadge
+                          <div
                             key={achievement.id}
-                            achievement={achievement}
-                            size="sm"
-                            showTooltip={true}
-                          />
+                            className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg"
+                            title={achievement.name}
+                          >
+                            🏆
+                          </div>
                         ))}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
