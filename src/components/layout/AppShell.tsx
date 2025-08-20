@@ -25,6 +25,7 @@ import { RoleBadge } from '../ui/Badge';
 import { SimpleThemeToggle } from '../ui/SimpleThemeToggle';
 import { useNotifications } from '../../context/NotificationContext';
 import { FloatingNotificationButton } from '../ui/FloatingNotificationButton';
+import { TestThemeToggle } from '../ui/TestThemeToggle';
 
 interface AppShellProps {
   children: ReactNode;
@@ -351,6 +352,9 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         
         {/* Floating Notification Button */}
         <FloatingNotificationButton />
+        
+        {/* Test Theme Toggle */}
+        <TestThemeToggle />
       </div>
     </div>
   );
