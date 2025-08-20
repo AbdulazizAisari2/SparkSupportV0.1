@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { ToastContainer } from './components/ui/Toast';
 import { AppShell } from './components/layout/AppShell';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -59,10 +60,11 @@ const RoleBasedRedirect: React.FC = () => {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ToastProvider>
-          <Router>
-            <div className="min-h-screen bg-gray-50">
+      <ThemeProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <Router>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
@@ -173,6 +175,7 @@ function App() {
           </Router>
         </ToastProvider>
       </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

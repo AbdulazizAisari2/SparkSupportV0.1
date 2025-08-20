@@ -92,19 +92,19 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center">
             <div className="flex items-center space-x-2">
               <MessageSquare className="w-12 h-12 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Support Desk</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Support Desk</h1>
             </div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             Customer Support Ticket System
           </p>
         </div>
@@ -121,8 +121,8 @@ export const LoginPage: React.FC = () => {
                 type="email"
                 autoComplete="email"
                 className={`
-                  relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm
-                  ${errors.email ? 'border-red-300' : 'border-gray-300'}
+                  relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 dark:text-gray-100 dark:placeholder-gray-400 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm bg-white dark:bg-gray-800 transition-colors duration-200
+                  ${errors.email ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'}
                 `}
                 placeholder="Email address"
               />
@@ -135,8 +135,8 @@ export const LoginPage: React.FC = () => {
                 {...register('role')}
                 id="role"
                 className={`
-                  relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm
-                  ${errors.role ? 'border-red-300' : 'border-gray-300'}
+                  relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 dark:text-gray-100 dark:placeholder-gray-400 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm bg-white dark:bg-gray-800 transition-colors duration-200
+                  ${errors.role ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'}
                 `}
               >
                 <option value="">Select Role</option>
@@ -148,7 +148,7 @@ export const LoginPage: React.FC = () => {
           </div>
 
           {(errors.email || errors.role) && (
-            <div className="text-red-600 text-sm space-y-1">
+            <div className="text-red-600 dark:text-red-400 text-sm space-y-1">
               {errors.email && <p>{errors.email.message}</p>}
               {errors.role && <p>{errors.role.message}</p>}
             </div>
@@ -173,7 +173,7 @@ export const LoginPage: React.FC = () => {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-50 text-gray-500">Demo Accounts</span>
+                <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">Demo Accounts</span>
               </div>
             </div>
 
@@ -183,20 +183,20 @@ export const LoginPage: React.FC = () => {
                   key={user.email}
                   type="button"
                   onClick={() => fillDemoCredentials(user)}
-                  className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+                  className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
                   {user.name}
                 </button>
               ))}
             </div>
             
-            <p className="mt-2 text-xs text-gray-500 text-center">
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
               Click a demo account to fill credentials, then sign in
             </p>
           </div>
 
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Don't have an account?{' '}
               <Link
                 to="/signup"
