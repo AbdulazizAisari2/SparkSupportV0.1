@@ -16,13 +16,23 @@ export const TicketDetail: React.FC = () => {
   const { user } = useAuth();
   const { addToast } = useToast();
 
-  const { data: ticketData, isLoading } = useTicket(id!);
+  const { data: ticketData, isLoading, error } = useTicket(id!);
   const { data: categories = [] } = useCategories();
   const { data: users = [] } = useUsers();
   const createMessageMutation = useCreateMessage();
 
   const ticket = ticketData?.ticket;
   const messages = ticketData?.messages || [];
+
+  // Debug logging
+  console.log('TicketDetail Debug:', {
+    id,
+    ticketData,
+    ticket,
+    isLoading,
+    error,
+    user
+  });
 
   const handleReply = async (data: { message: string }) => {
     if (!user || !ticket) return;
@@ -62,11 +72,36 @@ export const TicketDetail: React.FC = () => {
     );
   }
 
-  if (!ticket) {
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto text-center py-12">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Error Loading Ticket</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-8">
+          There was an error loading ticket {id}. Please try again.
+        </p>
+        <div className="text-sm text-red-600 dark:text-red-400 mb-4">
+          Error: {error?.message || 'Unknown error'}
+        </div>
+        <button
+          onClick={() => navigate('/my/tickets')}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Back to My Tickets
+        </button>
+      </div>
+    );
+  }
+
+  if (!isLoading && !ticket) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Ticket Not Found</h1>
-        <p className="text-gray-600 mb-8">The ticket you're looking for doesn't exist or you don't have access to it.</p>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
+          Ticket {id} doesn't exist or you don't have access to it.
+        </p>
+        <div className="text-sm text-gray-500 dark:text-gray-500 mb-8">
+          Available tickets: T001, T002, T003, T004
+        </div>
         <button
           onClick={() => navigate('/my/tickets')}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

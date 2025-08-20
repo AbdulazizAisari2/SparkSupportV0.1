@@ -169,10 +169,23 @@ class ApiClient {
   }
 
   async getTicket(token: string, id: string): Promise<{ ticket: Ticket; messages: TicketMessage[] }> {
+    console.log('API: Fetching ticket', id, 'with token', token?.substring(0, 20) + '...');
+    
     const response = await fetch(`${API_BASE}/tickets/${id}`, {
       headers: this.getHeaders(token),
     });
-    return response.json();
+
+    console.log('API: Response status', response.status, response.statusText);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.log('API: Error data', errorData);
+      throw new Error(errorData.error || `Failed to fetch ticket ${id}`);
+    }
+
+    const data = await response.json();
+    console.log('API: Ticket data received', data);
+    return data;
   }
 
   async updateTicket(token: string, id: string, data: Partial<Ticket>): Promise<Ticket> {
