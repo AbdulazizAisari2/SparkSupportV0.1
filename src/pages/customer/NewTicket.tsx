@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send, FileText, Sparkles } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useCreateTicket, useCategories } from '../../hooks/useApi';
 import { Priority } from '../../types';
+import { TicketTemplates, TicketTemplate } from '../../components/tickets/TicketTemplates';
+import { RichTextEditor } from '../../components/ui/RichTextEditor';
+import { FileUpload, UploadedFile } from '../../components/ui/FileUpload';
 
 const ticketSchema = z.object({
   categoryId: z.string().min(1, 'Category is required'),
@@ -24,10 +27,25 @@ export const NewTicket: React.FC = () => {
   const navigate = useNavigate();
   const createTicketMutation = useCreateTicket();
   const { data: categories = [] } = useCategories();
+  
+  const [showTemplates, setShowTemplates] = useState(true);
+  const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null);
+  const [attachedFiles, setAttachedFiles] = useState<UploadedFile[]>([]);
+  const [richDescription, setRichDescription] = useState('');
+
+  const handleTemplateSelect = (template: TicketTemplate) => {
+    setSelectedTemplate(template);
+    setShowTemplates(false);
+    setValue('categoryId', template.category);
+    setValue('priority', template.priority);
+    setValue('subject', template.subject);
+    setRichDescription(template.description);
+  };
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<TicketFormData>({
     resolver: zodResolver(ticketSchema),

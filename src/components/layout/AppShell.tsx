@@ -12,7 +12,8 @@ import {
   BarChart3,
   Tags,
   AlertTriangle,
-  Bell
+  Bell,
+  Trophy
 } from 'lucide-react';
 import { RoleBadge } from '../ui/Badge';
 import { ThemeToggle } from '../ui/ThemeToggle';
@@ -66,6 +67,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         return [
           { path: '/staff/tickets', label: 'All Tickets', icon: Ticket },
           { path: '/staff/dashboard', label: 'Dashboard', icon: BarChart3 },
+          { path: '/staff/leaderboard', label: 'Leaderboard', icon: Trophy },
           { path: '/staff/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
         ];
       case 'admin':

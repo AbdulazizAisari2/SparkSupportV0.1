@@ -19,6 +19,7 @@ import { TicketDetail } from './pages/customer/TicketDetail';
 import { StaffTickets } from './pages/staff/StaffTickets';
 import { StaffTicketDetail } from './pages/staff/StaffTicketDetail';
 import { StaffDashboard } from './pages/staff/StaffDashboard';
+import { StaffLeaderboard } from './pages/staff/StaffLeaderboard';
 import { AdminCategories } from './pages/admin/AdminCategories';
 import { AdminPriorities } from './pages/admin/AdminPriorities';
 import { AdminStaff } from './pages/admin/AdminStaff';
@@ -159,6 +160,16 @@ function App() {
                     <ProtectedRoute allowedRoles={['staff', 'admin']}>
                       <AppShell>
                         <StaffDashboard />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/staff/leaderboard" 
+                  element={
+                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                      <AppShell>
+                        <StaffLeaderboard />
                       </AppShell>
                     </ProtectedRoute>
                   } 
