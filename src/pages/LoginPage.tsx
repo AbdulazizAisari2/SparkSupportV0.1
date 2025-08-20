@@ -18,10 +18,10 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 // Demo user credentials
 const demoUsers = [
-  { email: 'customer@example.com', role: 'customer', name: 'John Customer' },
-  { email: 'staff1@example.com', role: 'staff', name: 'Sarah Support' },
-  { email: 'staff2@example.com', role: 'staff', name: 'Mike Manager' },
-  { email: 'admin@example.com', role: 'admin', name: 'Admin User' },
+  { email: 'customer@example.com', role: 'customer', name: 'Ahmed' },
+  { email: 'staff1@example.com', role: 'staff', name: 'Mohammed' },
+  { email: 'staff2@example.com', role: 'staff', name: 'Sarah' },
+  { email: 'admin@example.com', role: 'admin', name: 'Ahmed' },
 ];
 
 export const LoginPage: React.FC = () => {

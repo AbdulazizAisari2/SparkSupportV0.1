@@ -3,28 +3,28 @@ import { User, Category, PriorityDef, Ticket, TicketMessage } from '../types';
 export const mockUsers: User[] = [
   {
     id: '1',
-    name: 'John Customer',
+    name: 'Ahmed',
     email: 'customer@example.com',
     phone: '+1234567890',
     role: 'customer'
   },
   {
     id: '2',
-    name: 'Sarah Support',
+    name: 'Mohammed',
     email: 'staff1@example.com',
     role: 'staff',
     department: 'Technical Support'
   },
   {
     id: '3',
-    name: 'Mike Manager',
+    name: 'Sarah',
     email: 'staff2@example.com',
     role: 'staff',
     department: 'Customer Success'
   },
   {
     id: '4',
-    name: 'Admin User',
+    name: 'Ahmed',
     email: 'admin@example.com',
     role: 'admin',
     department: 'IT'
@@ -118,7 +118,7 @@ export const mockMessages: TicketMessage[] = [
     id: '2',
     ticketId: 'T001',
     senderId: '2',
-    message: 'Hi John, I\'ve assigned this ticket to myself and will investigate the login issue right away.',
+    message: 'Hi Ahmed, I\'ve assigned this ticket to myself and will investigate the login issue right away.',
     createdAt: '2024-01-15T11:15:00Z'
   },
   {
