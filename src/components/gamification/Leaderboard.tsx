@@ -316,68 +316,72 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
         </h2>
         
         <div className="flex items-end justify-center space-x-8">
-          {/* 2nd Place */}
-          {sortedStats[1] && (
-            <div className="text-center animate-slide-up" style={{ animationDelay: '0.1s' }}>
-              <div className="relative mb-4">
-                <div className="w-20 h-16 bg-gradient-to-t from-gray-400 to-gray-500 rounded-t-lg flex items-end justify-center pb-2">
-                  <span className="text-white font-bold text-lg">2</span>
-                </div>
-                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                  <div className="w-16 h-16 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-white font-bold text-lg">{sortedStats[1].name.charAt(0)}</span>
+          {/* 2nd Place - Sarah */}
+          <div className="text-center animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <div className="relative mb-4">
+              <div className="w-20 h-16 bg-gradient-to-t from-gray-400 to-gray-500 rounded-t-lg flex items-end justify-center pb-2 shadow-lg">
+                <span className="text-white font-bold text-lg">2</span>
+              </div>
+              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full blur opacity-50"></div>
+                  <div className="relative w-16 h-16 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full flex items-center justify-center shadow-xl border-2 border-white/20">
+                    <span className="text-white font-bold text-lg">S</span>
                   </div>
                 </div>
               </div>
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100">{sortedStats[1].name}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{sortedStats[1].points} points</p>
             </div>
-          )}
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">Sarah</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">2,680 points</p>
+            <div className="mt-1 px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium">
+              Customer Success
+            </div>
+          </div>
 
-          {/* 1st Place */}
-          {sortedStats[0] && (
-            <div className="text-center animate-slide-up">
-              <div className="relative mb-4">
-                <div className="w-24 h-20 bg-gradient-to-t from-yellow-400 to-yellow-500 rounded-t-lg flex items-end justify-center pb-2">
-                  <span className="text-white font-bold text-xl">1</span>
-                </div>
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full blur opacity-75 animate-glow"></div>
-                    <div className="relative w-20 h-20 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-2xl">
-                      <span className="text-white font-bold text-xl">{sortedStats[0].name.charAt(0)}</span>
-                    </div>
+          {/* 1st Place - Mohammed */}
+          <div className="text-center animate-slide-up">
+            <div className="relative mb-4">
+              <div className="w-24 h-20 bg-gradient-to-t from-yellow-400 to-yellow-500 rounded-t-lg flex items-end justify-center pb-2 shadow-xl">
+                <span className="text-white font-bold text-xl">1</span>
+              </div>
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full blur opacity-75 animate-glow"></div>
+                  <div className="relative w-20 h-20 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-2xl border-4 border-white/30">
+                    <span className="text-white font-bold text-xl">M</span>
                   </div>
                 </div>
-                <Crown className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-6 h-6 text-yellow-400 animate-bounce-gentle" />
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg">{sortedStats[0].name}</h3>
-              <p className="text-sm text-yellow-600 dark:text-yellow-400 font-semibold">{sortedStats[0].points} points</p>
-              {sortedStats[0].specialRecognition && (
-                <div className="mt-2 px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 rounded-full text-xs font-bold">
-                  {sortedStats[0].specialRecognition}
-                </div>
-              )}
+              <Crown className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-6 h-6 text-yellow-400 animate-bounce-gentle" />
             </div>
-          )}
+            <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg">Mohammed</h3>
+            <p className="text-sm text-yellow-600 dark:text-yellow-400 font-semibold">2,940 points</p>
+            <div className="mt-2 px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full text-xs font-bold shadow-lg">
+              🏆 Staff of the Month
+            </div>
+          </div>
 
-          {/* 3rd Place */}
-          {sortedStats[2] && (
-            <div className="text-center animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <div className="relative mb-4">
-                <div className="w-20 h-12 bg-gradient-to-t from-orange-400 to-orange-500 rounded-t-lg flex items-end justify-center pb-2">
-                  <span className="text-white font-bold text-lg">3</span>
-                </div>
-                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                  <div className="w-16 h-16 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-white font-bold text-lg">{sortedStats[2].name.charAt(0)}</span>
+          {/* 3rd Place - Abdulaziz */}
+          <div className="text-center animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <div className="relative mb-4">
+              <div className="w-20 h-12 bg-gradient-to-t from-orange-400 to-orange-500 rounded-t-lg flex items-end justify-center pb-2 shadow-lg">
+                <span className="text-white font-bold text-lg">3</span>
+              </div>
+              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full blur opacity-50"></div>
+                  <div className="relative w-16 h-16 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-xl border-2 border-white/20">
+                    <span className="text-white font-bold text-lg">A</span>
                   </div>
                 </div>
               </div>
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100">{sortedStats[2].name}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{sortedStats[2].points} points</p>
             </div>
-          )}
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">Abdulaziz</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">1,780 points</p>
+            <div className="mt-1 px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-lg text-xs font-medium">
+              IT Administration
+            </div>
+          </div>
         </div>
       </div>
 
