@@ -163,8 +163,8 @@ export const KanbanBoardBasic: React.FC<KanbanBoardBasicProps> = ({ tickets, use
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Kanban Board</h2>
-          <p className="text-gray-600 dark:text-gray-400">Click arrows to move tickets between statuses</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Board View</h2>
+          <p className="text-gray-600 dark:text-gray-400">Visual workflow - click arrows to move tickets between statuses</p>
         </div>
         <div className="text-sm text-gray-500 dark:text-gray-400">
           Total: <span className="font-semibold text-gray-900 dark:text-gray-100">{tickets.length}</span> tickets

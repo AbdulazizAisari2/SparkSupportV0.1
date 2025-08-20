@@ -21,13 +21,12 @@ export const SimpleThemeToggle: React.FC<SimpleThemeToggleProps> = ({
     <button
       onClick={handleToggle}
       className={`
-        relative inline-flex items-center justify-center p-3 rounded-xl transition-all duration-200 group cursor-pointer z-50
-        bg-white dark:bg-dark-700 
-        border-2 border-gray-300 dark:border-dark-500
-        text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100
-        hover:bg-gray-100 dark:hover:bg-dark-600 hover:shadow-lg hover:scale-110
-        focus:outline-none focus:ring-2 focus:ring-primary-500
-        active:scale-95 active:bg-primary-100 dark:active:bg-primary-900/30
+        relative inline-flex items-center justify-center p-2 rounded-lg transition-all duration-200 group cursor-pointer
+        bg-white/90 dark:bg-dark-700/90 backdrop-blur-sm
+        border border-gray-200 dark:border-dark-600
+        text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100
+        hover:bg-gray-50 dark:hover:bg-dark-600 hover:shadow-md hover:scale-105
+        focus:outline-none active:scale-95
         ${className}
       `}
       title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
@@ -38,11 +37,11 @@ export const SimpleThemeToggle: React.FC<SimpleThemeToggleProps> = ({
       
       <div className="relative flex items-center space-x-2">
         {/* Icon with smooth transition */}
-        <div className="relative w-6 h-6">
+        <div className="relative w-5 h-5">
           {theme === 'light' ? (
-            <Sun className="w-6 h-6 text-yellow-500" />
+            <Sun className="w-5 h-5 text-yellow-500" />
           ) : (
-            <Moon className="w-6 h-6 text-blue-400" />
+            <Moon className="w-5 h-5 text-blue-400" />
           )}
         </div>
 

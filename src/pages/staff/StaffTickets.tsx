@@ -54,37 +54,59 @@ export const StaffTickets: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">All Tickets</h1>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center bg-white dark:bg-dark-800 rounded-xl border border-gray-200 dark:border-dark-600 p-1">
-            <button
-              onClick={() => setViewMode('table')}
-              className={`
-                flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                ${viewMode === 'table'
-                  ? 'bg-primary-500 text-white shadow-lg'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700'
-                }
-              `}
-            >
-              <List className="w-4 h-4" />
-              <span>Table</span>
-            </button>
-            <button
-              onClick={() => setViewMode('kanban')}
-              className={`
-                flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                ${viewMode === 'kanban'
-                  ? 'bg-primary-500 text-white shadow-lg'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700'
-                }
-              `}
-            >
-              <Grid className="w-4 h-4" />
-              <span>Kanban</span>
-            </button>
+        <div className="flex items-center space-x-6">
+          {/* Enhanced View Toggle */}
+          <div className="relative bg-white/80 dark:bg-dark-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-dark-700/50 p-1 shadow-lg">
+            <div className="flex items-center space-x-1">
+              <button
+                onClick={() => setViewMode('table')}
+                className={`
+                  relative flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 group overflow-hidden
+                  ${viewMode === 'table'
+                    ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg transform scale-105'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-dark-700/50 hover:text-gray-900 dark:hover:text-gray-100 hover:scale-105'
+                  }
+                `}
+              >
+                <List className={`w-4 h-4 ${viewMode === 'table' ? 'animate-bounce-gentle' : 'group-hover:scale-110'} transition-transform`} />
+                <span>List View</span>
+                {viewMode === 'table' && (
+                  <div className="absolute inset-0 bg-white/20 animate-pulse rounded-xl"></div>
+                )}
+              </button>
+              
+              <button
+                onClick={() => setViewMode('kanban')}
+                className={`
+                  relative flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 group overflow-hidden
+                  ${viewMode === 'kanban'
+                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg transform scale-105'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-dark-700/50 hover:text-gray-900 dark:hover:text-gray-100 hover:scale-105'
+                  }
+                `}
+              >
+                <Grid className={`w-4 h-4 ${viewMode === 'kanban' ? 'animate-bounce-gentle' : 'group-hover:scale-110'} transition-transform`} />
+                <span>Board View</span>
+                {viewMode === 'kanban' && (
+                  <div className="absolute inset-0 bg-white/20 animate-pulse rounded-xl"></div>
+                )}
+              </button>
+            </div>
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {filteredTickets.length} ticket{filteredTickets.length !== 1 ? 's' : ''}
+
+          {/* Ticket Count with Better Design */}
+          <div className="flex items-center space-x-3">
+            <div className="bg-white/80 dark:bg-dark-800/80 backdrop-blur-xl rounded-xl border border-gray-200/50 dark:border-dark-700/50 px-4 py-2 shadow-md">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {filteredTickets.length}
+                </span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  ticket{filteredTickets.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
