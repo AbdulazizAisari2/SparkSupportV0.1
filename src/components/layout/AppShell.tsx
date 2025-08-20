@@ -29,44 +29,21 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Add sample notifications on first load
+  // Add a simple welcome notification on first load
   React.useEffect(() => {
     if (user) {
-      // Welcome notification
-      addNotification({
-        type: 'success',
-        title: `Welcome back, ${user.name}!`,
-        message: 'Your dashboard is ready. Check out the new notifications page!',
-      });
-
-      // Add some sample notifications based on role
-      setTimeout(() => {
-        if (user.role === 'customer') {
-          addNotification({
-            type: 'info',
-            title: 'Ticket Update',
-            message: 'Your support ticket #T001 has been assigned to our technical team.',
-          });
-        } else if (user.role === 'staff') {
-          addNotification({
-            type: 'warning',
-            title: 'High Priority Ticket',
-            message: 'New urgent ticket requires immediate attention.',
-            action: {
-              label: 'View Ticket',
-              onClick: () => navigate('/staff/tickets')
-            }
-          });
-        } else if (user.role === 'admin') {
-          addNotification({
-            type: 'error',
-            title: 'System Alert',
-            message: 'Server maintenance scheduled for tonight at 2 AM.',
-          });
-        }
-      }, 2000);
+      // Only add welcome notification once
+      const hasSeenWelcome = localStorage.getItem(`welcome-${user.id}`);
+      if (!hasSeenWelcome) {
+        addNotification({
+          type: 'success',
+          title: `Welcome, ${user.name}!`,
+          message: 'Your dashboard is ready. Check out the notifications page in the sidebar.',
+        });
+        localStorage.setItem(`welcome-${user.id}`, 'true');
+      }
     }
-  }, [user, addNotification, navigate]);
+  }, [user, addNotification]);
 
   if (!user) {
     return <div>{children}</div>;

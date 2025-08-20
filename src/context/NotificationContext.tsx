@@ -35,6 +35,15 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const addNotification = (notification: Omit<Notification, 'id' | 'createdAt' | 'read'>) => {
+    // Prevent duplicate notifications
+    const isDuplicate = notifications.some(n => 
+      n.title === notification.title && n.message === notification.message
+    );
+    
+    if (isDuplicate) {
+      return;
+    }
+
     const newNotification: Notification = {
       ...notification,
       id: Date.now().toString(),
@@ -42,13 +51,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       read: false,
     };
 
-    setNotifications(prev => [newNotification, ...prev]);
+    setNotifications(prev => [newNotification, ...prev.slice(0, 9)]); // Keep max 10 notifications
 
-    // Auto-remove after 10 seconds for non-action notifications
+    // Auto-remove after 8 seconds for non-action notifications
     if (!notification.action) {
       setTimeout(() => {
         removeNotification(newNotification.id);
-      }, 10000);
+      }, 8000);
     }
   };
 
