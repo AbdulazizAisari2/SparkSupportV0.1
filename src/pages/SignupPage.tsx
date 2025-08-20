@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { MessageSquare, UserPlus, User, Mail, Phone, Shield, Sparkles, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { ThemeToggle } from '../components/ui/ThemeToggle';
+import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -112,7 +112,7 @@ export const SignupPage: React.FC = () => {
 
       {/* Theme toggle in top right */}
       <div className="absolute top-6 right-6 z-20">
-        <ThemeToggle showLabel />
+        <SimpleThemeToggle showLabel />
       </div>
 
       {/* Main content */}

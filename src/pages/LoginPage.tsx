@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { MessageSquare, LogIn, Mail, Shield, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { ThemeToggle } from '../components/ui/ThemeToggle';
+import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -104,7 +104,7 @@ export const LoginPage: React.FC = () => {
 
       {/* Theme toggle in top right */}
       <div className="absolute top-6 right-6 z-20">
-        <ThemeToggle showLabel />
+        <SimpleThemeToggle showLabel />
       </div>
 
       {/* Main content */}
