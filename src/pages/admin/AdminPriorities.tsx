@@ -111,7 +111,7 @@ export const AdminPriorities: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Priorities Management</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Priorities Management</h1>
         <p className="text-sm text-gray-600">
           {priorities.length} priorit{priorities.length !== 1 ? 'ies' : 'y'}
         </p>
@@ -136,7 +136,7 @@ export const AdminPriorities: React.FC = () => {
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Name *
             </label>
             <input
@@ -155,7 +155,7 @@ export const AdminPriorities: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="level" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="level" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Level * (1-10, higher = more urgent)
             </label>
             <input
@@ -182,7 +182,7 @@ export const AdminPriorities: React.FC = () => {
             <button
               type="button"
               onClick={handleCloseDialog}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
             >
               Cancel
             </button>

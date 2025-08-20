@@ -118,7 +118,7 @@ export const StaffTicketDetail: React.FC = () => {
   if (!ticket) {
     return (
       <div className="max-w-6xl mx-auto text-center py-12">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Ticket Not Found</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Ticket Not Found</h1>
         <p className="text-gray-600 mb-8">The ticket you're looking for doesn't exist.</p>
         <button
           onClick={() => navigate('/staff/tickets')}
@@ -146,7 +146,7 @@ export const StaffTicketDetail: React.FC = () => {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Ticket {ticket.id}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ticket {ticket.id}</h1>
             <p className="text-gray-600">{ticket.subject}</p>
           </div>
         </div>

@@ -38,11 +38,11 @@ export const TicketCard: React.FC<TicketCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-600 p-4 hover:shadow-md dark:hover:shadow-xl transition-all duration-200 backdrop-blur-sm">
       <div className="flex justify-between items-start mb-3">
         <Link 
           to={`${linkPrefix}/${ticket.id}`}
-          className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+          className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
         >
           {ticket.id}
         </Link>
@@ -53,17 +53,17 @@ export const TicketCard: React.FC<TicketCardProps> = ({
       </div>
 
       <div className="mb-3">
-        <h3 className="font-medium text-gray-900 mb-1 line-clamp-2">
+        <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1 line-clamp-2">
           {ticket.subject}
         </h3>
-        <p className="text-sm text-gray-600 line-clamp-2">
+        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
           {ticket.description}
         </p>
       </div>
 
-      <div className="flex items-center justify-between text-xs text-gray-500">
+      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
         <div className="flex items-center space-x-4">
-          <span className="bg-gray-100 px-2 py-1 rounded">
+          <span className="bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded border border-gray-200 dark:border-dark-600">
             {getCategoryName(ticket.categoryId)}
           </span>
           <div className="flex items-center space-x-1">

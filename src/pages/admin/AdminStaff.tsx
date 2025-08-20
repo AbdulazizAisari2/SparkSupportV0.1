@@ -130,7 +130,7 @@ export const AdminStaff: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Staff Management</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Staff Management</h1>
         <p className="text-sm text-gray-600">
           {staffUsers.length} staff member{staffUsers.length !== 1 ? 's' : ''}
         </p>
@@ -155,7 +155,7 @@ export const AdminStaff: React.FC = () => {
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Full Name *
             </label>
             <input
@@ -174,7 +174,7 @@ export const AdminStaff: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Email Address *
             </label>
             <input
@@ -193,7 +193,7 @@ export const AdminStaff: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Phone Number
             </label>
             <input
@@ -206,7 +206,7 @@ export const AdminStaff: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Role *
             </label>
             <select
@@ -226,7 +226,7 @@ export const AdminStaff: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="department" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Department
             </label>
             <input
@@ -242,7 +242,7 @@ export const AdminStaff: React.FC = () => {
             <button
               type="button"
               onClick={handleCloseDialog}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
             >
               Cancel
             </button>

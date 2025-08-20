@@ -102,7 +102,7 @@ export const AdminCategories: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Categories Management</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Categories Management</h1>
         <p className="text-sm text-gray-600">
           {categories.length} categor{categories.length !== 1 ? 'ies' : 'y'}
         </p>
@@ -127,7 +127,7 @@ export const AdminCategories: React.FC = () => {
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Name *
             </label>
             <input
@@ -146,7 +146,7 @@ export const AdminCategories: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Description
             </label>
             <textarea
@@ -162,7 +162,7 @@ export const AdminCategories: React.FC = () => {
             <button
               type="button"
               onClick={handleCloseDialog}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
             >
               Cancel
             </button>

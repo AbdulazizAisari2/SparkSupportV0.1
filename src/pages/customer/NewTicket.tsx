@@ -61,7 +61,7 @@ export const NewTicket: React.FC = () => {
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h1 className="text-2xl font-bold text-gray-900">Create New Ticket</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create New Ticket</h1>
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200 p-6">

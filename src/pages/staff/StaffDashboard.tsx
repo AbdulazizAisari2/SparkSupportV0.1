@@ -92,7 +92,7 @@ export const StaffDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Staff Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Staff Dashboard</h1>
         <div className="flex items-center space-x-2 text-sm text-gray-600">
           <BarChart3 className="w-4 h-4" />
           <span>Support Overview</span>

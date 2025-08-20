@@ -33,7 +33,7 @@ export const StaffTickets: React.FC = () => {
   if (ticketsLoading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900">All Tickets</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">All Tickets</h1>
         <div className="grid gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <TicketSkeleton key={i} />
@@ -46,7 +46,7 @@ export const StaffTickets: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">All Tickets</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">All Tickets</h1>
         <div className="text-sm text-gray-600">
           {filteredTickets.length} ticket{filteredTickets.length !== 1 ? 's' : ''}
         </div>

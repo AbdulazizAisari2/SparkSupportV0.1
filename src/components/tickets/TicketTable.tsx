@@ -84,7 +84,7 @@ export const TicketTable: React.FC<TicketTableProps> = ({
 
   if (tickets.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+      <div className="bg-white dark:bg-dark-800 dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-600 p-8 text-center">
         <div className="max-w-sm mx-auto">
           <svg
             className="mx-auto h-12 w-12 text-gray-400"
@@ -99,8 +99,8 @@ export const TicketTable: React.FC<TicketTableProps> = ({
               strokeLinejoin="round"
             />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No tickets found</h3>
-          <p className="mt-1 text-sm text-gray-500">
+          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No tickets found</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Get started by creating a new support ticket.
           </p>
         </div>
@@ -112,10 +112,10 @@ export const TicketTable: React.FC<TicketTableProps> = ({
     field, 
     children 
   }) => (
-    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
       <button
         onClick={() => handleSort(field)}
-        className="flex items-center space-x-1 hover:text-gray-700 transition-colors"
+        className="flex items-center space-x-1 hover:text-gray-700 dark:text-gray-300 transition-colors"
       >
         <span>{children}</span>
         <ArrowUpDown className="w-3 h-3" />
@@ -124,27 +124,27 @@ export const TicketTable: React.FC<TicketTableProps> = ({
   );
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div className="bg-white dark:bg-dark-800 dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-600 overflow-hidden shadow-lg">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 dark:bg-dark-700">
             <tr>
               <SortableHeader field="id">Ticket ID</SortableHeader>
               <SortableHeader field="subject">Subject</SortableHeader>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Category
               </th>
               <SortableHeader field="priority">Priority</SortableHeader>
               <SortableHeader field="status">Status</SortableHeader>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Assignee
               </th>
               <SortableHeader field="updatedAt">Last Updated</SortableHeader>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-dark-800 divide-y divide-gray-200">
             {paginatedTickets.map((ticket) => (
-              <tr key={ticket.id} className="hover:bg-gray-50 transition-colors">
+              <tr key={ticket.id} className="hover:bg-gray-50 dark:bg-dark-700 transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
                   <Link 
                     to={`${linkPrefix}/${ticket.id}`}
@@ -154,14 +154,14 @@ export const TicketTable: React.FC<TicketTableProps> = ({
                   </Link>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900 font-medium">
+                  <div className="text-sm text-gray-900 dark:text-gray-100 font-medium">
                     {ticket.subject}
                   </div>
-                  <div className="text-sm text-gray-500 truncate max-w-xs">
+                  <div className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">
                     {ticket.description}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                   {getCategoryName(ticket.categoryId)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -170,10 +170,10 @@ export const TicketTable: React.FC<TicketTableProps> = ({
                 <td className="px-6 py-4 whitespace-nowrap">
                   <StatusBadge status={ticket.status} />
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                   {getUserName(ticket.assignedStaffId)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {formatDate(ticket.updatedAt)}
                 </td>
               </tr>
@@ -184,26 +184,26 @@ export const TicketTable: React.FC<TicketTableProps> = ({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200">
+        <div className="bg-white dark:bg-dark-800 dark:bg-dark-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-dark-600">
           <div className="flex-1 flex justify-between sm:hidden">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-dark-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-800 hover:bg-gray-50 dark:bg-dark-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
             </button>
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-dark-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-800 hover:bg-gray-50 dark:bg-dark-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
             </button>
           </div>
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-gray-700 dark:text-gray-300">
                 Showing{' '}
                 <span className="font-medium">{startIndex + 1}</span> to{' '}
                 <span className="font-medium">
@@ -217,7 +217,7 @@ export const TicketTable: React.FC<TicketTableProps> = ({
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-dark-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
@@ -229,7 +229,7 @@ export const TicketTable: React.FC<TicketTableProps> = ({
                     className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                       currentPage === page
                         ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                        : 'bg-white dark:bg-dark-800 dark:bg-dark-700 border-gray-300 dark:border-dark-600 dark:border-dark-600 text-gray-500 dark:text-gray-400 dark:text-gray-400 hover:bg-gray-50 dark:bg-dark-700 dark:hover:bg-dark-600'
                     }`}
                   >
                     {page}
@@ -239,7 +239,7 @@ export const TicketTable: React.FC<TicketTableProps> = ({
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-dark-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>

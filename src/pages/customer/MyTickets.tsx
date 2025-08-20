@@ -31,7 +31,7 @@ export const MyTickets: React.FC = () => {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">My Tickets</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Tickets</h1>
         </div>
         <div className="grid gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -45,7 +45,7 @@ export const MyTickets: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">My Tickets</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Tickets</h1>
         <Link
           to="/my/tickets/new"
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

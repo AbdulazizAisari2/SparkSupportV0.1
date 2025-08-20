@@ -52,15 +52,15 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className = ''
   const getStyles = () => {
     switch (status) {
       case 'open':
-        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-700';
+        return 'bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-200 border-2 border-red-300 dark:border-red-400 shadow-sm dark:shadow-red-500/20';
       case 'in_progress':
-        return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-700';
+        return 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-200 border-2 border-yellow-300 dark:border-yellow-400 shadow-sm dark:shadow-yellow-500/20';
       case 'resolved':
-        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-700';
+        return 'bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-200 border-2 border-green-300 dark:border-green-400 shadow-sm dark:shadow-green-500/20';
       case 'closed':
-        return 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700';
+        return 'bg-gray-100 dark:bg-gray-500/20 text-gray-800 dark:text-gray-200 border-2 border-gray-300 dark:border-gray-400 shadow-sm dark:shadow-gray-500/20';
       default:
-        return 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700';
+        return 'bg-gray-100 dark:bg-gray-500/20 text-gray-800 dark:text-gray-200 border-2 border-gray-300 dark:border-gray-400 shadow-sm dark:shadow-gray-500/20';
     }
   };
 
@@ -74,7 +74,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className = ''
   };
 
   return (
-    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full transition-colors duration-200 ${getStyles()} ${className}`}>
+    <span className={`inline-flex px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 ${getStyles()} ${className}`}>
       {getDisplayText()}
     </span>
   );
@@ -89,20 +89,20 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority, classNam
   const getStyles = () => {
     switch (priority) {
       case 'urgent':
-        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-700 animate-pulse';
+        return 'bg-red-100 dark:bg-red-500/25 text-red-900 dark:text-red-100 border-2 border-red-400 dark:border-red-300 shadow-lg dark:shadow-red-500/30 animate-pulse font-black';
       case 'high':
-        return 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 border border-orange-200 dark:border-orange-700';
+        return 'bg-orange-100 dark:bg-orange-500/25 text-orange-900 dark:text-orange-100 border-2 border-orange-400 dark:border-orange-300 shadow-md dark:shadow-orange-500/20 font-bold';
       case 'medium':
-        return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-700';
+        return 'bg-yellow-100 dark:bg-yellow-500/25 text-yellow-900 dark:text-yellow-100 border-2 border-yellow-400 dark:border-yellow-300 shadow-md dark:shadow-yellow-500/20 font-semibold';
       case 'low':
-        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-700';
+        return 'bg-green-100 dark:bg-green-500/25 text-green-900 dark:text-green-100 border-2 border-green-400 dark:border-green-300 shadow-md dark:shadow-green-500/20 font-medium';
       default:
-        return 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700';
+        return 'bg-gray-100 dark:bg-gray-500/25 text-gray-900 dark:text-gray-100 border-2 border-gray-400 dark:border-gray-300 shadow-md dark:shadow-gray-500/20 font-medium';
     }
   };
 
   return (
-    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full transition-colors duration-200 ${getStyles()} ${className}`}>
+    <span className={`inline-flex px-3 py-1.5 text-xs rounded-lg transition-all duration-200 uppercase tracking-wider ${getStyles()} ${className}`}>
       {priority.charAt(0).toUpperCase() + priority.slice(1)}
     </span>
   );
