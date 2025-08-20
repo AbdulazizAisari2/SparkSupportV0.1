@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { RoleBadge } from '../ui/Badge';
 import { ThemeToggle } from '../ui/ThemeToggle';
-import { NotificationBell } from '../../context/NotificationContext';
+import { NotificationBell, useNotifications } from '../../context/NotificationContext';
 
 interface AppShellProps {
   children: ReactNode;
@@ -23,8 +23,20 @@ interface AppShellProps {
 
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const { user, logout } = useAuth();
+  const { addNotification } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Add a welcome notification on first load
+  React.useEffect(() => {
+    if (user) {
+      addNotification({
+        type: 'info',
+        title: `Welcome back, ${user.name}!`,
+        message: 'Your dashboard is ready. Check out the new dark theme toggle!',
+      });
+    }
+  }, [user, addNotification]);
 
   if (!user) {
     return <div>{children}</div>;

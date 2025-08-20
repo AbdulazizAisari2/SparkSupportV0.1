@@ -249,12 +249,14 @@ export const LoginPage: React.FC = () => {
                       `}
                     >
                       <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-                      <div className="relative flex items-center space-x-2">
-                        <Sparkles className="w-4 h-4" />
-                        <span>{user.name}</span>
-                      </div>
-                      <div className="relative text-xs opacity-90 mt-1 capitalize">
-                        {user.role}
+                      <div className="relative flex flex-col items-center justify-center text-center">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <Sparkles className="w-4 h-4" />
+                          <span className="font-semibold">{user.name}</span>
+                        </div>
+                        <div className="text-xs opacity-90 capitalize">
+                          {user.role}
+                        </div>
                       </div>
                     </button>
                   ))}

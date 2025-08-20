@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react';
 import { Bell, CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 
 export type NotificationType = 'success' | 'error' | 'info' | 'warning';
@@ -96,6 +96,24 @@ export const useNotifications = () => {
 export const NotificationBell: React.FC = () => {
   const { notifications, unreadCount, markAsRead, removeNotification } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const getIcon = (type: NotificationType) => {
     switch (type) {
@@ -118,37 +136,47 @@ export const NotificationBell: React.FC = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+        className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-dark-700/50 rounded-xl transition-all duration-200 hover:scale-110 backdrop-blur-sm"
       >
-        <Bell className="w-6 h-6" />
+        <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+          <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse shadow-lg">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 animate-slide-up">
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="absolute right-0 top-full mt-3 w-80 bg-white/90 dark:bg-dark-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-200/50 dark:border-dark-700/50 z-[60] animate-slide-down">
+          <div className="p-4 border-b border-gray-200/50 dark:border-dark-700/50 bg-gradient-to-r from-primary-50/50 to-purple-50/50 dark:from-primary-900/20 dark:to-purple-900/20">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Notifications</h3>
+              <div className="flex items-center space-x-2">
+                <Bell className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Notifications</h3>
+                {unreadCount > 0 && (
+                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                    {unreadCount}
+                  </span>
+                )}
+              </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-700 p-1 rounded-lg transition-all duration-200"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
           </div>
 
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                No notifications yet
+              <div className="p-8 text-center">
+                <Bell className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3 opacity-50" />
+                <p className="text-gray-500 dark:text-gray-400 font-medium">No notifications yet</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">You'll see updates here when they arrive</p>
               </div>
             ) : (
               notifications.map((notification) => {
@@ -156,8 +184,8 @@ export const NotificationBell: React.FC = () => {
                 return (
                   <div
                     key={notification.id}
-                    className={`p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
-                      !notification.read ? 'bg-blue-50 dark:bg-blue-900/10' : ''
+                    className={`p-4 border-b border-gray-100/50 dark:border-dark-700/50 hover:bg-gradient-to-r hover:from-primary-50/50 hover:to-purple-50/50 dark:hover:from-primary-900/10 dark:hover:to-purple-900/10 transition-all duration-200 cursor-pointer ${
+                      !notification.read ? 'bg-gradient-to-r from-blue-50/50 to-primary-50/50 dark:from-blue-900/20 dark:to-primary-900/20 border-l-4 border-l-primary-500' : ''
                     }`}
                     onClick={() => !notification.read && markAsRead(notification.id)}
                   >
