@@ -111,8 +111,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                 </div>
               </div>
               <div>
-                <h1 className="text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-800 dark:from-primary-400 dark:to-primary-300 bg-clip-text text-transparent">SparkSupport</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Support Dashboard</p>
+                <h1 className="text-lg font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">SparkSupport</h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Professional Support Platform</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
