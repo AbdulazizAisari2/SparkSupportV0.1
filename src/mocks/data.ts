@@ -80,8 +80,8 @@ export const mockTickets: Ticket[] = [
     subject: 'Password reset not working',
     description: 'I tried to reset my password multiple times but I\'m not receiving the reset email. Could you please help me access my account?',
     status: 'open',
-    createdAt: '2024-12-20T14:30:00Z',
-    updatedAt: '2024-12-20T14:30:00Z'
+    createdAt: '2025-01-15T16:45:00Z',
+    updatedAt: '2025-01-15T16:45:00Z'
   },
   {
     id: 'T002',
@@ -91,8 +91,8 @@ export const mockTickets: Ticket[] = [
     subject: 'Question about subscription pricing',
     description: 'Hi, I\'m interested in upgrading my plan but I have some questions about the pricing tiers. What are the differences between the Standard and Premium plans?',
     status: 'open',
-    createdAt: '2024-12-19T09:15:00Z',
-    updatedAt: '2024-12-19T09:15:00Z'
+    createdAt: '2025-01-12T09:15:00Z',
+    updatedAt: '2025-01-12T09:15:00Z'
   }
 ];
 
@@ -102,13 +102,13 @@ export const mockMessages: TicketMessage[] = [
     ticketId: 'T001',
     senderId: '1',
     message: 'I tried to reset my password multiple times but I\'m not receiving the reset email. Could you please help me access my account?',
-    createdAt: '2024-12-20T14:30:00Z'
+    createdAt: '2025-01-15T16:45:00Z'
   },
   {
     id: '2',
     ticketId: 'T002',
     senderId: '1',
     message: 'Hi, I\'m interested in upgrading my plan but I have some questions about the pricing tiers. What are the differences between the Standard and Premium plans?',
-    createdAt: '2024-12-19T09:15:00Z'
+    createdAt: '2025-01-12T09:15:00Z'
   }
 ];

@@ -8,7 +8,6 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
 import { PasswordField } from '../components/auth/PasswordField';
-
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
@@ -23,9 +22,7 @@ const signupSchema = z.object({
     required_error: 'Account type is required',
   }),
 });
-
 type SignupFormData = z.infer<typeof signupSchema>;
-
 const roleOptions = [
   {
     value: 'customer',
@@ -34,7 +31,7 @@ const roleOptions = [
     icon: User,
     color: 'from-blue-500 to-cyan-500',
     features: ['Submit Support Tickets', 'Track Ticket Progress', 'Real-time Updates', 'Priority Support']
-  },
+  }
 ];
 export const SignupPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +40,6 @@ export const SignupPage: React.FC = () => {
   const { signup } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
-
   const {
     register,
     handleSubmit,
@@ -52,7 +48,6 @@ export const SignupPage: React.FC = () => {
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
   });
-
   const onSubmit = async (data: SignupFormData) => {
     setIsLoading(true);
     try {
@@ -63,12 +58,10 @@ export const SignupPage: React.FC = () => {
         },
         body: JSON.stringify(data),
       });
-
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || 'Signup failed');
       }
-
       const result = await response.json();
       signup(result.token, result.user);
       
@@ -91,12 +84,10 @@ export const SignupPage: React.FC = () => {
       setIsLoading(false);
     }
   };
-
   const handleRoleSelect = (role: string) => {
     setSelectedRole(role);
     setValue('role', role as "customer" | "staff" | "admin");
   };
-
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background with gradient and animated elements */}
@@ -108,12 +99,10 @@ export const SignupPage: React.FC = () => {
         <div className="absolute top-40 left-10 w-72 h-72 bg-primary-200 dark:bg-primary-900 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
         <div className="absolute -bottom-32 right-1/3 w-72 h-72 bg-pink-200 dark:bg-pink-900 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-xl opacity-20 animate-float" style={{ animationDelay: '4s' }}></div>
       </div>
-
       {/* Theme toggle in top right */}
       <div className="absolute top-6 right-6 z-20">
         <SimpleThemeToggle />
       </div>
-
       {/* Main content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl w-full">
@@ -138,7 +127,6 @@ export const SignupPage: React.FC = () => {
               Get started with our premium support experience
             </p>
           </div>
-
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Account Type Selection */}
             <div className="animate-slide-up">
@@ -196,7 +184,6 @@ export const SignupPage: React.FC = () => {
                 })}
               </div>
             </div>
-
             {/* Registration Form */}
             <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <div className="bg-white/80 dark:bg-dark-800/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 dark:border-dark-700/50 p-6">
@@ -236,7 +223,6 @@ export const SignupPage: React.FC = () => {
                       <p className="text-sm text-red-600 dark:text-red-400 animate-slide-down">{errors.name.message}</p>
                     )}
                   </div>
-
                   {/* Email Field */}
                   <div className="space-y-2">
                     <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -268,7 +254,6 @@ export const SignupPage: React.FC = () => {
                       <p className="text-sm text-red-600 dark:text-red-400 animate-slide-down">{errors.email.message}</p>
                     )}
                   </div>
-
                   {/* Password Field */}
                   <div className="space-y-2">
                     <PasswordField
@@ -285,7 +270,6 @@ export const SignupPage: React.FC = () => {
                     />
                     <input type="hidden" {...register('password')} />
                   </div>
-
                   {/* Phone Field */}
                   <div className="space-y-2">
                     <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -305,13 +289,11 @@ export const SignupPage: React.FC = () => {
                       />
                     </div>
                   </div>
-
                   {/* Hidden Role Field */}
                   <input type="hidden" {...register('role')} value={selectedRole} />
                   {errors.role && (
                     <p className="text-sm text-red-600 dark:text-red-400 animate-slide-down">{errors.role.message}</p>
                   )}
-
                   {/* Submit Button */}
                   <button
                     type="submit"
@@ -331,7 +313,6 @@ export const SignupPage: React.FC = () => {
                     )}
                   </button>
                 </form>
-
                 {/* Sign in link */}
                 <div className="mt-6 text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -348,7 +329,6 @@ export const SignupPage: React.FC = () => {
               </div>
             </div>
           </div>
-
           {/* Footer */}
           <div className="mt-8 text-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <p className="text-xs text-gray-500 dark:text-gray-400">
