@@ -19,8 +19,8 @@ const signupSchema = z.object({
     .regex(/\d/, 'Password must contain at least one number')
     .regex(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one special character'),
   phone: z.string().optional(),
-  role: z.enum(['customer', 'staff'], {
-    required_error: 'Please select a role',
+  role: z.enum(['customer'], {
+    required_error: 'Account type is required',
   }),
 });
 
@@ -36,13 +36,6 @@ const roleOptions = [
     features: ['Submit Support Tickets', 'Track Ticket Progress', 'Real-time Updates', 'Priority Support']
   },
   {
-    value: 'staff',
-    label: 'Staff Account',
-    description: 'Manage tickets, assist customers, and access tools',
-    icon: Shield,
-    color: 'from-green-500 to-emerald-500',
-    features: ['Manage All Tickets', 'Staff Dashboard', 'Internal Notes', 'Team Collaboration']
-  }
 ];
 
 export const SignupPage: React.FC = () => {

@@ -248,58 +248,7 @@ export const LoginPage: React.FC = () => {
                 </button>
               </form>
 
-              {/* Demo Accounts Section */}
-              <div className="mt-8">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300 dark:border-dark-600"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-white/80 dark:bg-dark-800/80 text-gray-500 dark:text-gray-400 font-medium">
-                      Quick Demo Access
-                    </span>
-                  </div>
-                </div>
 
-                <div className="mt-6 grid grid-cols-2 gap-3">
-                  {demoUsers.map((user) => (
-                    <button
-                      key={user.email}
-                      type="button"
-                      onClick={() => fillDemoCredentials(user)}
-                      className={`
-                        relative overflow-hidden p-3 rounded-xl text-white font-medium text-sm
-                        bg-gradient-to-r ${user.color} hover:shadow-lg transform transition-all duration-200 
-                        hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500
-                        group
-                      `}
-                    >
-                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-                      <div className="relative flex flex-col items-center justify-center text-center">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <Sparkles className="w-4 h-4" />
-                          <span className="font-semibold">{user.name}</span>
-                        </div>
-                        <div className="text-xs opacity-90 capitalize">
-                          {user.role}
-                        </div>
-                        <div className="text-xs opacity-75 mt-1 font-mono">
-                          {user.password}
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-                
-                <div className="mt-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-700">
-                  <p className="text-xs text-primary-600 dark:text-primary-400 text-center font-medium">
-                    🔐 Demo Passwords: Secure defaults for testing
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">
-                    Click any account to auto-fill credentials • Passwords meet security requirements
-                  </p>
-                </div>
-              </div>
 
               {/* Sign up link */}
               <div className="mt-8 text-center">
