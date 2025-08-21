@@ -22,7 +22,7 @@ import {
   Bot
 } from 'lucide-react';
 import { RoleBadge } from '../ui/Badge';
-import { SimpleThemeToggle } from '../ui/SimpleThemeToggle';
+import { AdvancedThemeToggle } from '../ui/ThemeToggle';
 import { useNotifications } from '../../context/NotificationContext';
 import { FloatingNotificationButton } from '../ui/FloatingNotificationButton';
 
@@ -116,7 +116,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <SimpleThemeToggle />
+              <AdvancedThemeToggle />
             </div>
           </div>
 

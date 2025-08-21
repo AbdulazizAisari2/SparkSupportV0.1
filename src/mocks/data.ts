@@ -46,6 +46,16 @@ export const mockCategories: Category[] = [
     id: '3',
     name: 'General Inquiry',
     description: 'General questions and information requests'
+  },
+  {
+    id: '4',
+    name: 'Account Access',
+    description: 'Login issues, password resets, and account management'
+  },
+  {
+    id: '5',
+    name: 'Feature Request',
+    description: 'Suggestions for new features or improvements'
   }
 ];
 
@@ -61,7 +71,7 @@ export const mockTickets: Ticket[] = [
     id: 'T001',
     customerId: '1',
     assignedStaffId: '2',
-    categoryId: '1',
+    categoryId: '4',
     priority: 'medium',
     subject: 'Password reset not working',
     description: 'I tried to reset my password multiple times but I\'m not receiving the reset email. Could you please help me access my account?',

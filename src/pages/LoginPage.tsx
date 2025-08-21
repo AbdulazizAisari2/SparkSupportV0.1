@@ -43,6 +43,8 @@ export const LoginPage: React.FC = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
+    console.log('Form submission data:', data);
+    
     try {
       const response = await fetch('/api/login', {
         method: 'POST',
@@ -52,11 +54,16 @@ export const LoginPage: React.FC = () => {
         body: JSON.stringify(data),
       });
 
+      console.log('Login response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Login failed');
+        const errorData = await response.json();
+        console.log('Login error:', errorData);
+        throw new Error(errorData.error || 'Login failed');
       }
 
       const result = await response.json();
+      console.log('Login successful:', result);
       login(result.token, result.user);
       
       addToast(`Welcome back, ${result.user.name}! 🎉`, 'success');
@@ -75,8 +82,9 @@ export const LoginPage: React.FC = () => {
         default:
           navigate('/');
       }
-    } catch {
-      addToast('Login failed. Please check your credentials.', 'error');
+    } catch (error) {
+      console.error('Login error:', error);
+      addToast(`Login failed: ${error instanceof Error ? error.message : 'Please check your credentials'}`, 'error');
     } finally {
       setIsLoading(false);
     }
