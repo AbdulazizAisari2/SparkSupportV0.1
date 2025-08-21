@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,6 +7,8 @@ import { ArrowLeft, Send } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useCreateTicket, useCategories } from '../../hooks/useApi';
+import { TicketTemplate } from '../../components/tickets/TicketTemplates';
+import { UploadedFile } from '../../components/ui/FileUpload';
 
 const ticketSchema = z.object({
   categoryId: z.string().min(1, 'Category is required'),
