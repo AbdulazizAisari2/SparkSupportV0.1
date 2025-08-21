@@ -7,10 +7,17 @@ import { MessageSquare, UserPlus, User, Mail, Phone, Shield, CheckCircle } from 
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
+import { PasswordField } from '../components/auth/PasswordField';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/\d/, 'Password must contain at least one number')
+    .regex(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one special character'),
   phone: z.string().optional(),
   role: z.enum(['customer', 'staff'], {
     required_error: 'Please select a role',
@@ -41,6 +48,7 @@ const roleOptions = [
 export const SignupPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string>('');
+  const [password, setPassword] = useState('');
   const { signup } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
@@ -268,6 +276,23 @@ export const SignupPage: React.FC = () => {
                     {errors.email && (
                       <p className="text-sm text-red-600 dark:text-red-400 animate-slide-down">{errors.email.message}</p>
                     )}
+                  </div>
+
+                  {/* Password Field */}
+                  <div className="space-y-2">
+                    <PasswordField
+                      value={password}
+                      onChange={(value) => {
+                        setPassword(value);
+                        setValue('password', value);
+                      }}
+                      placeholder="Create a secure password"
+                      label="Password"
+                      required
+                      showStrength
+                      error={errors.password?.message}
+                    />
+                    <input type="hidden" {...register('password')} />
                   </div>
 
                   {/* Phone Field */}

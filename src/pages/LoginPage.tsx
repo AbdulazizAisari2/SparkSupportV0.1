@@ -7,9 +7,11 @@ import { MessageSquare, LogIn, Mail, Shield, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
+import { PasswordField } from '../components/auth/PasswordField';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
   role: z.enum(['customer', 'staff', 'admin'], {
     required_error: 'Please select a role',
   }),
@@ -17,16 +19,17 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-// Demo user credentials
+// Demo user credentials with secure default passwords
 const demoUsers = [
-  { email: 'customer@example.com', role: 'customer', name: 'Ahmed', color: 'from-blue-500 to-cyan-500' },
-  { email: 'staff1@example.com', role: 'staff', name: 'Mohammed', color: 'from-green-500 to-emerald-500' },
-  { email: 'staff2@example.com', role: 'staff', name: 'Sarah', color: 'from-purple-500 to-pink-500' },
-  { email: 'admin@example.com', role: 'admin', name: 'Abdulaziz', color: 'from-orange-500 to-red-500' },
+  { email: 'customer@example.com', password: 'Customer123!', role: 'customer', name: 'Ahmed', color: 'from-blue-500 to-cyan-500' },
+  { email: 'staff1@example.com', password: 'Staff123!', role: 'staff', name: 'Mohammed', color: 'from-green-500 to-emerald-500' },
+  { email: 'staff2@example.com', password: 'Staff123!', role: 'staff', name: 'Sarah', color: 'from-purple-500 to-pink-500' },
+  { email: 'admin@example.com', password: 'Admin123!', role: 'admin', name: 'Abdulaziz', color: 'from-orange-500 to-red-500' },
 ];
 
 export const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [password, setPassword] = useState('');
   const { login } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
@@ -92,7 +95,9 @@ export const LoginPage: React.FC = () => {
 
   const fillDemoCredentials = (demoUser: typeof demoUsers[0]) => {
     setValue('email', demoUser.email);
+    setValue('password', demoUser.password);
     setValue('role', demoUser.role as "customer" | "staff" | "admin");
+    setPassword(demoUser.password);
   };
 
   return (
@@ -171,6 +176,22 @@ export const LoginPage: React.FC = () => {
                   {errors.email && (
                     <p className="text-sm text-red-600 dark:text-red-400 animate-slide-down">{errors.email.message}</p>
                   )}
+                </div>
+
+                {/* Password Field */}
+                <div className="space-y-2">
+                  <PasswordField
+                    value={password}
+                    onChange={(value) => {
+                      setPassword(value);
+                      setValue('password', value);
+                    }}
+                    placeholder="Enter your password"
+                    label="Password"
+                    required
+                    error={errors.password?.message}
+                  />
+                  <input type="hidden" {...register('password')} />
                 </div>
 
                 {/* Role Field */}
@@ -262,14 +283,22 @@ export const LoginPage: React.FC = () => {
                         <div className="text-xs opacity-90 capitalize">
                           {user.role}
                         </div>
+                        <div className="text-xs opacity-75 mt-1 font-mono">
+                          {user.password}
+                        </div>
                       </div>
                     </button>
                   ))}
                 </div>
                 
-                <p className="mt-4 text-xs text-gray-500 dark:text-gray-400 text-center">
-                  Click any demo account to auto-fill credentials
-                </p>
+                <div className="mt-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-700">
+                  <p className="text-xs text-primary-600 dark:text-primary-400 text-center font-medium">
+                    🔐 Demo Passwords: Secure defaults for testing
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">
+                    Click any account to auto-fill credentials • Passwords meet security requirements
+                  </p>
+                </div>
               </div>
 
               {/* Sign up link */}

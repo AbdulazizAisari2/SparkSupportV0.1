@@ -12,32 +12,48 @@ let messages = [...mockMessages];
 export const handlers = [
   // Authentication
   http.post('/api/login', async ({ request }) => {
-    const { email, role } = await request.json() as { email: string; role: string };
-    console.log('Login attempt:', { email, role });
+    const { email, password, role } = await request.json() as { email: string; password: string; role: string };
+    console.log('Login attempt:', { email, role, hasPassword: !!password });
     console.log('Available users:', users.map(u => ({ email: u.email, role: u.role })));
     
+    // Find user by email and role
     const user = users.find(u => u.email === email && u.role === role);
-    console.log('Found user:', user);
+    console.log('Found user:', user ? { name: user.name, email: user.email, role: user.role } : null);
     
-    if (user) {
-      console.log('Login successful for:', user.name);
-      return HttpResponse.json({
-        token: `fake-token-${user.id}`,
-        user
-      });
+    if (!user) {
+      console.log('Login failed - no matching user found');
+      return HttpResponse.json({ error: 'Invalid email or role' }, { status: 401 });
     }
     
-    console.log('Login failed - no matching user found');
-    return HttpResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+    // Validate password
+    if (!password || user.password !== password) {
+      console.log('Login failed - invalid password');
+      return HttpResponse.json({ error: 'Invalid password' }, { status: 401 });
+    }
+    
+    console.log('Login successful for:', user.name);
+    
+    // Return user without password for security
+    const { password: _, ...userWithoutPassword } = user;
+    return HttpResponse.json({
+      token: `fake-token-${user.id}`,
+      user: userWithoutPassword
+    });
   }),
 
   http.post('/api/signup', async ({ request }) => {
-    const { name, email, phone, role } = await request.json() as { 
+    const { name, email, phone, role, password } = await request.json() as { 
       name: string; 
       email: string; 
       phone?: string; 
       role: string;
+      password: string;
     };
+    
+    // Validate password strength
+    if (!password || password.length < 6) {
+      return HttpResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
+    }
     
     // Check if user already exists
     const existingUser = users.find(u => u.email === email);
@@ -52,14 +68,17 @@ export const handlers = [
       email,
       phone,
       role: role as Role,
-      department: role === 'staff' ? 'General Support' : undefined
+      department: role === 'staff' ? 'General Support' : undefined,
+      password // Store password for demo purposes
     };
     
     users.push(newUser);
     
+    // Return user without password for security
+    const { password: _, ...userWithoutPassword } = newUser;
     return HttpResponse.json({
       token: `fake-token-${newUser.id}`,
-      user: newUser
+      user: userWithoutPassword
     }, { status: 201 });
   }),
 

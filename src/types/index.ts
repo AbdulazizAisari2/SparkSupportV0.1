@@ -9,6 +9,7 @@ export interface User {
   phone?: string;
   role: Role;
   department?: string;
+  password?: string; // Optional for security - not included in API responses
 }
 
 export interface Category {
