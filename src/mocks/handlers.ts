@@ -3,25 +3,31 @@ import { mockUsers, mockCategories, mockPriorities, mockTickets, mockMessages } 
 import { User, Ticket, TicketMessage, Role } from '../types';
 
 // In-memory storage for runtime data
-const users = [...mockUsers];
-const categories = [...mockCategories];
-const priorities = [...mockPriorities];
-const tickets = [...mockTickets];
-const messages = [...mockMessages];
+let users = [...mockUsers];
+let categories = [...mockCategories];
+let priorities = [...mockPriorities];
+let tickets = [...mockTickets];
+let messages = [...mockMessages];
 
 export const handlers = [
   // Authentication
   http.post('/api/login', async ({ request }) => {
     const { email, role } = await request.json() as { email: string; role: string };
+    console.log('Login attempt:', { email, role });
+    console.log('Available users:', users.map(u => ({ email: u.email, role: u.role })));
+    
     const user = users.find(u => u.email === email && u.role === role);
+    console.log('Found user:', user);
     
     if (user) {
+      console.log('Login successful for:', user.name);
       return HttpResponse.json({
         token: `fake-token-${user.id}`,
         user
       });
     }
     
+    console.log('Login failed - no matching user found');
     return HttpResponse.json({ error: 'Invalid credentials' }, { status: 401 });
   }),
 
@@ -75,6 +81,7 @@ export const handlers = [
 
   // Categories
   http.get('/api/categories', () => {
+    console.log('Categories requested:', categories);
     return HttpResponse.json(categories);
   }),
 

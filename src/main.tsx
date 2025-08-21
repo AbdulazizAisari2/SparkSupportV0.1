@@ -16,6 +16,15 @@ async function enableMocking() {
 }
 
 enableMocking().then(() => {
+  console.log('MSW enabled successfully');
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  )
+}).catch((error) => {
+  console.error('Failed to enable MSW:', error);
+  // Still render app even if MSW fails
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <App />
