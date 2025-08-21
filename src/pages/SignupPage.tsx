@@ -112,7 +112,7 @@ export const SignupPage: React.FC = () => {
 
       {/* Theme toggle in top right */}
       <div className="absolute top-6 right-6 z-20">
-        <SimpleThemeToggle showLabel />
+        <SimpleThemeToggle />
       </div>
 
       {/* Main content */}
