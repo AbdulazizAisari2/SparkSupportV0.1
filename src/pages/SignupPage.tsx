@@ -35,7 +35,7 @@ const roleOptions = [
     color: 'from-blue-500 to-cyan-500',
     features: ['Submit Support Tickets', 'Track Ticket Progress', 'Real-time Updates', 'Priority Support']
   },
-
+];
 export const SignupPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string>('');
