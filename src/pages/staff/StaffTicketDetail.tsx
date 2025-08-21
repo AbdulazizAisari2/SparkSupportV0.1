@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, UserPlus, Clock } from 'lucide-react';
 import { useTicket, useCreateMessage, useCreateNote, useUpdateTicket, useCategories, useUsers } from '../../hooks/useApi';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -21,7 +21,14 @@ export const StaffTicketDetail: React.FC = () => {
   const { addToast } = useToast();
   const [isAssignDrawerOpen, setIsAssignDrawerOpen] = useState(false);
 
-  const { data: ticketData, isLoading } = useTicket(id!);
+  // Safety check for ID
+  if (!id) {
+    console.error('No ticket ID provided in route params');
+    navigate('/staff/tickets');
+    return null;
+  }
+
+  const { data: ticketData, isLoading, error } = useTicket(id || '');
   const { data: categories = [] } = useCategories();
   const { data: users = [] } = useUsers();
   const { data: staff = [] } = useUsers('staff');
@@ -99,6 +106,12 @@ export const StaffTicketDetail: React.FC = () => {
     }
   };
 
+  // Debug logging
+  console.log('StaffTicketDetail - ID:', id);
+  console.log('StaffTicketDetail - Loading:', isLoading);
+  console.log('StaffTicketDetail - Error:', error);
+  console.log('StaffTicketDetail - TicketData:', ticketData);
+
   if (isLoading) {
     return (
       <div className="max-w-6xl mx-auto space-y-6">
@@ -111,6 +124,23 @@ export const StaffTicketDetail: React.FC = () => {
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-3/4" />
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto text-center py-12">
+        <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">Error Loading Ticket</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-8">
+          {error instanceof Error ? error.message : 'Unable to load ticket details'}
+        </p>
+        <button
+          onClick={() => navigate('/staff/tickets')}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Back to All Tickets
+        </button>
       </div>
     );
   }
@@ -134,7 +164,25 @@ export const StaffTicketDetail: React.FC = () => {
   const assignedUser = users.find(u => u.id === ticket.assignedStaffId);
   const customer = users.find(u => u.id === ticket.customerId);
 
-  return (
+  // Additional safety checks
+  if (!ticket || !user) {
+    console.error('Missing ticket or user data:', { ticket: !!ticket, user: !!user });
+    return (
+      <div className="max-w-6xl mx-auto text-center py-12">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Loading Error</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-8">Unable to load ticket details</p>
+        <button
+          onClick={() => navigate('/staff/tickets')}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Back to All Tickets
+        </button>
+      </div>
+    );
+  }
+
+  try {
+    return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -264,5 +312,30 @@ export const StaffTicketDetail: React.FC = () => {
         isAssigning={updateTicketMutation.isPending}
       />
     </div>
-  );
+    );
+  } catch (renderError) {
+    console.error('Error rendering StaffTicketDetail:', renderError);
+    return (
+      <div className="max-w-6xl mx-auto text-center py-12">
+        <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">Rendering Error</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-8">
+          Something went wrong displaying this ticket. Please try refreshing the page.
+        </p>
+        <div className="space-x-4">
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Refresh Page
+          </button>
+          <button
+            onClick={() => navigate('/staff/tickets')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Back to All Tickets
+          </button>
+        </div>
+      </div>
+    );
+  }
 };
