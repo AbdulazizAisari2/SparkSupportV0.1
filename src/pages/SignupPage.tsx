@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { MessageSquare, UserPlus, User, Mail, Phone, Shield, CheckCircle } from 'lucide-react';
+import { MessageSquare, UserPlus, User, Mail, Phone, CheckCircle, ArrowRight, Star, Zap, Sparkles, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
@@ -23,19 +23,9 @@ const signupSchema = z.object({
   }),
 });
 type SignupFormData = z.infer<typeof signupSchema>;
-const roleOptions = [
-  {
-    value: 'customer',
-    label: 'Customer Account',
-    description: 'Submit tickets, track progress, and get support',
-    icon: User,
-    color: 'from-blue-500 to-cyan-500',
-    features: ['Submit Support Tickets', 'Track Ticket Progress', 'Real-time Updates', 'Priority Support']
-  }
-];
+
 export const SignupPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<string>('');
   const [password, setPassword] = useState('');
   const { signup } = useAuth();
   const { addToast } = useToast();
@@ -51,12 +41,15 @@ export const SignupPage: React.FC = () => {
   const onSubmit = async (data: SignupFormData) => {
     setIsLoading(true);
     try {
+      // Auto-set role to customer since signup is customer-only
+      const signupData = { ...data, role: 'customer' };
+      
       const response = await fetch('/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(signupData),
       });
       if (!response.ok) {
         const error = await response.json();
@@ -84,10 +77,7 @@ export const SignupPage: React.FC = () => {
       setIsLoading(false);
     }
   };
-  const handleRoleSelect = (role: string) => {
-    setSelectedRole(role);
-    setValue('role', role as "customer" | "staff" | "admin");
-  };
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background with gradient and animated elements */}

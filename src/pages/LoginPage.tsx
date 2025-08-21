@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { MessageSquare, LogIn, Mail, Shield, Sparkles } from 'lucide-react';
+import { MessageSquare, LogIn, Mail, ArrowRight, Star, Zap, Sparkles, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
@@ -12,18 +12,11 @@ import { PasswordField } from '../components/auth/PasswordField';
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  // Role removed - will be determined automatically or set as customer by default
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-// Demo user credentials with secure default passwords
-const demoUsers = [
-  { email: 'customer@example.com', password: 'Customer123!', role: 'customer', name: 'Ahmed', color: 'from-blue-500 to-cyan-500' },
-  { email: 'staff1@example.com', password: 'Staff123!', role: 'staff', name: 'Mohammed', color: 'from-green-500 to-emerald-500' },
-  { email: 'staff2@example.com', password: 'Staff123!', role: 'staff', name: 'Sarah', color: 'from-purple-500 to-pink-500' },
-  { email: 'admin@example.com', password: 'Admin123!', role: 'admin', name: 'Abdulaziz', color: 'from-orange-500 to-red-500' },
-];
+
 
 export const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -46,7 +39,7 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
     console.log('Form submission data:', data);
     
-    // Try to find user by email first to determine role
+    // Auto-determine role based on email
     const allUsers = [
       { email: 'customer@example.com', role: 'customer' },
       { email: 'staff1@example.com', role: 'staff' },
@@ -102,23 +95,26 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const fillDemoCredentials = (demoUser: typeof demoUsers[0]) => {
-    setValue('email', demoUser.email);
-    setValue('password', demoUser.password);
-    setValue('role', demoUser.role as "customer" | "staff" | "admin");
-    setPassword(demoUser.password);
-  };
+
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background with gradient and animated elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-800"></div>
+      {/* Stunning gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-cyan-50 dark:from-gray-950 dark:via-indigo-950 dark:to-purple-950"></div>
       
-      {/* Animated background shapes */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary-200 dark:bg-primary-900 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-xl opacity-20 animate-float"></div>
-        <div className="absolute top-40 right-10 w-72 h-72 bg-purple-200 dark:bg-purple-900 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute -bottom-32 left-1/2 w-72 h-72 bg-pink-200 dark:bg-pink-900 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-xl opacity-20 animate-float" style={{ animationDelay: '4s' }}></div>
+      {/* Animated gradient orbs */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-500 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-30 animate-float"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-30 animate-float" style={{ animationDelay: '3s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-purple-400 via-pink-500 to-red-400 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-20 animate-pulse"></div>
+      </div>
+
+      {/* Floating sparkles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-20 w-2 h-2 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full animate-ping opacity-60"></div>
+        <div className="absolute top-32 right-24 w-1 h-1 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full animate-ping opacity-40" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-40 left-16 w-1.5 h-1.5 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full animate-ping opacity-50" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-20 right-20 w-1 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-ping opacity-60" style={{ animationDelay: '3s' }}></div>
       </div>
 
       {/* Theme toggle in top right */}
@@ -129,61 +125,70 @@ export const LoginPage: React.FC = () => {
       {/* Main content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full">
-          {/* Header */}
-          <div className="text-center animate-fade-in">
+          {/* Magnificent header */}
+          <div className="text-center mb-12 animate-fade-in">
             <div className="flex justify-center mb-8">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary-400 to-primary-600 rounded-2xl blur opacity-75 animate-glow"></div>
-                <div className="relative bg-white dark:bg-dark-800 p-4 rounded-2xl shadow-xl">
-                  <MessageSquare className="w-12 h-12 text-primary-600 dark:text-primary-400" />
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 rounded-full blur-xl opacity-75 group-hover:opacity-100 animate-glow transition-opacity duration-500"></div>
+                <div className="relative bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl p-6 rounded-full shadow-2xl border border-white/50 dark:border-gray-700/50 group-hover:scale-110 transition-transform duration-500">
+                  <MessageSquare className="w-16 h-16 text-transparent bg-gradient-to-br from-indigo-500 via-purple-600 to-cyan-500 bg-clip-text drop-shadow-lg" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-600/10 rounded-full"></div>
                 </div>
               </div>
             </div>
             
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 dark:from-primary-400 dark:to-primary-300 bg-clip-text text-transparent mb-2">
+            <h1 className="text-6xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent mb-4 tracking-tight drop-shadow-sm">
               SparkSupport
             </h1>
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
               Welcome Back
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-300 text-lg mb-4">
               Sign in to access your support dashboard
             </p>
+            <div className="flex items-center justify-center space-x-3 text-sm text-gray-500 dark:text-gray-400">
+              <Star className="w-4 h-4 text-yellow-400 animate-pulse" />
+              <span>Professional customer support platform</span>
+              <Zap className="w-4 h-4 text-indigo-400 animate-pulse" style={{ animationDelay: '0.5s' }} />
+            </div>
           </div>
 
-          {/* Login Form */}
-          <div className="mt-8 animate-slide-up">
-            <div className="bg-white/80 dark:bg-dark-800/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 dark:border-dark-700/50 p-8">
-              <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-                {/* Email Field */}
-                <div className="space-y-2">
-                  <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Email Address
+          {/* Stunning form container */}
+          <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-cyan-500/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
+            <div className="relative bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 dark:border-gray-700/50 p-8">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                {/* Enhanced Email Field */}
+                <div className="space-y-3">
+                  <label htmlFor="email" className="block text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center space-x-2">
+                    <Mail className="w-4 h-4 text-indigo-500" />
+                    <span>Email Address</span>
                   </label>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
-                    </div>
                     <input
                       {...register('email')}
                       id="email"
                       type="email"
                       autoComplete="email"
                       className={`
-                        block w-full pl-10 pr-4 py-3 border-2 rounded-xl placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100 
-                        bg-white/50 dark:bg-dark-700/50 backdrop-blur-sm
-                        focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-                        transition-all duration-200 hover:bg-white/70 dark:hover:bg-dark-700/70
+                        block w-full px-4 py-4 border-2 rounded-2xl placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100 text-lg
+                        bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm
+                        focus:outline-none focus:ring-4 focus:ring-indigo-200/50 focus:border-indigo-500
+                        transition-all duration-300 hover:bg-white/90 dark:hover:bg-gray-800/90 hover:shadow-lg hover:scale-[1.02]
                         ${errors.email 
-                          ? 'border-red-300 dark:border-red-600 focus:ring-red-500' 
-                          : 'border-gray-200 dark:border-dark-600'
+                          ? 'border-red-300 dark:border-red-600 focus:ring-red-200/50' 
+                          : 'border-gray-200 dark:border-gray-600'
                         }
                       `}
                       placeholder="Enter your email address"
                     />
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 opacity-0 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   </div>
                   {errors.email && (
-                    <p className="text-sm text-red-600 dark:text-red-400 animate-slide-down">{errors.email.message}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400 animate-slide-down flex items-center space-x-2">
+                      <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
+                      <span>{errors.email.message}</span>
+                    </p>
                   )}
                 </div>
 
@@ -203,72 +208,65 @@ export const LoginPage: React.FC = () => {
                   <input type="hidden" {...register('password')} />
                 </div>
 
-                {/* Role Field */}
-                <div className="space-y-2">
-                  <label htmlFor="role" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Account Type
-                  </label>
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Shield className="h-5 w-5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
-                    </div>
-                    <select
-                      {...register('role')}
-                      id="role"
-                      className={`
-                        block w-full pl-10 pr-4 py-3 border-2 rounded-xl text-gray-900 dark:text-gray-100
-                        bg-white/50 dark:bg-dark-700/50 backdrop-blur-sm
-                        focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-                        transition-all duration-200 hover:bg-white/70 dark:hover:bg-dark-700/70
-                        ${errors.role 
-                          ? 'border-red-300 dark:border-red-600 focus:ring-red-500' 
-                          : 'border-gray-200 dark:border-dark-600'
-                        }
-                      `}
-                    >
-                      <option value="">Select Account Type</option>
-                      <option value="customer">Customer</option>
-                      <option value="staff">Staff</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  </div>
-                  {errors.role && (
-                    <p className="text-sm text-red-600 dark:text-red-400 animate-slide-down">{errors.role.message}</p>
-                  )}
-                </div>
 
-                {/* Submit Button */}
+
+                {/* Enhanced Submit Button */}
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg disabled:hover:scale-100"
+                  className="group relative w-full flex justify-center items-center py-4 px-6 border border-transparent text-lg font-bold rounded-2xl text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 hover:from-indigo-700 hover:via-purple-700 hover:to-cyan-700 focus:outline-none focus:ring-4 focus:ring-indigo-200/50 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-300 hover:scale-105 hover:shadow-2xl disabled:hover:scale-100 overflow-hidden"
                 >
-                  <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                    <LogIn className="h-5 w-5 text-primary-300 group-hover:text-primary-200 transition-colors" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <span className="absolute left-0 inset-y-0 flex items-center pl-4">
+                    <LogIn className="h-6 w-6 text-white/80 group-hover:text-white group-hover:animate-pulse transition-all duration-300" />
                   </span>
-                  {isLoading ? (
-                    <div className="flex items-center space-x-2">
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span>Signing in...</span>
-                    </div>
-                  ) : (
-                    'Sign In'
+                  <div className="flex items-center space-x-3">
+                    {isLoading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Signing you in...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Sign In</span>
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                      </>
+                    )}
+                  </div>
+                  {isLoading && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-400/50 to-purple-500/50 animate-pulse"></div>
                   )}
                 </button>
               </form>
 
 
 
-              {/* Sign up link */}
+              {/* Demo credentials info */}
+              <div className="mt-6 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl border border-indigo-200/50 dark:border-indigo-600/50">
+                <div className="text-center">
+                  <div className="flex items-center justify-center space-x-2 mb-2">
+                    <Sparkles className="w-4 h-4 text-indigo-500 animate-pulse" />
+                    <span className="text-sm font-bold text-indigo-700 dark:text-indigo-300">Demo Credentials</span>
+                    <Heart className="w-4 h-4 text-pink-500 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                  </div>
+                  <div className="grid grid-cols-1 gap-2 text-xs text-indigo-600 dark:text-indigo-400">
+                    <div><strong>Customer:</strong> customer@example.com • Customer123!</div>
+                    <div><strong>Staff:</strong> staff1@example.com • Staff123!</div>
+                    <div><strong>Admin:</strong> admin@example.com • Admin123!</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Enhanced sign up link */}
               <div className="mt-8 text-center">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-400">
                   Don't have an account?{' '}
                   <Link
                     to="/signup"
-                    className="font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 transition-colors duration-200 relative group"
+                    className="font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 relative group"
                   >
-                    Sign up here
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-600 dark:bg-primary-400 group-hover:w-full transition-all duration-200"></span>
+                    Create Account
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
                   </Link>
                 </p>
               </div>
