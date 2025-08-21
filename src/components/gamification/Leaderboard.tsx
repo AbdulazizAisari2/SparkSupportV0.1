@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Trophy, Medal, Award, Star, Zap, Target, Crown, TrendingUp, Calendar, Users, Sparkles, Gift, Flame, Clock } from 'lucide-react';
-import { User } from '../../types';
+import { Trophy, Medal, Award, Star, Zap, Target, Crown, TrendingUp, Calendar, Users, Sparkles, Gift, Flame } from 'lucide-react';
 import { Achievement } from '../ui/Badge';
 
 export interface StaffStats {
@@ -144,7 +143,6 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
   });
 
   const staffOfTheMonth = staffStats.find(s => s.specialRecognition === 'Staff of the Month');
-  const topPerformer = sortedStats[0];
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -155,9 +153,6 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
     }
   };
 
-  const getLevel = (points: number) => {
-    return Math.floor(points / 500) + 1;
-  };
 
   const getLevelProgress = (points: number) => {
     const currentLevelPoints = points % 500;

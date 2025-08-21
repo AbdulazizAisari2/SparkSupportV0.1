@@ -3,11 +3,11 @@ import { mockUsers, mockCategories, mockPriorities, mockTickets, mockMessages } 
 import { User, Ticket, TicketMessage, Role } from '../types';
 
 // In-memory storage for runtime data
-let users = [...mockUsers];
-let categories = [...mockCategories];
-let priorities = [...mockPriorities];
-let tickets = [...mockTickets];
-let messages = [...mockMessages];
+const users = [...mockUsers];
+const categories = [...mockCategories];
+const priorities = [...mockPriorities];
+const tickets = [...mockTickets];
+const messages = [...mockMessages];
 
 export const handlers = [
   // Authentication

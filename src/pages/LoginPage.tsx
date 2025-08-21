@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { MessageSquare, LogIn, Mail, Shield, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { MessageSquare, LogIn, Mail, Shield, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
@@ -27,13 +27,10 @@ const demoUsers = [
 
 export const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/';
 
   const {
     register,
@@ -78,9 +75,6 @@ export const LoginPage: React.FC = () => {
         default:
           navigate('/');
       }
-    } catch (error) {
-      addToast('Login failed. Please check your credentials.', 'error');
-    } finally {
       setIsLoading(false);
     }
   };
