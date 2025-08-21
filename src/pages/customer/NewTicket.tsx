@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send, MessageSquare, Tag, AlertTriangle, HelpCircle, CreditCard, Settings, Sparkles, Star } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useCreateTicket, useCategories } from '../../hooks/useApi';
@@ -18,6 +18,34 @@ const ticketSchema = z.object({
 });
 
 type TicketFormData = z.infer<typeof ticketSchema>;
+
+// Helper function to get category icon
+const getCategoryIcon = (categoryId: string) => {
+  switch (categoryId) {
+    case '1': return Settings; // Technical Issue
+    case '2': return CreditCard; // Billing
+    case '3': return HelpCircle; // General Inquiry
+    case '4': return Tag; // Account Access
+    case '5': return Star; // Feature Request
+    default: return MessageSquare;
+  }
+};
+
+// Helper function to get priority styling
+const getPriorityStyles = (priority: string) => {
+  switch (priority) {
+    case 'low':
+      return 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-600';
+    case 'medium':
+      return 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-600';
+    case 'high':
+      return 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-600';
+    case 'urgent':
+      return 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-red-200 dark:border-red-600';
+    default:
+      return 'bg-gray-50 dark:bg-gray-900/20 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600';
+  }
+};
 
 export const NewTicket: React.FC = () => {
   const { user } = useAuth();
