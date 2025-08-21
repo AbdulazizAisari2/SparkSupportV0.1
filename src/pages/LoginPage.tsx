@@ -12,9 +12,7 @@ import { PasswordField } from '../components/auth/PasswordField';
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  role: z.enum(['customer', 'staff', 'admin'], {
-    required_error: 'Please select a role',
-  }),
+  // Role removed - will be determined automatically or set as customer by default
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -48,13 +46,24 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
     console.log('Form submission data:', data);
     
+    // Try to find user by email first to determine role
+    const allUsers = [
+      { email: 'customer@example.com', role: 'customer' },
+      { email: 'staff1@example.com', role: 'staff' },
+      { email: 'staff2@example.com', role: 'staff' },
+      { email: 'admin@example.com', role: 'admin' }
+    ];
+    
+    const userRole = allUsers.find(u => u.email === data.email)?.role || 'customer';
+    const loginData = { ...data, role: userRole };
+    
     try {
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(loginData),
       });
 
       console.log('Login response status:', response.status);
