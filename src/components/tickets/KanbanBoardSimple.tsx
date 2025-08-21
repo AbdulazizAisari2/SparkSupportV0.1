@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Ticket, User, Category, Status } from '../../types';
-import { StatusBadge, PriorityBadge } from '../ui/Badge';
+import { PriorityBadge } from '../ui/Badge';
 import { Clock, User as UserIcon, Plus, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useUpdateTicket } from '../../hooks/useApi';
 import { useToast } from '../../context/ToastContext';
@@ -117,7 +117,7 @@ const KanbanTicketCard: React.FC<KanbanTicketCardProps> = ({ ticket, users, cate
       });
       addToast(`Ticket moved to ${newStatus.replace('_', ' ')}!`, 'success');
       onTicketUpdate(ticket.id, { status: newStatus });
-    } catch (error) {
+    } catch {
       addToast('Failed to update ticket status', 'error');
     }
   };

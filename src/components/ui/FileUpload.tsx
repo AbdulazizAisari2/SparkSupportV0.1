@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Upload, X, File, Image, FileText, Download, Eye, Trash2, Paperclip } from 'lucide-react';
+import { Upload, File, Image, FileText, Download, Eye, Trash2, Paperclip } from 'lucide-react';
 
 export interface UploadedFile {
   id: string;

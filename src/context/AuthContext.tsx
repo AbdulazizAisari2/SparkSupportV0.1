@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const parsedState = JSON.parse(stored);
         setState(parsedState);
-      } catch (error) {
+      } catch {
         console.error('Failed to parse auth state from localStorage:', error);
         localStorage.removeItem('auth');
       }

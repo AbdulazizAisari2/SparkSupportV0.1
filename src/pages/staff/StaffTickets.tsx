@@ -146,7 +146,7 @@ export const StaffTickets: React.FC = () => {
                 data: updates
               });
               addToast('Ticket updated successfully!', 'success');
-            } catch (error) {
+            } catch {
               addToast('Failed to update ticket', 'error');
             }
           }}

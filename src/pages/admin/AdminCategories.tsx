@@ -58,7 +58,7 @@ export const AdminCategories: React.FC = () => {
     try {
       await deleteCategoryMutation.mutateAsync(id);
       addToast('Category deleted successfully!', 'success');
-    } catch (error) {
+    } catch {
       addToast('Failed to delete category. Please try again.', 'error');
     }
   };
@@ -77,7 +77,7 @@ export const AdminCategories: React.FC = () => {
       }
       setIsDialogOpen(false);
       reset();
-    } catch (error) {
+    } catch {
       addToast('Operation failed. Please try again.', 'error');
     }
   };

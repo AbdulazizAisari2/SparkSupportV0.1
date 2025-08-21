@@ -75,13 +75,16 @@ export const LoginPage: React.FC = () => {
         default:
           navigate('/');
       }
+    } catch {
+      addToast('Login failed. Please check your credentials.', 'error');
+    } finally {
       setIsLoading(false);
     }
   };
 
   const fillDemoCredentials = (demoUser: typeof demoUsers[0]) => {
     setValue('email', demoUser.email);
-    setValue('role', demoUser.role as any);
+    setValue('role', demoUser.role as "customer" | "staff" | "admin");
   };
 
   return (

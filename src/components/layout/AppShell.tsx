@@ -6,7 +6,6 @@ import {
   Users, 
   Settings, 
   LogOut, 
-  Home, 
   Plus,
   MessageSquare,
   BarChart3,

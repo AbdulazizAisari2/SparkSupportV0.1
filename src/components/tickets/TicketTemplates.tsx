@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Zap, Bug, HelpCircle, Settings, CreditCard, Smartphone, Monitor } from 'lucide-react';
+import { FileText, Zap, Bug, HelpCircle, Settings, CreditCard, Smartphone } from 'lucide-react';
 
 export interface TicketTemplate {
   id: string;
@@ -8,7 +8,7 @@ export interface TicketTemplate {
   priority: 'low' | 'medium' | 'high' | 'urgent';
   subject: string;
   description: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string; size?: number }>;
   color: string;
   tags: string[];
 }

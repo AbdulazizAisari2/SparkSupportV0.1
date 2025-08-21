@@ -40,7 +40,7 @@ export const Thread: React.FC<ThreadProps> = ({ messages, users }) => {
 
   return (
     <div className="space-y-4">
-      {filteredMessages.map((message, index) => {
+      {filteredMessages.map((message) => {
         const senderName = getUserName(message.senderId);
         const senderRole = getUserRole(message.senderId);
         const isCurrentUser = message.senderId === currentUser?.id;

@@ -58,7 +58,7 @@ export const AdminPriorities: React.FC = () => {
     try {
       await deletePriorityMutation.mutateAsync(id);
       addToast('Priority deleted successfully!', 'success');
-    } catch (error) {
+    } catch {
       addToast('Failed to delete priority. Please try again.', 'error');
     }
   };
@@ -68,16 +68,16 @@ export const AdminPriorities: React.FC = () => {
       if (editingPriority) {
         await updatePriorityMutation.mutateAsync({
           id: editingPriority.id,
-          data: data as any,
+          data: data as PriorityFormData,
         });
         addToast('Priority updated successfully!', 'success');
       } else {
-        await createPriorityMutation.mutateAsync(data as any);
+        await createPriorityMutation.mutateAsync(data as PriorityFormData);
         addToast('Priority created successfully!', 'success');
       }
       setIsDialogOpen(false);
       reset();
-    } catch (error) {
+    } catch {
       addToast('Operation failed. Please try again.', 'error');
     }
   };

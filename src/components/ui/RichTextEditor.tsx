@@ -11,7 +11,6 @@ import {
   Quote,
   Undo,
   Redo,
-  Type,
   Palette
 } from 'lucide-react';
 
@@ -26,7 +25,7 @@ interface RichTextEditorProps {
 interface ToolbarButtonProps {
   onClick: () => void;
   isActive?: boolean;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string; size?: number }>;
   tooltip: string;
   disabled?: boolean;
 }
@@ -102,9 +101,6 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   };
 
-  const formatBlock = (tag: string) => {
-    executeCommand('formatBlock', `<${tag}>`);
-  };
 
   return (
     <div className={`border-2 border-gray-200 dark:border-dark-600 rounded-xl overflow-hidden transition-all duration-200 ${isEditorFocused ? 'border-primary-500 shadow-lg' : ''} ${className}`}>

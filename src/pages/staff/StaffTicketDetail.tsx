@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, User, UserPlus } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useTicket, useCreateMessage, useCreateNote, useUpdateTicket, useCategories, useUsers } from '../../hooks/useApi';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -45,7 +45,7 @@ export const StaffTicketDetail: React.FC = () => {
       });
 
       addToast('Reply sent successfully!', 'success');
-    } catch (error) {
+    } catch {
       addToast('Failed to send reply. Please try again.', 'error');
     }
   };
@@ -63,7 +63,7 @@ export const StaffTicketDetail: React.FC = () => {
       });
 
       addToast('Internal note added successfully!', 'success');
-    } catch (error) {
+    } catch {
       addToast('Failed to add note. Please try again.', 'error');
     }
   };
@@ -78,7 +78,7 @@ export const StaffTicketDetail: React.FC = () => {
       });
 
       addToast(`Ticket status updated to ${newStatus.replace('_', ' ')}!`, 'success');
-    } catch (error) {
+    } catch {
       addToast('Failed to update status. Please try again.', 'error');
     }
   };
@@ -94,7 +94,7 @@ export const StaffTicketDetail: React.FC = () => {
 
       const action = staffId ? 'assigned' : 'unassigned';
       addToast(`Ticket ${action} successfully!`, 'success');
-    } catch (error) {
+    } catch {
       addToast('Failed to update assignment. Please try again.', 'error');
     }
   };

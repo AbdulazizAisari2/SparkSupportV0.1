@@ -7,8 +7,8 @@ import {
   Clock, 
   CheckCircle, 
   AlertTriangle,
-  TrendingUp,
-  Users,
+  
+  
   Ticket
 } from 'lucide-react';
 
@@ -64,7 +64,7 @@ export const StaffDashboard: React.FC = () => {
   const getSparklineData = (status: string) => {
     // In a real app, this would come from API
     const baseValue = allTickets.filter(t => t.status === status).length;
-    return Array.from({ length: 7 }, (_, i) => 
+    return Array.from({ length: 7 }, () => 
       Math.max(0, baseValue + Math.floor(Math.random() * 10) - 5)
     );
   };

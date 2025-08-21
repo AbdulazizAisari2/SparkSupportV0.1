@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { MessageSquare, UserPlus, User, Mail, Phone, Shield, Sparkles, CheckCircle } from 'lucide-react';
+import { MessageSquare, UserPlus, User, Mail, Phone, Shield, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
@@ -86,7 +86,7 @@ export const SignupPage: React.FC = () => {
         default:
           navigate('/');
       }
-    } catch (error) {
+    } catch {
       addToast(error instanceof Error ? error.message : 'Signup failed. Please try again.', 'error');
     } finally {
       setIsLoading(false);
@@ -95,7 +95,7 @@ export const SignupPage: React.FC = () => {
 
   const handleRoleSelect = (role: string) => {
     setSelectedRole(role);
-    setValue('role', role as any);
+    setValue('role', role as "customer" | "staff" | "admin");
   };
 
   return (

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, Search, Filter, CheckCircle, XCircle, AlertCircle, Info, X, MoreVertical, Check, Trash2, Archive, Clock, Star } from 'lucide-react';
+import { Bell, Search, CheckCircle, XCircle, AlertCircle, Info, X, Check, Trash2, Clock, Star } from 'lucide-react';
 import { useNotifications, NotificationType } from '../context/NotificationContext';
 
 type FilterType = 'all' | 'unread' | 'success' | 'error' | 'warning' | 'info';

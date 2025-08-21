@@ -67,7 +67,6 @@ export const AISupport: React.FC = () => {
   }, []);
 
   const currentAIFeature = aiFeatures[currentFeature];
-  const FeatureIcon = currentAIFeature.icon;
 
   return (
     <div className="min-h-screen relative overflow-hidden">

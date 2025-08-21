@@ -16,8 +16,8 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Ticket, User, Category, Status } from '../../types';
-import { StatusBadge, PriorityBadge } from '../ui/Badge';
-import { Clock, User as UserIcon, Plus, MoreVertical } from 'lucide-react';
+import { PriorityBadge } from '../ui/Badge';
+import { Clock, User as UserIcon, Plus } from 'lucide-react';
 
 interface KanbanBoardProps {
   tickets: Ticket[];

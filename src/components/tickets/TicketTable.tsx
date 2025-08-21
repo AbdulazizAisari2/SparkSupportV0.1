@@ -38,8 +38,8 @@ export const TicketTable: React.FC<TicketTableProps> = ({
   };
 
   const sortedTickets = [...tickets].sort((a, b) => {
-    let aValue: any = a[sortField];
-    let bValue: any = b[sortField];
+    let aValue: string | number = a[sortField];
+    let bValue: string | number = b[sortField];
 
     if (sortField === 'createdAt' || sortField === 'updatedAt') {
       aValue = new Date(aValue).getTime();

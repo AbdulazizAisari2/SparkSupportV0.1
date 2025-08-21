@@ -1,6 +1,5 @@
 import React from 'react';
 import { Search, Filter, X, Users, Tag, AlertTriangle, Clock } from 'lucide-react';
-import { Status, Priority } from '../../types';
 
 interface FiltersBarProps {
   searchQuery: string;

@@ -139,7 +139,7 @@ export const AdvancedThemeToggle: React.FC<AdvancedThemeToggleProps> = ({ classN
                 <button
                   key={themeOption.id}
                   onClick={() => {
-                    setTheme(themeOption.id as any);
+                    setTheme(themeOption.id as "light" | "dark");
                     setIsOpen(false);
                   }}
                   className={`

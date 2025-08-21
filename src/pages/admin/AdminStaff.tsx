@@ -12,7 +12,7 @@ import { useToast } from '../../context/ToastContext';
 import { CrudList } from '../../components/admin/CrudList';
 import { CrudDialog } from '../../components/admin/CrudDialog';
 import { RoleBadge } from '../../components/ui/Badge';
-import { User, Role } from '../../types';
+import { User } from '../../types';
 
 const userSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
@@ -73,7 +73,7 @@ export const AdminStaff: React.FC = () => {
     try {
       await deleteUserMutation.mutateAsync(id);
       addToast('User deleted successfully!', 'success');
-    } catch (error) {
+    } catch {
       addToast('Failed to delete user. Please try again.', 'error');
     }
   };
@@ -92,7 +92,7 @@ export const AdminStaff: React.FC = () => {
       }
       setIsDialogOpen(false);
       reset();
-    } catch (error) {
+    } catch {
       addToast('Operation failed. Please try again.', 'error');
     }
   };

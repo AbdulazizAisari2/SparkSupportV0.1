@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bold, Italic, List, Link, Type, Palette, Eye } from 'lucide-react';
+import { Bold, Italic, List, Link, Type, Eye } from 'lucide-react';
 
 interface SimpleTextEditorProps {
   value: string;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Ticket, User, Category, Status } from '../../types';
 import { PriorityBadge } from '../ui/Badge';
-import { Clock, User as UserIcon, Plus, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Clock, User as UserIcon, ArrowRight, ArrowLeft } from 'lucide-react';
 
 interface KanbanBoardBasicProps {
   tickets: Ticket[];

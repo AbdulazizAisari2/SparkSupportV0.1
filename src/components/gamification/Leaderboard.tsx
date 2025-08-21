@@ -257,7 +257,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                 return (
                   <button
                     key={option.value}
-                    onClick={() => onTimeframeChange(option.value as any)}
+                    onClick={() => onTimeframeChange(option.value as "week" | "month" | "quarter" | "year")}
                     className={`
                       flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
                       ${isSelected
@@ -284,7 +284,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
             return (
               <button
                 key={option.value}
-                onClick={() => setSelectedMetric(option.value as any)}
+                onClick={() => setSelectedMetric(option.value as "week" | "month" | "quarter" | "year")}
                 className={`
                   relative overflow-hidden p-4 rounded-xl font-medium text-sm transition-all duration-200 border-2 group
                   ${isSelected

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, User, Tag } from 'lucide-react';
+import { ArrowLeft, Clock } from 'lucide-react';
 import { useTicket, useCreateMessage, useCategories, useUsers } from '../../hooks/useApi';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -47,7 +47,7 @@ export const TicketDetail: React.FC = () => {
       });
 
       addToast('Reply sent successfully!', 'success');
-    } catch (error) {
+    } catch {
       addToast('Failed to send reply. Please try again.', 'error');
     }
   };
