@@ -24,6 +24,11 @@ interface LeaderboardProps {
   currentUserId?: string;
   timeframe: 'week' | 'month' | 'quarter' | 'year';
   onTimeframeChange: (timeframe: 'week' | 'month' | 'quarter' | 'year') => void;
+  metric?: 'points' | 'resolved' | 'satisfaction' | 'growth';
+  onMetricChange?: (metric: 'points' | 'resolved' | 'satisfaction' | 'growth') => void;
+  topPerformer?: StaffStats;
+  isLoading?: boolean;
+  onRefresh?: () => void;
 }
 
 const sampleAchievements: Achievement[] = [
@@ -119,14 +124,28 @@ const mockStaffStats: StaffStats[] = [
 ];
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ 
-  staffStats = mockStaffStats, 
+  staffStats = [], 
   currentUserId,
   timeframe,
-  onTimeframeChange 
+  onTimeframeChange,
+  metric = 'points',
+  onMetricChange,
+  topPerformer,
+  isLoading = false,
+  onRefresh
 }) => {
-  const [selectedMetric, setSelectedMetric] = useState<'points' | 'resolved' | 'satisfaction' | 'growth'>('points');
+  const [selectedMetric, setSelectedMetric] = useState<'points' | 'resolved' | 'satisfaction' | 'growth'>(metric);
   const [showAchievements, setShowAchievements] = useState(false);
 
+  // Handle metric change
+  const handleMetricChange = (newMetric: 'points' | 'resolved' | 'satisfaction' | 'growth') => {
+    setSelectedMetric(newMetric);
+    if (onMetricChange) {
+      onMetricChange(newMetric);
+    }
+  };
+
+  // Use real data instead of mock data
   const sortedStats = [...staffStats].sort((a, b) => {
     switch (selectedMetric) {
       case 'points':
@@ -142,7 +161,8 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
     }
   });
 
-  const staffOfTheMonth = staffStats.find(s => s.specialRecognition === 'Staff of the Month');
+  // Use provided topPerformer or find the staff of the month from data
+  const staffOfTheMonth = topPerformer || staffStats.find(s => s.specialRecognition === 'Staff of the Month');
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -284,7 +304,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
             return (
               <button
                 key={option.value}
-                onClick={() => setSelectedMetric(option.value as "week" | "month" | "quarter" | "year")}
+                onClick={() => handleMetricChange(option.value as "points" | "resolved" | "satisfaction" | "growth")}
                 className={`
                   relative overflow-hidden p-4 rounded-xl font-medium text-sm transition-all duration-200 border-2 group
                   ${isSelected

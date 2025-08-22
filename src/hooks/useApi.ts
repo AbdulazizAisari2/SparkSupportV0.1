@@ -306,6 +306,150 @@ class ApiClient {
 
     return response.json();
   }
+
+  // Leaderboard API methods
+  async getLeaderboard(token: string, params?: {
+    timeframe?: 'week' | 'month' | 'quarter' | 'year';
+    metric?: 'points' | 'resolved' | 'satisfaction' | 'growth';
+    limit?: number;
+  }): Promise<{
+    leaderboard: StaffStats[];
+    topPerformer?: StaffStats;
+    timeframe: string;
+    metric: string;
+    totalStaff: number;
+  }> {
+    const queryParams = new URLSearchParams();
+    if (params?.timeframe) queryParams.append('timeframe', params.timeframe);
+    if (params?.metric) queryParams.append('metric', params.metric);
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+    const response = await fetch(`${API_BASE}/leaderboard?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: this.getHeaders(token),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to fetch leaderboard');
+    }
+
+    return response.json();
+  }
+
+  async getUserStats(token: string, userId: string): Promise<{
+    user: {
+      userId: string;
+      name: string;
+      department?: string;
+      role: string;
+      points: number;
+      level: number;
+      rank: number;
+      ticketsResolved: number;
+      averageResolutionTime?: number;
+      customerSatisfaction?: number;
+      currentStreak: number;
+      totalTicketsHandled: number;
+      responseTime?: number;
+      monthlyGrowth: number;
+      specialRecognition?: string;
+      achievements: Achievement[];
+    }
+  }> {
+    const response = await fetch(`${API_BASE}/leaderboard/user/${userId}`, {
+      method: 'GET',
+      headers: this.getHeaders(token),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to fetch user stats');
+    }
+
+    return response.json();
+  }
+
+  async getAchievements(token: string): Promise<{
+    achievements: {
+      id: string;
+      name: string;
+      description: string;
+      icon: string;
+      color: string;
+      pointsReward: number;
+      requirements: string;
+      isActive: boolean;
+    }[]
+  }> {
+    const response = await fetch(`${API_BASE}/leaderboard/achievements`, {
+      method: 'GET',
+      headers: this.getHeaders(token),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to fetch achievements');
+    }
+
+    return response.json();
+  }
+
+  async getChallenges(token: string): Promise<{
+    challenges: {
+      id: string;
+      name: string;
+      description: string;
+      type: string;
+      icon: string;
+      color: string;
+      progress: number;
+      target: number;
+      timeLeft: string;
+      status: string;
+    }[]
+  }> {
+    const response = await fetch(`${API_BASE}/leaderboard/challenges`, {
+      method: 'GET',
+      headers: this.getHeaders(token),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to fetch challenges');
+    }
+
+    return response.json();
+  }
+
+  async awardPoints(token: string, data: {
+    userId: string;
+    points: number;
+    reason?: string;
+  }): Promise<{
+    message: string;
+    user: {
+      id: string;
+      name: string;
+      points: number;
+      level: number;
+    };
+    awarded: number;
+    reason?: string;
+  }> {
+    const response = await fetch(`${API_BASE}/leaderboard/award-points`, {
+      method: 'POST',
+      headers: this.getHeaders(token),
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to award points');
+    }
+
+    return response.json();
+  }
 }
 
 const apiClient = new ApiClient();
@@ -493,6 +637,64 @@ export const useCreateMessage = () => {
     onSuccess: (_, { ticketId }) => {
       queryClient.invalidateQueries({ queryKey: ['ticket', ticketId] });
       queryClient.invalidateQueries({ queryKey: ['tickets'] });
+    },
+  });
+};
+
+// Leaderboard hooks
+export const useLeaderboard = (params?: {
+  timeframe?: 'week' | 'month' | 'quarter' | 'year';
+  metric?: 'points' | 'resolved' | 'satisfaction' | 'growth';
+  limit?: number;
+}) => {
+  const { token } = useAuth();
+  return useQuery({
+    queryKey: ['leaderboard', params],
+    queryFn: () => apiClient.getLeaderboard(token!, params),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+export const useUserStats = (userId: string) => {
+  const { token } = useAuth();
+  return useQuery({
+    queryKey: ['userStats', userId],
+    queryFn: () => apiClient.getUserStats(token!, userId),
+    enabled: !!token && !!userId,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+};
+
+export const useAchievements = () => {
+  const { token } = useAuth();
+  return useQuery({
+    queryKey: ['achievements'],
+    queryFn: () => apiClient.getAchievements(token!),
+    enabled: !!token,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+export const useChallenges = () => {
+  const { token } = useAuth();
+  return useQuery({
+    queryKey: ['challenges'],
+    queryFn: () => apiClient.getChallenges(token!),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+export const useAwardPoints = () => {
+  const queryClient = useQueryClient();
+  const { token } = useAuth();
+  return useMutation({
+    mutationFn: (data: { userId: string; points: number; reason?: string }) =>
+      apiClient.awardPoints(token!, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+      queryClient.invalidateQueries({ queryKey: ['userStats', variables.userId] });
     },
   });
 };

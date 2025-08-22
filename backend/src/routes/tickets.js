@@ -198,10 +198,43 @@ router.patch('/:id', authenticateToken, requireStaffOrAdmin, async (req, res, ne
   try {
     const { id } = req.params;
     const validatedData = updateTicketSchema.parse(req.body);
+    const user = req.user;
 
+    // Get the current ticket to compare status changes
+    const currentTicket = await prisma.ticket.findUnique({
+      where: { id },
+      select: { 
+        status: true, 
+        assignedStaffId: true, 
+        createdAt: true,
+        customerId: true
+      }
+    });
+
+    if (!currentTicket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    // Prepare update data
+    const updateData = { ...validatedData };
+
+    // If ticket is being resolved/closed, calculate resolution time and award points
+    const isResolved = validatedData.status === 'resolved' || validatedData.status === 'closed';
+    const wasNotResolved = currentTicket.status !== 'resolved' && currentTicket.status !== 'closed';
+    const ticketJustResolved = isResolved && wasNotResolved;
+
+    if (ticketJustResolved) {
+      const resolutionTime = (new Date() - new Date(currentTicket.createdAt)) / (1000 * 60 * 60); // hours
+      updateData.resolvedAt = new Date();
+      updateData.resolutionTime = resolutionTime;
+
+      console.log(`🎯 Ticket ${id} resolved in ${resolutionTime.toFixed(2)} hours`);
+    }
+
+    // Update the ticket
     const ticket = await prisma.ticket.update({
       where: { id },
-      data: validatedData,
+      data: updateData,
       include: {
         customer: {
           select: { id: true, name: true, email: true, role: true }
@@ -213,13 +246,161 @@ router.patch('/:id', authenticateToken, requireStaffOrAdmin, async (req, res, ne
       }
     });
 
-    console.log(`📝 Ticket ${id} updated by ${req.user.email}`);
+    // Award points if ticket was just resolved
+    if (ticketJustResolved && currentTicket.assignedStaffId) {
+      try {
+        await awardPointsForResolution(currentTicket.assignedStaffId, ticket.resolutionTime);
+        console.log(`🏆 Points awarded to staff member for resolving ticket ${id}`);
+      } catch (pointsError) {
+        console.error('❌ Failed to award points:', pointsError);
+        // Don't fail the ticket update if points awarding fails
+      }
+    }
+
+    console.log(`📝 Ticket ${id} updated by ${user.email}`);
     res.json({ ticket });
 
   } catch (error) {
     next(error);
   }
 });
+
+// Helper function to award points for ticket resolution
+async function awardPointsForResolution(staffId, resolutionTimeHours) {
+  // Base points for resolving a ticket
+  let points = 20;
+  
+  // Bonus points based on resolution speed
+  if (resolutionTimeHours <= 1) {
+    points += 30; // Lightning fast (under 1 hour)
+  } else if (resolutionTimeHours <= 4) {
+    points += 20; // Very fast (under 4 hours)
+  } else if (resolutionTimeHours <= 24) {
+    points += 10; // Good (under 1 day)
+  }
+  // No bonus for slower resolutions
+
+  // Get current user data for level calculation
+  const currentUser = await prisma.user.findUnique({
+    where: { id: staffId },
+    select: { points: true, level: true }
+  });
+
+  if (!currentUser) return 0;
+
+  const newPoints = currentUser.points + points;
+  const newLevel = Math.floor(newPoints / 500) + 1;
+
+  // Update staff member's stats
+  await prisma.user.update({
+    where: { id: staffId },
+    data: {
+      points: newPoints,
+      level: newLevel,
+      ticketsResolved: { increment: 1 },
+      totalTicketsHandled: { increment: 1 },
+      lastActiveDate: new Date()
+    }
+  });
+
+  // Recalculate averages (simplified - in production this would be more sophisticated)
+  const staffTickets = await prisma.ticket.findMany({
+    where: {
+      assignedStaffId: staffId,
+      status: { in: ['resolved', 'closed'] },
+      resolutionTime: { not: null }
+    },
+    select: { resolutionTime: true, customerRating: true }
+  });
+
+  if (staffTickets.length > 0) {
+    const avgResolutionTime = staffTickets.reduce((sum, t) => sum + (t.resolutionTime || 0), 0) / staffTickets.length;
+    const ratingsWithValues = staffTickets.filter(t => t.customerRating);
+    const avgRating = ratingsWithValues.length > 0 
+      ? ratingsWithValues.reduce((sum, t) => sum + t.customerRating, 0) / ratingsWithValues.length 
+      : null;
+
+    await prisma.user.update({
+      where: { id: staffId },
+      data: {
+        averageResolutionTimeHours: avgResolutionTime,
+        ...(avgRating && { customerSatisfactionRating: avgRating })
+      }
+    });
+  }
+
+  // Check for achievements
+  await checkAndAwardAchievements(staffId);
+
+  console.log(`🎯 Awarded ${points} points to staff member ${staffId} for ticket resolution`);
+  return points;
+}
+
+// Helper function to check and award achievements
+async function checkAndAwardAchievements(staffId) {
+  const user = await prisma.user.findUnique({
+    where: { id: staffId },
+    include: {
+      achievements: {
+        include: { achievement: true }
+      }
+    }
+  });
+
+  if (!user) return;
+
+  const existingAchievements = new Set(user.achievements.map(ua => ua.achievement.name));
+  
+  // Check for First Resolution achievement
+  if (user.ticketsResolved >= 1 && !existingAchievements.has('First Resolution')) {
+    await awardAchievement(staffId, 'First Resolution');
+  }
+  
+  // Check for Resolution Master achievement
+  if (user.ticketsResolved >= 100 && !existingAchievements.has('Resolution Master')) {
+    await awardAchievement(staffId, 'Resolution Master');
+  }
+  
+  // Check for Customer Champion achievement
+  if (user.customerSatisfactionRating >= 4.8 && !existingAchievements.has('Customer Champion')) {
+    await awardAchievement(staffId, 'Customer Champion');
+  }
+  
+  // Check for Lightning Fast achievement
+  if (user.averageResponseTimeMinutes <= 5 && !existingAchievements.has('Lightning Fast')) {
+    await awardAchievement(staffId, 'Lightning Fast');
+  }
+}
+
+// Helper function to award achievement
+async function awardAchievement(staffId, achievementName) {
+  try {
+    const achievement = await prisma.achievement.findUnique({
+      where: { name: achievementName }
+    });
+
+    if (achievement) {
+      await prisma.userAchievement.create({
+        data: {
+          userId: staffId,
+          achievementId: achievement.id
+        }
+      });
+
+      // Award bonus points
+      await prisma.user.update({
+        where: { id: staffId },
+        data: {
+          points: { increment: achievement.pointsReward }
+        }
+      });
+
+      console.log(`🏅 Achievement "${achievementName}" awarded to staff member ${staffId} (+${achievement.pointsReward} points)`);
+    }
+  } catch (error) {
+    console.error(`❌ Failed to award achievement "${achievementName}":`, error);
+  }
+}
 
 // POST /api/tickets/:id/messages - Add message to ticket
 router.post('/:id/messages', authenticateToken, async (req, res, next) => {

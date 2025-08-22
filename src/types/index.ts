@@ -51,3 +51,30 @@ export interface AuthState {
   token: string | null;
   user: User | null;
 }
+
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  pointsReward?: number;
+  unlockedAt?: Date;
+}
+
+export interface StaffStats {
+  userId: string;
+  name: string;
+  department: string;
+  ticketsResolved: number;
+  averageResolutionTime: number; // in hours
+  customerSatisfaction: number; // 1-5 rating
+  points: number;
+  achievements: Achievement[];
+  streak: number; // consecutive days with resolved tickets
+  level: number;
+  totalTicketsHandled: number;
+  responseTime: number; // average first response time in minutes
+  monthlyGrowth: number; // percentage growth from last month
+  specialRecognition?: string;
+}

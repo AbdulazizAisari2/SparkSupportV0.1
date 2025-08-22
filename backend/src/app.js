@@ -14,6 +14,7 @@ const ticketRoutes = require('./routes/tickets');
 const categoryRoutes = require('./routes/categories');
 const userRoutes = require('./routes/users');
 const emailRoutes = require('./routes/email');
+const leaderboardRoutes = require('./routes/leaderboard');
 
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
@@ -61,6 +62,7 @@ app.use('/api/tickets', ticketRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/email', emailRoutes);
+app.use('/api/leaderboard', leaderboardRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
