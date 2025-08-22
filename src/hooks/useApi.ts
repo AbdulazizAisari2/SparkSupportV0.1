@@ -463,7 +463,7 @@ export const useTicket = (id: string) => {
     queryKey: ['ticket', id],
     queryFn: () => apiClient.getTicket(token!, id),
     enabled: !!token && !!id,
-    select: (data) => data.ticket,
+    // Return full response with ticket and messages
   });
 };
 

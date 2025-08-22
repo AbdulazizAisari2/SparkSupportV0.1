@@ -37,7 +37,7 @@ export const StaffTicketDetail: React.FC = () => {
   const updateTicketMutation = useUpdateTicket();
 
   const ticket = ticketData?.ticket;
-  const messages = ticketData?.messages || [];
+  const messages = ticket?.messages || [];
 
   const handleReply = async (data: { message: string }) => {
     if (!user || !ticket) return;

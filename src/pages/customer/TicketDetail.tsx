@@ -22,7 +22,7 @@ export const TicketDetail: React.FC = () => {
   const createMessageMutation = useCreateMessage();
 
   const ticket = ticketData?.ticket;
-  const messages = ticketData?.messages || [];
+  const messages = ticket?.messages || [];
 
   // Debug logging
   console.log('TicketDetail Debug:', {

@@ -18,11 +18,8 @@ export const MyTickets: React.FC = () => {
     data: tickets = [], 
     isLoading: ticketsLoading 
   } = useTickets({
-    mine: true,
     status: status || undefined,
-    category: category || undefined,
     priority: priority || undefined,
-    q: searchQuery || undefined,
   });
 
   const { data: categories = [] } = useCategories();
