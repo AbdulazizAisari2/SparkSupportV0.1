@@ -1,4 +1,5 @@
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config();
+console.log('🔑 JWT_SECRET loaded:', process.env.JWT_SECRET ? 'YES' : 'NO');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
