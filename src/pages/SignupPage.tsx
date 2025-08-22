@@ -285,7 +285,7 @@ export const SignupPage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={signupMutation.isPending}
-                    className="group relative w-full overflow-hidden"
+                    className="group relative w-full overflow-hidden focus:outline-none focus:ring-0 focus:ring-offset-0"
                   >
                     {/* Button background with animated gradient */}
                     <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-2xl transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-cyan-500/25"></div>
