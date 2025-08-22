@@ -1,4 +1,3 @@
-// SparkSupport Database Schema
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,20 +8,18 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  phone        String?
-  role         String   // 'customer' | 'staff' | 'admin'
-  department   String?
-  passwordHash String   @map("password_hash")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  createdTickets  Ticket[] @relation("CustomerTickets")
-  assignedTickets Ticket[] @relation("AssignedTickets")
+  id              String          @id @default(cuid())
+  name            String
+  email           String          @unique
+  phone           String?
+  role            String
+  department      String?
+  passwordHash    String          @map("password_hash")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
   sentMessages    TicketMessage[]
+  assignedTickets Ticket[]        @relation("AssignedTickets")
+  createdTickets  Ticket[]        @relation("CustomerTickets")
 
   @@map("users")
 }
@@ -33,30 +30,26 @@ model Category {
   description String?
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  tickets Ticket[]
+  tickets     Ticket[]
 
   @@map("categories")
 }
 
 model Ticket {
-  id              String   @id // T001, T002, etc.
-  customerId      String   @map("customer_id")
-  assignedStaffId String?  @map("assigned_staff_id")
-  categoryId      String   @map("category_id")
-  priority        String   // 'low' | 'medium' | 'high' | 'urgent'
-  status          String   // 'open' | 'in_progress' | 'resolved' | 'closed'
+  id              String          @id
+  customerId      String          @map("customer_id")
+  assignedStaffId String?         @map("assigned_staff_id")
+  categoryId      String          @map("category_id")
+  priority        String
+  status          String
   subject         String
   description     String
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  customer      User            @relation("CustomerTickets", fields: [customerId], references: [id])
-  assignedStaff User?           @relation("AssignedTickets", fields: [assignedStaffId], references: [id])
-  category      Category        @relation(fields: [categoryId], references: [id])
-  messages      TicketMessage[]
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  messages        TicketMessage[]
+  category        Category        @relation(fields: [categoryId], references: [id])
+  assignedStaff   User?           @relation("AssignedTickets", fields: [assignedStaffId], references: [id])
+  customer        User            @relation("CustomerTickets", fields: [customerId], references: [id])
 
   @@map("tickets")
 }
@@ -66,15 +59,11 @@ model TicketMessage {
   ticketId       String   @map("ticket_id")
   senderId       String   @map("sender_id")
   message        String
-  attachmentUrls String   @default("[]") @map("attachment_urls") // JSON string
+  attachmentUrls String   @default("[]") @map("attachment_urls")
   isInternal     Boolean  @default(false) @map("is_internal")
   createdAt      DateTime @default(now()) @map("created_at")
-
-  // Relations
-  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  sender User   @relation(fields: [senderId], references: [id])
+  sender         User     @relation(fields: [senderId], references: [id])
+  ticket         Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
   @@map("ticket_messages")
 }
-
-// Note: SQLite doesn't support enums, so we use strings with validation in the application layer
