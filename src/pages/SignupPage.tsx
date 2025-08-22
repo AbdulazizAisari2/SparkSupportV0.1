@@ -315,16 +315,9 @@ export const SignupPage: React.FC = () => {
                     className="
                       group relative w-full overflow-hidden 
                       focus:outline-none focus:ring-0 focus:ring-offset-0 
-                      outline-none border-none appearance-none
-                      bg-transparent hover:bg-transparent focus:bg-transparent
+                      outline-none border-none
                     "
-                    style={{ 
-                      outline: 'none !important', 
-                      border: 'none !important',
-                      boxShadow: 'none !important',
-                      WebkitAppearance: 'none',
-                      MozAppearance: 'none'
-                    }}
+                    style={{ outline: 'none', border: 'none' }}
                   >
                     {/* Button background with animated gradient */}
                     <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-2xl transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-cyan-500/25"></div>
@@ -353,14 +346,14 @@ export const SignupPage: React.FC = () => {
                 </div>
 
                 {/* Customer Account Info */}
-                <div className="mt-6 p-4 bg-gradient-to-r from-blue-500/30 to-purple-500/30 dark:from-blue-400/20 dark:to-purple-400/20 backdrop-blur-sm rounded-2xl border border-blue-400/40 dark:border-blue-300/30">
+                <div className="mt-6 p-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-2xl border border-blue-400/30">
                   <div className="text-center">
-                    <div className="text-blue-800 dark:text-blue-100 text-sm font-semibold mb-2 flex items-center justify-center space-x-2">
+                    <div className="text-blue-100 text-sm font-semibold mb-2 flex items-center justify-center space-x-2">
                       <Zap className="w-4 h-4" />
                       <span>Customer Account Registration</span>
                       <Zap className="w-4 h-4" />
                     </div>
-                    <p className="text-blue-700 dark:text-blue-200 text-xs leading-relaxed">
+                    <p className="text-blue-200/90 text-xs">
                       Creating a customer account gives you access to submit tickets, track progress, and communicate with our support team.
                     </p>
                   </div>
