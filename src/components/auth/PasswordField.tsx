@@ -9,6 +9,7 @@ interface PasswordFieldProps {
   error?: string;
   label?: string;
   required?: boolean;
+  className?: string;
 }
 
 interface PasswordStrength {
@@ -97,7 +98,8 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
   showStrength = false,
   error,
   label = 'Password',
-  required = false
+  required = false,
+  className = ''
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -123,7 +125,7 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          className={`
+          className={className || `
             block w-full pl-10 pr-12 py-3 border-2 rounded-xl placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100
             bg-white/50 dark:bg-dark-700/50 backdrop-blur-sm
             focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent

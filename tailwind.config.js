@@ -35,14 +35,19 @@ export default {
       animation: {
         'bounce-gentle': 'bounce 1s ease-in-out 2',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'fade-in': 'fadeIn 0.5s ease-in-out',
+        'fade-in': 'fadeIn 0.8s ease-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'slide-down': 'slideDown 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s ease-out',
         'confetti': 'confetti 0.6s ease-out',
         'glow': 'glow 2s ease-in-out infinite alternate',
-        'float': 'float 3s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'twinkle': 'twinkle 2s ease-in-out infinite',
+        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
         'spin-slow': 'spin 3s linear infinite',
+        'gradient-x': 'gradientX 15s ease infinite',
+        'gradient-y': 'gradientY 15s ease infinite',
+        'gradient-xy': 'gradientXY 15s ease infinite',
       },
       keyframes: {
         fadeIn: {
@@ -71,8 +76,31 @@ export default {
           '100%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.8)' },
         },
         float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-10px)' },
+          '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+          '33%': { transform: 'translateY(-10px) rotate(1deg)' },
+          '66%': { transform: 'translateY(-5px) rotate(-1deg)' },
+        },
+        twinkle: {
+          '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+          '50%': { opacity: '1', transform: 'scale(1.2)' },
+        },
+        pulseGlow: {
+          '0%, 100%': { boxShadow: '0 0 20px rgba(139, 92, 246, 0.3)' },
+          '50%': { boxShadow: '0 0 40px rgba(139, 92, 246, 0.6)' },
+        },
+        gradientX: {
+          '0%, 100%': { transform: 'translateX(0%)' },
+          '50%': { transform: 'translateX(100%)' },
+        },
+        gradientY: {
+          '0%, 100%': { transform: 'translateY(0%)' },
+          '50%': { transform: 'translateY(100%)' },
+        },
+        gradientXY: {
+          '0%, 100%': { transform: 'translate(0%, 0%)' },
+          '25%': { transform: 'translate(100%, 0%)' },
+          '50%': { transform: 'translate(100%, 100%)' },
+          '75%': { transform: 'translate(0%, 100%)' },
         },
       },
       backdropBlur: {
