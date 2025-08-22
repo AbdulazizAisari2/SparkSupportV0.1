@@ -25,33 +25,26 @@ const signupSchema = z.object({
   department: z.string().optional()
 });
 
-// Generate tokens
+// Generate tokens (HARDCODED FOR LOCAL DEV)
 const generateTokens = (userId) => {
   console.log('🔑 Generating tokens for user:', userId);
-  console.log('🔑 JWT_SECRET available:', !!process.env.JWT_SECRET);
-  console.log('🔑 JWT_REFRESH_SECRET available:', !!process.env.JWT_REFRESH_SECRET);
   
-  if (!process.env.JWT_SECRET) {
-    throw new Error('JWT_SECRET environment variable is not set');
-  }
-  
-  if (!process.env.JWT_REFRESH_SECRET) {
-    throw new Error('JWT_REFRESH_SECRET environment variable is not set');
-  }
+  const JWT_SECRET = 'sparksupport-local-dev-secret-123';
+  const JWT_REFRESH_SECRET = 'sparksupport-local-dev-refresh-secret-456';
 
   const accessToken = jwt.sign(
     { userId },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
+    JWT_SECRET,
+    { expiresIn: '1h' }
   );
   
   const refreshToken = jwt.sign(
     { userId },
-    process.env.JWT_REFRESH_SECRET,
-    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d' }
+    JWT_REFRESH_SECRET,
+    { expiresIn: '7d' }
   );
 
-  console.log('✅ Tokens generated successfully');
+  console.log('✅ Tokens generated successfully with hardcoded secrets');
   return { accessToken, refreshToken };
 };
 
@@ -159,7 +152,7 @@ router.post('/refresh', async (req, res, next) => {
       return res.status(401).json({ error: 'Refresh token required' });
     }
 
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const decoded = jwt.verify(refreshToken, 'sparksupport-local-dev-refresh-secret-456');
     
     // Verify user still exists
     const user = await prisma.user.findUnique({

@@ -13,7 +13,7 @@ const authenticateToken = async (req, res, next) => {
       return res.status(401).json({ error: 'Access token required' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, 'sparksupport-local-dev-secret-123');
     
     // Get fresh user data from database
     const user = await prisma.user.findUnique({
