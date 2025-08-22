@@ -155,46 +155,47 @@ export const SignupPage: React.FC = () => {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* Enhanced Name Field */}
                 <div className="space-y-3">
-                                      <label htmlFor="name" className="block text-sm font-bold text-gray-800 dark:text-white flex items-center space-x-2 drop-shadow-sm">
-                      <div className="p-1.5 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg shadow-lg">
-                        <User className="w-4 h-4 text-white" />
-                      </div>
-                      <span>Full Name</span>
-                    </label>
-                    <div className="relative group">
-                      <input
-                        {...register('name')}
-                        id="name"
-                        type="text"
-                        autoComplete="name"
-                        className={`
-                          block w-full px-5 py-4 border-2 rounded-2xl text-gray-900 dark:text-white text-base font-medium 
-                          placeholder-gray-500 dark:placeholder-white/60
-                          bg-gradient-to-r from-white/70 to-white/60 dark:from-white/20 dark:to-white/15 
-                          backdrop-blur-xl border-gray-300 dark:border-white/40
-                          focus:outline-none focus:ring-4 focus:ring-cyan-400/30 focus:border-cyan-500 dark:focus:border-white/70
-                          hover:bg-gradient-to-r hover:from-white/80 hover:to-white/70 dark:hover:from-white/25 dark:hover:to-white/20 
-                          hover:border-cyan-400 dark:hover:border-white/50
-                          transition-all duration-300 shadow-xl hover:shadow-2xl
-                          ${errors.name ? 'border-red-500 dark:border-red-400/70 focus:ring-red-400/30' : ''}
-                        `}
-                        placeholder="Enter your full name"
-                      />
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-400/20 to-purple-400/20 opacity-0 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                  <label htmlFor="name" className="block text-sm font-bold text-gray-800 dark:text-white flex items-center space-x-2 drop-shadow-sm">
+                    <div className="p-1.5 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg shadow-lg">
+                      <User className="w-4 h-4 text-white" />
                     </div>
-                    {errors.name && (
-                      <div className="bg-red-100 dark:bg-red-500/20 backdrop-blur-sm border border-red-300 dark:border-red-400/50 rounded-xl p-3 animate-slide-down">
-                        <p className="text-red-700 dark:text-red-200 text-sm font-medium flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full animate-pulse"></div>
-                          <span>{errors.name.message}</span>
-                        </p>
-                      </div>
-                    )}
+                    <span>Full Name</span>
+                  </label>
+                  <div className="relative group">
+                    <input
+                      {...register('name')}
+                      id="name"
+                      type="text"
+                      autoComplete="name"
+                      className={`
+                        block w-full px-5 py-4 border-2 rounded-2xl 
+                        text-gray-900 dark:text-white text-base font-medium 
+                        placeholder-gray-500 dark:placeholder-white/60
+                        bg-gradient-to-r from-white/90 to-white/85 dark:from-white/20 dark:to-white/15 
+                        backdrop-blur-xl border-gray-300 dark:border-white/40
+                        focus:outline-none focus:ring-4 focus:ring-cyan-400/30 focus:border-cyan-500 dark:focus:border-white/70
+                        hover:bg-gradient-to-r hover:from-white/95 hover:to-white/90 dark:hover:from-white/25 dark:hover:to-white/20 
+                        hover:border-cyan-400 dark:hover:border-white/50
+                        transition-all duration-300 shadow-xl hover:shadow-2xl
+                        ${errors.name ? 'border-red-500 dark:border-red-400/70 focus:ring-red-400/30' : ''}
+                      `}
+                      placeholder="Enter your full name"
+                    />
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-400/20 to-purple-400/20 opacity-0 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                  </div>
+                  {errors.name && (
+                    <div className="bg-red-100 dark:bg-red-500/20 backdrop-blur-sm border border-red-300 dark:border-red-400/50 rounded-xl p-3 animate-slide-down">
+                      <p className="text-red-700 dark:text-red-200 text-sm font-medium flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full animate-pulse"></div>
+                        <span>{errors.name.message}</span>
+                      </p>
+                    </div>
+                  )}
                 </div>
 
-                                 {/* Enhanced Email Field */}
-                 <div className="space-y-3">
-                   <label htmlFor="email" className="block text-sm font-bold text-gray-800 dark:text-white flex items-center space-x-2 drop-shadow-sm">
+                {/* Enhanced Email Field */}
+                <div className="space-y-3">
+                  <label htmlFor="email" className="block text-sm font-bold text-gray-800 dark:text-white flex items-center space-x-2 drop-shadow-sm">
                     <div className="p-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg shadow-lg">
                       <Mail className="w-4 h-4 text-white" />
                     </div>
@@ -207,21 +208,25 @@ export const SignupPage: React.FC = () => {
                       type="email"
                       autoComplete="email"
                       className={`
-                        block w-full px-5 py-4 border-2 rounded-2xl text-white text-base font-medium placeholder-white/60
-                        bg-gradient-to-r from-white/20 to-white/15 backdrop-blur-xl border-white/40
-                        focus:outline-none focus:ring-4 focus:ring-purple-400/30 focus:border-white/70
-                        hover:bg-gradient-to-r hover:from-white/25 hover:to-white/20 hover:border-white/50
+                        block w-full px-5 py-4 border-2 rounded-2xl 
+                        text-gray-900 dark:text-white text-base font-medium 
+                        placeholder-gray-500 dark:placeholder-white/60
+                        bg-gradient-to-r from-white/90 to-white/85 dark:from-white/20 dark:to-white/15 
+                        backdrop-blur-xl border-gray-300 dark:border-white/40
+                        focus:outline-none focus:ring-4 focus:ring-purple-400/30 focus:border-purple-500 dark:focus:border-white/70
+                        hover:bg-gradient-to-r hover:from-white/95 hover:to-white/90 dark:hover:from-white/25 dark:hover:to-white/20 
+                        hover:border-purple-400 dark:hover:border-white/50
                         transition-all duration-300 shadow-xl hover:shadow-2xl
-                        ${errors.email ? 'border-red-400/70 focus:ring-red-400/30' : ''}
+                        ${errors.email ? 'border-red-500 dark:border-red-400/70 focus:ring-red-400/30' : ''}
                       `}
                       placeholder="Enter your email address"
                     />
                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400/20 to-pink-400/20 opacity-0 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   </div>
                   {errors.email && (
-                    <div className="bg-red-500/20 backdrop-blur-sm border border-red-400/50 rounded-xl p-3 animate-slide-down">
-                      <p className="text-red-200 text-sm font-medium flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+                    <div className="bg-red-100 dark:bg-red-500/20 backdrop-blur-sm border border-red-300 dark:border-red-400/50 rounded-xl p-3 animate-slide-down">
+                      <p className="text-red-700 dark:text-red-200 text-sm font-medium flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full animate-pulse"></div>
                         <span>{errors.email.message}</span>
                       </p>
                     </div>
@@ -230,11 +235,11 @@ export const SignupPage: React.FC = () => {
 
                 {/* Enhanced Phone Field */}
                 <div className="space-y-3">
-                  <label htmlFor="phone" className="block text-sm font-bold text-white flex items-center space-x-2 drop-shadow-sm">
+                  <label htmlFor="phone" className="block text-sm font-bold text-gray-800 dark:text-white flex items-center space-x-2 drop-shadow-sm">
                     <div className="p-1.5 bg-gradient-to-r from-pink-500 to-red-500 rounded-lg shadow-lg">
                       <Phone className="w-4 h-4 text-white" />
                     </div>
-                    <span>Phone Number <span className="text-white/60 font-normal">(optional)</span></span>
+                    <span>Phone Number <span className="text-gray-600 dark:text-white/60 font-normal">(optional)</span></span>
                   </label>
                   <div className="relative group">
                     <input
@@ -242,7 +247,17 @@ export const SignupPage: React.FC = () => {
                       id="phone"
                       type="tel"
                       autoComplete="tel"
-                      className="block w-full px-5 py-4 border-2 rounded-2xl text-white text-base font-medium placeholder-white/60 bg-gradient-to-r from-white/20 to-white/15 backdrop-blur-xl border-white/40 focus:outline-none focus:ring-4 focus:ring-pink-400/30 focus:border-white/70 hover:bg-gradient-to-r hover:from-white/25 hover:to-white/20 hover:border-white/50 transition-all duration-300 shadow-xl hover:shadow-2xl"
+                      className="
+                        block w-full px-5 py-4 border-2 rounded-2xl 
+                        text-gray-900 dark:text-white text-base font-medium 
+                        placeholder-gray-500 dark:placeholder-white/60
+                        bg-gradient-to-r from-white/90 to-white/85 dark:from-white/20 dark:to-white/15 
+                        backdrop-blur-xl border-gray-300 dark:border-white/40
+                        focus:outline-none focus:ring-4 focus:ring-pink-400/30 focus:border-pink-500 dark:focus:border-white/70
+                        hover:bg-gradient-to-r hover:from-white/95 hover:to-white/90 dark:hover:from-white/25 dark:hover:to-white/20 
+                        hover:border-pink-400 dark:hover:border-white/50
+                        transition-all duration-300 shadow-xl hover:shadow-2xl
+                      "
                       placeholder="Enter your phone number"
                     />
                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-pink-400/20 to-red-400/20 opacity-0 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -251,7 +266,7 @@ export const SignupPage: React.FC = () => {
 
                 {/* Enhanced Password Field */}
                 <div className="space-y-3">
-                  <label htmlFor="password" className="block text-sm font-bold text-white flex items-center space-x-2 drop-shadow-sm">
+                  <label htmlFor="password" className="block text-sm font-bold text-gray-800 dark:text-white flex items-center space-x-2 drop-shadow-sm">
                     <div className="p-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg shadow-lg">
                       <Lock className="w-4 h-4 text-white" />
                     </div>
@@ -268,14 +283,24 @@ export const SignupPage: React.FC = () => {
                       required
                       showStrength
                       error={errors.password?.message}
-                      className="block w-full px-5 py-4 border-2 rounded-2xl text-white text-base font-medium placeholder-white/60 bg-gradient-to-r from-white/20 to-white/15 backdrop-blur-xl border-white/40 focus:outline-none focus:ring-4 focus:ring-blue-400/30 focus:border-white/70 hover:bg-gradient-to-r hover:from-white/25 hover:to-white/20 hover:border-white/50 transition-all duration-300 shadow-xl hover:shadow-2xl"
+                      className="
+                        block w-full px-5 py-4 border-2 rounded-2xl 
+                        text-gray-900 dark:text-white text-base font-medium 
+                        placeholder-gray-500 dark:placeholder-white/60
+                        bg-gradient-to-r from-white/90 to-white/85 dark:from-white/20 dark:to-white/15 
+                        backdrop-blur-xl border-gray-300 dark:border-white/40
+                        focus:outline-none focus:ring-4 focus:ring-blue-400/30 focus:border-blue-500 dark:focus:border-white/70
+                        hover:bg-gradient-to-r hover:from-white/95 hover:to-white/90 dark:hover:from-white/25 dark:hover:to-white/20 
+                        hover:border-blue-400 dark:hover:border-white/50
+                        transition-all duration-300 shadow-xl hover:shadow-2xl
+                      "
                     />
                     <input type="hidden" {...register('password')} />
                   </div>
                   {errors.password && (
-                    <div className="bg-red-500/20 backdrop-blur-sm border border-red-400/50 rounded-xl p-3 animate-slide-down">
-                      <p className="text-red-200 text-sm font-medium flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+                    <div className="bg-red-100 dark:bg-red-500/20 backdrop-blur-sm border border-red-300 dark:border-red-400/50 rounded-xl p-3 animate-slide-down">
+                      <p className="text-red-700 dark:text-red-200 text-sm font-medium flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full animate-pulse"></div>
                         <span>{errors.password.message}</span>
                       </p>
                     </div>
@@ -287,7 +312,12 @@ export const SignupPage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={signupMutation.isPending}
-                    className="group relative w-full overflow-hidden focus:outline-none focus:ring-0 focus:ring-offset-0"
+                    className="
+                      group relative w-full overflow-hidden 
+                      focus:outline-none focus:ring-0 focus:ring-offset-0 
+                      outline-none border-none
+                    "
+                    style={{ outline: 'none', border: 'none' }}
                   >
                     {/* Button background with animated gradient */}
                     <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-2xl transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-cyan-500/25"></div>
