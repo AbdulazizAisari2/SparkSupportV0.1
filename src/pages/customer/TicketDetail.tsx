@@ -29,10 +29,56 @@ export const TicketDetail: React.FC = () => {
     id,
     ticketData,
     ticket,
+    messages: messages?.length,
     isLoading,
     error,
     user
   });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading ticket details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600">Error Loading Ticket</h2>
+          <p className="mt-2 text-gray-600">{error.message}</p>
+          <button 
+            onClick={() => navigate('/my/tickets')}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            Back to My Tickets
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!ticket) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ticket Not Found</h2>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">The ticket you're looking for doesn't exist.</p>
+          <button 
+            onClick={() => navigate('/my/tickets')}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            Back to My Tickets
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleReply = async (data: { message: string }) => {
     if (!user || !ticket) return;
@@ -41,13 +87,14 @@ export const TicketDetail: React.FC = () => {
       await createMessageMutation.mutateAsync({
         ticketId: ticket.id,
         data: {
-          senderId: user.id,
           message: data.message,
+          isInternal: false,
         },
       });
 
       addToast('Reply sent successfully!', 'success');
-    } catch {
+    } catch (error) {
+      console.error('❌ Reply failed:', error);
       addToast('Failed to send reply. Please try again.', 'error');
     }
   };
