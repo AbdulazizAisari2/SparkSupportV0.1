@@ -24,6 +24,14 @@ export const MyTickets: React.FC = () => {
 
   const { data: categories = [] } = useCategories();
 
+  // Debug logging
+  console.log('MyTickets Debug:', {
+    user,
+    tickets: tickets?.length,
+    ticketsLoading,
+    categories: categories?.length
+  });
+
   if (ticketsLoading) {
     return (
       <div className="space-y-6">
