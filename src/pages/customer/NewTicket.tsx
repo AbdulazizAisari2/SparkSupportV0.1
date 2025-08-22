@@ -19,14 +19,14 @@ const ticketSchema = z.object({
 
 type TicketFormData = z.infer<typeof ticketSchema>;
 
-// Helper function to get category icon
-const getCategoryIcon = (categoryId: string) => {
-  switch (categoryId) {
-    case '1': return Settings; // Technical Issue
-    case '2': return CreditCard; // Billing
-    case '3': return HelpCircle; // General Inquiry
-    case '4': return Tag; // Account Access
-    case '5': return Star; // Feature Request
+// Helper function to get category icon by name
+const getCategoryIcon = (categoryName: string) => {
+  switch (categoryName.toLowerCase()) {
+    case 'technical support': return Settings;
+    case 'billing': return CreditCard;
+    case 'account access': return Tag;
+    case 'feature request': return Star;
+    case 'bug report': return HelpCircle;
     default: return MessageSquare;
   }
 };
@@ -76,18 +76,18 @@ export const NewTicket: React.FC = () => {
   const watchedPriority = watch('priority');
 
   // Helper functions
-  const getCategoryConfig = (categoryId: string) => {
-    switch (categoryId) {
-      case '1': 
+  const getCategoryConfig = (categoryName: string) => {
+    switch (categoryName.toLowerCase()) {
+      case 'technical support': 
         return { icon: Settings, color: 'from-blue-500 to-indigo-600', bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200 dark:border-blue-600', text: 'text-blue-700 dark:text-blue-300' };
-      case '2': 
+      case 'billing': 
         return { icon: CreditCard, color: 'from-green-500 to-emerald-600', bg: 'bg-green-50 dark:bg-green-900/20', border: 'border-green-200 dark:border-green-600', text: 'text-green-700 dark:text-green-300' };
-      case '3': 
-        return { icon: HelpCircle, color: 'from-purple-500 to-violet-600', bg: 'bg-purple-50 dark:bg-purple-900/20', border: 'border-purple-200 dark:border-purple-600', text: 'text-purple-700 dark:text-purple-300' };
-      case '4': 
+      case 'account access': 
         return { icon: Tag, color: 'from-orange-500 to-red-600', bg: 'bg-orange-50 dark:bg-orange-900/20', border: 'border-orange-200 dark:border-orange-600', text: 'text-orange-700 dark:text-orange-300' };
-      case '5': 
+      case 'feature request': 
         return { icon: Star, color: 'from-yellow-500 to-amber-600', bg: 'bg-yellow-50 dark:bg-yellow-900/20', border: 'border-yellow-200 dark:border-yellow-600', text: 'text-yellow-700 dark:text-yellow-300' };
+      case 'bug report': 
+        return { icon: HelpCircle, color: 'from-purple-500 to-violet-600', bg: 'bg-purple-50 dark:bg-purple-900/20', border: 'border-purple-200 dark:border-purple-600', text: 'text-purple-700 dark:text-purple-300' };
       default: 
         return { icon: MessageSquare, color: 'from-gray-500 to-slate-600', bg: 'bg-gray-50 dark:bg-gray-900/20', border: 'border-gray-200 dark:border-gray-600', text: 'text-gray-700 dark:text-gray-300' };
     }
@@ -184,7 +184,7 @@ export const NewTicket: React.FC = () => {
                   
                   <div className="grid grid-cols-1 gap-4">
                     {categories.map((category) => {
-                      const config = getCategoryConfig(category.id);
+                      const config = getCategoryConfig(category.name);
                       const Icon = config.icon;
                       const isSelected = watchedCategory === category.id;
                       
