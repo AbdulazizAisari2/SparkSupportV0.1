@@ -8,7 +8,10 @@ import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { ToastContainer } from './components/ui/Toast';
 import { AppShell } from './components/layout/AppShell';
-import { ProtectedRoute } from './components/ProtectedRoute';
+import { ProtectedRoute, RouteGuard } from './components/ProtectedRoute';
+import { UnauthorizedPage } from './components/AuthGuard';
+import { SecurityWrapper } from './components/SecurityWrapper';
+import { NotFound } from './components/NotFound';
 
 // Pages
 import { LoginPage } from './pages/LoginPage';
@@ -85,12 +88,19 @@ function App() {
           <AuthProvider>
             <ToastProvider>
             <Router>
-            <div className="min-h-screen transition-all duration-300">
-              <Routes>
+              <SecurityWrapper>
+                <RouteGuard>
+                  <div className="min-h-screen transition-all duration-300">
+                  <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 
                 <Route path="/" element={<RoleBasedRedirect />} />
+
+                {/* Security Routes - Block direct access to base paths */}
+                <Route path="/my" element={<Navigate to="/my/tickets" replace />} />
+                <Route path="/staff" element={<Navigate to="/staff/tickets" replace />} />
+                <Route path="/admin" element={<Navigate to="/admin/categories" replace />} />
 
                 {/* Customer Routes */}
                 <Route 
@@ -258,11 +268,13 @@ function App() {
                   } 
                 />
 
-                {/* Catch-all route */}
-                <Route path="*" element={<Navigate to="/" replace />} />
+                {/* Catch-all route for 404 and unauthorized access */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
             <ToastContainer />
+          </RouteGuard>
+        </SecurityWrapper>
           </Router>
         </ToastProvider>
       </AuthProvider>
