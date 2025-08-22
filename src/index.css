@@ -2,6 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Button Outline & Appearance Fixes */
+button {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+button:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+button:active {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+button:focus-visible {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove all default browser button styles */
+button[type="submit"],
+button[type="button"] {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background: none !important;
+}
+
 /* Comprehensive Dark Theme Fixes */
 .dark {
   color-scheme: dark;

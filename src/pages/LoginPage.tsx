@@ -245,9 +245,16 @@ export const LoginPage: React.FC = () => {
                     className="
                       group relative w-full overflow-hidden 
                       focus:outline-none focus:ring-0 focus:ring-offset-0 
-                      outline-none border-none
+                      outline-none border-none appearance-none
+                      bg-transparent hover:bg-transparent focus:bg-transparent
                     "
-                    style={{ outline: 'none', border: 'none' }}
+                    style={{ 
+                      outline: 'none !important', 
+                      border: 'none !important',
+                      boxShadow: 'none !important',
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'none'
+                    }}
                   >
                     {/* Button background with animated gradient */}
                     <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 rounded-2xl transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-purple-500/25"></div>
