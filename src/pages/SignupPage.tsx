@@ -352,14 +352,14 @@ export const SignupPage: React.FC = () => {
                 </div>
 
                 {/* Customer Account Info */}
-                <div className="mt-6 p-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-2xl border border-blue-400/30">
+                <div className="mt-6 p-4 bg-gradient-to-r from-blue-500/40 to-purple-500/40 dark:from-blue-500/20 dark:to-purple-500/20 backdrop-blur-sm rounded-2xl border border-blue-400/50 dark:border-blue-400/30">
                   <div className="text-center">
-                    <div className="text-blue-100 text-sm font-semibold mb-2 flex items-center justify-center space-x-2">
+                    <div className="text-blue-800 dark:text-blue-100 text-sm font-semibold mb-2 flex items-center justify-center space-x-2">
                       <Zap className="w-4 h-4" />
                       <span>Customer Account Registration</span>
                       <Zap className="w-4 h-4" />
                     </div>
-                    <p className="text-blue-200/90 text-xs">
+                    <p className="text-blue-700 dark:text-blue-200/90 text-xs leading-relaxed">
                       Creating a customer account gives you access to submit tickets, track progress, and communicate with our support team.
                     </p>
                   </div>
