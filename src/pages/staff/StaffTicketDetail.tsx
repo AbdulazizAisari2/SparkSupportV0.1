@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, UserPlus, Clock } from 'lucide-react';
-import { useTicket, useCreateMessage, useCreateNote, useUpdateTicket, useCategories, useUsers } from '../../hooks/useApi';
+import { useTicket, useCreateMessage, useUpdateTicket, useCategories, useUsers } from '../../hooks/useApi';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { StatusBadge, PriorityBadge } from '../../components/ui/Badge';
@@ -33,7 +33,7 @@ export const StaffTicketDetail: React.FC = () => {
   const { data: users = [] } = useUsers();
   const { data: staff = [] } = useUsers('staff');
   const createMessageMutation = useCreateMessage();
-  const createNoteMutation = useCreateNote();
+  const createInternalNoteMutation = useCreateMessage();
   const updateTicketMutation = useUpdateTicket();
 
   const ticket = ticketData?.ticket;
@@ -61,11 +61,11 @@ export const StaffTicketDetail: React.FC = () => {
     if (!user || !ticket) return;
 
     try {
-      await createNoteMutation.mutateAsync({
+      await createInternalNoteMutation.mutateAsync({
         ticketId: ticket.id,
         data: {
-          senderId: user.id,
           message: data.message,
+          isInternal: true,
         },
       });
 
@@ -242,7 +242,7 @@ export const StaffTicketDetail: React.FC = () => {
             messages={messages}
             users={users}
             onAddNote={handleAddNote}
-            isSubmitting={createNoteMutation.isPending}
+            isSubmitting={createInternalNoteMutation.isPending}
           />
         </div>
 
