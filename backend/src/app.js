@@ -1,5 +1,8 @@
-require('dotenv').config();
+require('dotenv').config({ path: '.env' });
+console.log('🔧 Environment variables loaded from .env');
 console.log('🔑 JWT_SECRET loaded:', process.env.JWT_SECRET ? 'YES' : 'NO');
+console.log('🔑 JWT_SECRET value length:', process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 0);
+console.log('🗄️ DATABASE_URL loaded:', process.env.DATABASE_URL ? 'YES' : 'NO');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');

@@ -27,18 +27,31 @@ const signupSchema = z.object({
 
 // Generate tokens
 const generateTokens = (userId) => {
+  console.log('🔑 Generating tokens for user:', userId);
+  console.log('🔑 JWT_SECRET available:', !!process.env.JWT_SECRET);
+  console.log('🔑 JWT_REFRESH_SECRET available:', !!process.env.JWT_REFRESH_SECRET);
+  
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is not set');
+  }
+  
+  if (!process.env.JWT_REFRESH_SECRET) {
+    throw new Error('JWT_REFRESH_SECRET environment variable is not set');
+  }
+
   const accessToken = jwt.sign(
     { userId },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN }
+    { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
   );
   
   const refreshToken = jwt.sign(
     { userId },
     process.env.JWT_REFRESH_SECRET,
-    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN }
+    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d' }
   );
 
+  console.log('✅ Tokens generated successfully');
   return { accessToken, refreshToken };
 };
 
