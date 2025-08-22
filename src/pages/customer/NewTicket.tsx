@@ -122,8 +122,8 @@ export const NewTicket: React.FC = () => {
       });
 
       console.log('✅ Ticket created:', result);
-      addToast('🎉 Ticket created successfully! Our team will respond soon.', 'success');
-      navigate(`/my/tickets/${result.ticket?.id || result.id}`);
+      addToast(`🎉 Ticket ${result.ticket?.id} created successfully! Our team will respond soon.`, 'success');
+      navigate('/my/tickets'); // Navigate to tickets list instead of detail page
     } catch (error) {
       console.error('❌ Ticket creation failed:', error);
       addToast(`Failed to create ticket: ${error instanceof Error ? error.message : 'Please try again.'}`, 'error');
