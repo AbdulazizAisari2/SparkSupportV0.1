@@ -11,6 +11,7 @@ import { AppShell } from './components/layout/AppShell';
 import { ProtectedRoute, RouteGuard } from './components/ProtectedRoute';
 import { UnauthorizedPage } from './components/AuthGuard';
 import { NotFound } from './components/NotFound';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Pages
 import { LoginPage } from './pages/LoginPage';
@@ -81,8 +82,9 @@ const RoleBasedRedirect: React.FC = () => {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <ErrorBoundary>
       <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
         <NotificationProvider>
           <AuthProvider>
             <ToastProvider>
@@ -274,10 +276,11 @@ function App() {
           </RouteGuard>
           </Router>
         </ToastProvider>
-      </AuthProvider>
-      </NotificationProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+              </AuthProvider>
+        </NotificationProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
+  </ErrorBoundary>
   );
 }
 

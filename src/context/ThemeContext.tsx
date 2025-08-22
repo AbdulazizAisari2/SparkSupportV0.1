@@ -15,43 +15,59 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setThemeState] = useState<Theme>('light');
-
-  useEffect(() => {
-    // Load theme from localStorage on app start
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme) {
-      setThemeState(savedTheme);
-    } else {
-      // Check system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setThemeState(prefersDark ? 'dark' : 'light');
-    }
-  }, []);
-
-  useEffect(() => {
-    // Apply theme to document
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
+  // Initialize with light theme to avoid SSR issues
+  const [theme, setThemeState] = useState<Theme>(() => {
+    // Safe initialization
+    if (typeof window === 'undefined') return 'light';
     
-    // Save to localStorage
-    localStorage.setItem('theme', theme);
+    try {
+      const saved = localStorage.getItem('theme') as Theme;
+      if (saved && (saved === 'light' || saved === 'dark')) {
+        return saved;
+      }
+      
+      // System preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return prefersDark ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      // Apply theme to document
+      const root = document.documentElement;
+      
+      if (theme === 'dark') {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+      
+      // Save to localStorage
+      localStorage.setItem('theme', theme);
+    } catch (error) {
+      console.warn('Theme persistence failed:', error);
+    }
   }, [theme]);
 
-  const toggleTheme = () => {
+  const toggleTheme = React.useCallback(() => {
     setThemeState(prev => prev === 'light' ? 'dark' : 'light');
-  };
+  }, []);
 
-  const setTheme = (newTheme: Theme) => {
+  const setTheme = React.useCallback((newTheme: Theme) => {
     setThemeState(newTheme);
-  };
+  }, []);
+
+  const contextValue = React.useMemo(() => ({
+    theme,
+    toggleTheme,
+    setTheme
+  }), [theme, toggleTheme, setTheme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );
