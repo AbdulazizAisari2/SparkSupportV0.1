@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
 import { PasswordField } from '../components/auth/PasswordField';
+import { useLogin } from '../hooks/useApi';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -19,12 +20,11 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 
 export const LoginPage: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState('');
   const { login } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
-
+  const loginMutation = useLogin();
 
   const {
     register,
@@ -36,40 +36,16 @@ export const LoginPage: React.FC = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
     console.log('Form submission data:', data);
     
-    // Auto-determine role based on email
-    const allUsers = [
-      { email: 'customer@example.com', role: 'customer' },
-      { email: 'staff1@example.com', role: 'staff' },
-      { email: 'staff2@example.com', role: 'staff' },
-      { email: 'admin@example.com', role: 'admin' }
-    ];
-    
-    const userRole = allUsers.find(u => u.email === data.email)?.role || 'customer';
-    const loginData = { ...data, role: userRole };
-    
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginData),
+      const result = await loginMutation.mutateAsync({
+        email: data.email,
+        password: data.password
       });
 
-      console.log('Login response status:', response.status);
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.log('Login error:', errorData);
-        throw new Error(errorData.error || 'Login failed');
-      }
-
-      const result = await response.json();
       console.log('Login successful:', result);
-      login(result.token, result.user);
+      login(result.accessToken, result.refreshToken, result.user);
       
       addToast(`Welcome back, ${result.user.name}! 🎉`, 'success');
       
@@ -90,8 +66,6 @@ export const LoginPage: React.FC = () => {
     } catch (error) {
       console.error('Login error:', error);
       addToast(`Login failed: ${error instanceof Error ? error.message : 'Please check your credentials'}`, 'error');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -219,12 +193,12 @@ export const LoginPage: React.FC = () => {
                 {/* Spectacular Submit Button */}
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={loginMutation.isPending}
                   className="group relative w-full flex justify-center items-center py-3 px-6 border border-transparent text-base font-bold rounded-xl text-indigo-600 bg-white hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-300 hover:scale-105 hover:shadow-2xl disabled:hover:scale-100 overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="flex items-center space-x-2">
-                    {isLoading ? (
+                    {loginMutation.isPending ? (
                       <>
                         <div className="w-4 h-4 border-2 border-indigo-600/30 border-t-indigo-600 rounded-full animate-spin"></div>
                         <span>Signing you in...</span>

@@ -1,8 +1,31 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
-import { User, Category, PriorityDef, Ticket, TicketMessage } from '../types';
+import { User, Category, Ticket, TicketMessage } from '../types';
 
-const API_BASE = '/api';
+const API_BASE = 'http://localhost:8000/api';
+
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+interface SignupRequest {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+}
+
+interface LoginResponse {
+  message: string;
+  user: User;
+  accessToken: string;
+  refreshToken: string;
+}
+
+interface ApiResponse<T> {
+  [key: string]: T;
+}
 
 class ApiClient {
   private getHeaders(token?: string) {
@@ -17,22 +40,52 @@ class ApiClient {
     return headers;
   }
 
-  async login(email: string, role: string) {
-    const response = await fetch(`${API_BASE}/login`, {
+  async login(email: string, password: string): Promise<LoginResponse> {
+    const response = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
       headers: this.getHeaders(),
-      body: JSON.stringify({ email, role }),
+      body: JSON.stringify({ email, password }),
     });
 
     if (!response.ok) {
-      throw new Error('Login failed');
+      const error = await response.json();
+      throw new Error(error.error || 'Login failed');
+    }
+
+    return response.json();
+  }
+
+  async signup(data: SignupRequest): Promise<LoginResponse> {
+    const response = await fetch(`${API_BASE}/auth/signup`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Signup failed');
+    }
+
+    return response.json();
+  }
+
+  async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
+    const response = await fetch(`${API_BASE}/auth/refresh`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Token refresh failed');
     }
 
     return response.json();
   }
 
   async me(token: string): Promise<{ user: User }> {
-    const response = await fetch(`${API_BASE}/me`, {
+    const response = await fetch(`${API_BASE}/auth/me`, {
       headers: this.getHeaders(token),
     });
 
@@ -43,66 +96,35 @@ class ApiClient {
     return response.json();
   }
 
-  async getCategories(): Promise<Category[]> {
-    const response = await fetch(`${API_BASE}/categories`);
+  async getCategories(token: string): Promise<{ categories: Category[] }> {
+    const response = await fetch(`${API_BASE}/categories`, {
+      headers: this.getHeaders(token),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch categories');
+    }
+
     return response.json();
   }
 
-  async createCategory(data: Omit<Category, 'id'>): Promise<Category> {
+  async createCategory(token: string, data: { name: string; description?: string }): Promise<{ category: Category }> {
     const response = await fetch(`${API_BASE}/categories`, {
       method: 'POST',
-      headers: this.getHeaders(),
+      headers: this.getHeaders(token),
       body: JSON.stringify(data),
     });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create category');
+    }
+
     return response.json();
   }
 
-  async updateCategory(id: string, data: Partial<Category>): Promise<Category> {
-    const response = await fetch(`${API_BASE}/categories/${id}`, {
-      method: 'PUT',
-      headers: this.getHeaders(),
-      body: JSON.stringify(data),
-    });
-    return response.json();
-  }
-
-  async deleteCategory(id: string): Promise<void> {
-    await fetch(`${API_BASE}/categories/${id}`, {
-      method: 'DELETE',
-    });
-  }
-
-  async getPriorities(): Promise<PriorityDef[]> {
-    const response = await fetch(`${API_BASE}/priorities`);
-    return response.json();
-  }
-
-  async createPriority(data: Omit<PriorityDef, 'id'>): Promise<PriorityDef> {
-    const response = await fetch(`${API_BASE}/priorities`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(data),
-    });
-    return response.json();
-  }
-
-  async updatePriority(id: string, data: Partial<PriorityDef>): Promise<PriorityDef> {
-    const response = await fetch(`${API_BASE}/priorities/${id}`, {
-      method: 'PUT',
-      headers: this.getHeaders(),
-      body: JSON.stringify(data),
-    });
-    return response.json();
-  }
-
-  async deletePriority(id: string): Promise<void> {
-    await fetch(`${API_BASE}/priorities/${id}`, {
-      method: 'DELETE',
-    });
-  }
-
-  async getUsers(token: string, role?: string): Promise<User[]> {
-    const url = new URL(`${API_BASE}/users`, window.location.origin);
+  async getUsers(token: string, role?: string): Promise<{ users: User[] }> {
+    const url = new URL(`${API_BASE}/users`);
     if (role) {
       url.searchParams.append('role', role);
     }
@@ -110,42 +132,20 @@ class ApiClient {
     const response = await fetch(url.toString(), {
       headers: this.getHeaders(token),
     });
-    return response.json();
-  }
 
-  async createUser(data: Omit<User, 'id'>): Promise<User> {
-    const response = await fetch(`${API_BASE}/users`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(data),
-    });
-    return response.json();
-  }
+    if (!response.ok) {
+      throw new Error('Failed to fetch users');
+    }
 
-  async updateUser(id: string, data: Partial<User>): Promise<User> {
-    const response = await fetch(`${API_BASE}/users/${id}`, {
-      method: 'PUT',
-      headers: this.getHeaders(),
-      body: JSON.stringify(data),
-    });
     return response.json();
-  }
-
-  async deleteUser(id: string): Promise<void> {
-    await fetch(`${API_BASE}/users/${id}`, {
-      method: 'DELETE',
-    });
   }
 
   async getTickets(token: string, params: {
-    mine?: boolean;
     status?: string;
-    category?: string;
-    assignee?: string;
     priority?: string;
-    q?: string;
-  } = {}): Promise<Ticket[]> {
-    const url = new URL(`${API_BASE}/tickets`, window.location.origin);
+    assignedToMe?: boolean;
+  } = {}): Promise<{ tickets: Ticket[] }> {
+    const url = new URL(`${API_BASE}/tickets`);
     
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
@@ -156,31 +156,44 @@ class ApiClient {
     const response = await fetch(url.toString(), {
       headers: this.getHeaders(token),
     });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch tickets');
+    }
+
     return response.json();
   }
 
-  async createTicket(token: string, data: Omit<Ticket, 'id' | 'status' | 'createdAt' | 'updatedAt'>): Promise<Ticket> {
+  async createTicket(token: string, data: {
+    categoryId: string;
+    priority: string;
+    subject: string;
+    description: string;
+  }): Promise<{ ticket: Ticket }> {
     const response = await fetch(`${API_BASE}/tickets`, {
       method: 'POST',
       headers: this.getHeaders(token),
       body: JSON.stringify(data),
     });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create ticket');
+    }
+
     return response.json();
   }
 
-  async getTicket(token: string, id: string): Promise<{ ticket: Ticket; messages: TicketMessage[] }> {
-    console.log('API: Fetching ticket', id, 'with token', token?.substring(0, 20) + '...');
+  async getTicket(token: string, id: string): Promise<{ ticket: Ticket }> {
+    console.log('API: Fetching ticket', id);
     
     const response = await fetch(`${API_BASE}/tickets/${id}`, {
       headers: this.getHeaders(token),
     });
 
-    console.log('API: Response status', response.status, response.statusText);
-
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.log('API: Error data', errorData);
-      throw new Error(errorData.error || `Failed to fetch ticket ${id}`);
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || `Failed to fetch ticket ${id}`);
     }
 
     const data = await response.json();
@@ -188,35 +201,59 @@ class ApiClient {
     return data;
   }
 
-  async updateTicket(token: string, id: string, data: Partial<Ticket>): Promise<Ticket> {
+  async updateTicket(token: string, id: string, data: {
+    status?: string;
+    priority?: string;
+    assignedStaffId?: string | null;
+  }): Promise<{ ticket: Ticket }> {
     const response = await fetch(`${API_BASE}/tickets/${id}`, {
       method: 'PATCH',
       headers: this.getHeaders(token),
       body: JSON.stringify(data),
     });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to update ticket');
+    }
+
     return response.json();
   }
 
-  async createMessage(token: string, ticketId: string, data: Omit<TicketMessage, 'id' | 'ticketId' | 'createdAt'>): Promise<TicketMessage> {
+  async createMessage(token: string, ticketId: string, data: {
+    message: string;
+    isInternal?: boolean;
+  }): Promise<{ message: TicketMessage }> {
     const response = await fetch(`${API_BASE}/tickets/${ticketId}/messages`, {
       method: 'POST',
       headers: this.getHeaders(token),
       body: JSON.stringify(data),
     });
-    return response.json();
-  }
 
-  async createNote(token: string, ticketId: string, data: Omit<TicketMessage, 'id' | 'ticketId' | 'createdAt' | 'isInternal'>): Promise<TicketMessage> {
-    const response = await fetch(`${API_BASE}/tickets/${ticketId}/notes`, {
-      method: 'POST',
-      headers: this.getHeaders(token),
-      body: JSON.stringify(data),
-    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create message');
+    }
+
     return response.json();
   }
 }
 
 const apiClient = new ApiClient();
+
+// Authentication hooks
+export const useLogin = () => {
+  return useMutation({
+    mutationFn: ({ email, password }: LoginRequest) => 
+      apiClient.login(email, password),
+  });
+};
+
+export const useSignup = () => {
+  return useMutation({
+    mutationFn: (data: SignupRequest) => apiClient.signup(data),
+  });
+};
 
 // Hook for getting current user
 export const useMe = () => {
@@ -230,78 +267,23 @@ export const useMe = () => {
 
 // Categories hooks
 export const useCategories = () => {
+  const { token } = useAuth();
   return useQuery({
     queryKey: ['categories'],
-    queryFn: () => apiClient.getCategories(),
+    queryFn: () => apiClient.getCategories(token!),
+    enabled: !!token,
+    select: (data) => data.categories,
   });
 };
 
 export const useCreateCategory = () => {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
   return useMutation({
-    mutationFn: (data: Omit<Category, 'id'>) => apiClient.createCategory(data),
+    mutationFn: (data: { name: string; description?: string }) => 
+      apiClient.createCategory(token!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
-    },
-  });
-};
-
-export const useUpdateCategory = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Category> }) => 
-      apiClient.updateCategory(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-    },
-  });
-};
-
-export const useDeleteCategory = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => apiClient.deleteCategory(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-    },
-  });
-};
-
-// Priorities hooks
-export const usePriorities = () => {
-  return useQuery({
-    queryKey: ['priorities'],
-    queryFn: () => apiClient.getPriorities(),
-  });
-};
-
-export const useCreatePriority = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (data: Omit<PriorityDef, 'id'>) => apiClient.createPriority(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['priorities'] });
-    },
-  });
-};
-
-export const useUpdatePriority = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<PriorityDef> }) => 
-      apiClient.updatePriority(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['priorities'] });
-    },
-  });
-};
-
-export const useDeletePriority = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => apiClient.deletePriority(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['priorities'] });
     },
   });
 };
@@ -313,54 +295,22 @@ export const useUsers = (role?: string) => {
     queryKey: ['users', role],
     queryFn: () => apiClient.getUsers(token!, role),
     enabled: !!token,
-  });
-};
-
-export const useCreateUser = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (data: Omit<User, 'id'>) => apiClient.createUser(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
-  });
-};
-
-export const useUpdateUser = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<User> }) => 
-      apiClient.updateUser(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
-  });
-};
-
-export const useDeleteUser = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => apiClient.deleteUser(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
+    select: (data) => data.users,
   });
 };
 
 // Tickets hooks
 export const useTickets = (params: {
-  mine?: boolean;
   status?: string;
-  category?: string;
-  assignee?: string;
   priority?: string;
-  q?: string;
+  assignedToMe?: boolean;
 } = {}) => {
   const { token } = useAuth();
   return useQuery({
     queryKey: ['tickets', params],
     queryFn: () => apiClient.getTickets(token!, params),
     enabled: !!token,
+    select: (data) => data.tickets,
   });
 };
 
@@ -368,8 +318,12 @@ export const useCreateTicket = () => {
   const queryClient = useQueryClient();
   const { token } = useAuth();
   return useMutation({
-    mutationFn: (data: Omit<Ticket, 'id' | 'status' | 'createdAt' | 'updatedAt'>) => 
-      apiClient.createTicket(token!, data),
+    mutationFn: (data: {
+      categoryId: string;
+      priority: string;
+      subject: string;
+      description: string;
+    }) => apiClient.createTicket(token!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tickets'] });
     },
@@ -382,6 +336,7 @@ export const useTicket = (id: string) => {
     queryKey: ['ticket', id],
     queryFn: () => apiClient.getTicket(token!, id),
     enabled: !!token && !!id,
+    select: (data) => data.ticket,
   });
 };
 
@@ -389,8 +344,10 @@ export const useUpdateTicket = () => {
   const queryClient = useQueryClient();
   const { token } = useAuth();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Ticket> }) => 
-      apiClient.updateTicket(token!, id, data),
+    mutationFn: ({ id, data }: { 
+      id: string; 
+      data: { status?: string; priority?: string; assignedStaffId?: string | null }
+    }) => apiClient.updateTicket(token!, id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tickets'] });
       queryClient.invalidateQueries({ queryKey: ['ticket'] });
@@ -402,23 +359,13 @@ export const useCreateMessage = () => {
   const queryClient = useQueryClient();
   const { token } = useAuth();
   return useMutation({
-    mutationFn: ({ ticketId, data }: { ticketId: string; data: Omit<TicketMessage, 'id' | 'ticketId' | 'createdAt'> }) => 
-      apiClient.createMessage(token!, ticketId, data),
+    mutationFn: ({ ticketId, data }: { 
+      ticketId: string; 
+      data: { message: string; isInternal?: boolean }
+    }) => apiClient.createMessage(token!, ticketId, data),
     onSuccess: (_, { ticketId }) => {
       queryClient.invalidateQueries({ queryKey: ['ticket', ticketId] });
       queryClient.invalidateQueries({ queryKey: ['tickets'] });
-    },
-  });
-};
-
-export const useCreateNote = () => {
-  const queryClient = useQueryClient();
-  const { token } = useAuth();
-  return useMutation({
-    mutationFn: ({ ticketId, data }: { ticketId: string; data: Omit<TicketMessage, 'id' | 'ticketId' | 'createdAt' | 'isInternal'> }) => 
-      apiClient.createNote(token!, ticketId, data),
-    onSuccess: (_, { ticketId }) => {
-      queryClient.invalidateQueries({ queryKey: ['ticket', ticketId] });
     },
   });
 };

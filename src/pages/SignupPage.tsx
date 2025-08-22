@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
 import { PasswordField } from '../components/auth/PasswordField';
+import { useSignup } from '../hooks/useApi';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -24,11 +25,11 @@ const signupSchema = z.object({
 type SignupFormData = z.infer<typeof signupSchema>;
 
 export const SignupPage: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState('');
   const { signup } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+  const signupMutation = useSignup();
 
   const {
     register,
@@ -40,33 +41,20 @@ export const SignupPage: React.FC = () => {
   });
 
   const onSubmit = async (data: SignupFormData) => {
-    setIsLoading(true);
     try {
-      // Auto-set role to customer since signup is customer-only
-      const signupData = { ...data, role: 'customer' };
-      
-      const response = await fetch('/api/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(signupData),
+      const result = await signupMutation.mutateAsync({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        phone: data.phone
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Signup failed');
-      }
-
-      const result = await response.json();
-      signup(result.token, result.user);
+      signup(result.accessToken, result.refreshToken, result.user);
       
       addToast(`🎉 Welcome ${result.user.name}! Your account has been created successfully.`, 'success');
       navigate('/my/tickets');
     } catch (error) {
       addToast(error instanceof Error ? error.message : 'Signup failed. Please try again.', 'error');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -244,12 +232,12 @@ export const SignupPage: React.FC = () => {
                 {/* Spectacular Submit Button */}
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={signupMutation.isPending}
                   className="group relative w-full flex justify-center items-center py-3 px-6 border border-transparent text-base font-bold rounded-xl text-indigo-600 bg-white hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-300 hover:scale-105 hover:shadow-2xl disabled:hover:scale-100 overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="flex items-center space-x-2">
-                    {isLoading ? (
+                    {signupMutation.isPending ? (
                       <>
                         <div className="w-4 h-4 border-2 border-indigo-600/30 border-t-indigo-600 rounded-full animate-spin"></div>
                         <span>Creating your account...</span>
