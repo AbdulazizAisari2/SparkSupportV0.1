@@ -68,11 +68,11 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-slate-900">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-purple-50 via-blue-50 to-cyan-50 dark:bg-slate-900">
       {/* Epic Animated Background */}
       <div className="absolute inset-0">
-        {/* Base gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900"></div>
+                  {/* Base gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-200 via-blue-200 to-indigo-200 dark:from-purple-900 dark:via-blue-900 dark:to-indigo-900"></div>
         
         {/* Animated gradient layers */}
         <div className="absolute inset-0 bg-gradient-to-tr from-pink-500/20 via-purple-500/30 to-cyan-500/20 animate-gradient-x"></div>
@@ -108,8 +108,8 @@ export const LoginPage: React.FC = () => {
               </div>
             </div>
             <div>
-              <span className="text-white font-bold text-lg tracking-tight drop-shadow-lg">SparkSupport</span>
-              <div className="text-white/70 text-xs font-medium">Support System</div>
+              <span className="text-gray-800 dark:text-white font-bold text-lg tracking-tight drop-shadow-lg">SparkSupport</span>
+              <div className="text-gray-600 dark:text-white/70 text-xs font-medium">Support System</div>
             </div>
           </div>
         </div>
@@ -139,15 +139,15 @@ export const LoginPage: React.FC = () => {
               </div>
             </div>
             
-            <h1 className="text-5xl font-black text-white mb-3 tracking-tight drop-shadow-2xl">
-              <span className="bg-gradient-to-r from-white via-purple-100 to-cyan-100 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-black text-gray-900 dark:text-white mb-3 tracking-tight drop-shadow-2xl">
+              <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 dark:from-white dark:via-purple-100 dark:to-cyan-100 bg-clip-text text-transparent">
                 SparkSupport
               </span>
             </h1>
-            <h2 className="text-2xl font-bold text-white/95 mb-3 drop-shadow-lg">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white/95 mb-3 drop-shadow-lg">
               Welcome Back! 👋
             </h2>
-            <p className="text-white/80 text-base font-medium drop-shadow-sm">
+            <p className="text-gray-700 dark:text-white/80 text-base font-medium drop-shadow-sm">
               Sign in to access your support dashboard
             </p>
           </div>
@@ -158,11 +158,11 @@ export const LoginPage: React.FC = () => {
             <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 rounded-3xl blur-lg opacity-25 group-hover:opacity-40 transition-opacity duration-500"></div>
             
             {/* Main form container */}
-            <div className="relative bg-gradient-to-br from-white/25 to-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl border-2 border-white/50 p-8">
+            <div className="relative bg-gradient-to-br from-white/90 to-white/80 dark:from-white/25 dark:to-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl border-2 border-gray-200/50 dark:border-white/50 p-8">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* Enhanced Email Field */}
                 <div className="space-y-3">
-                  <label htmlFor="email" className="block text-sm font-bold text-white flex items-center space-x-2 drop-shadow-sm">
+                  <label htmlFor="email" className="block text-sm font-bold text-gray-800 dark:text-white flex items-center space-x-2 drop-shadow-sm">
                     <div className="p-1.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg shadow-lg">
                       <Mail className="w-4 h-4 text-white" />
                     </div>
@@ -175,31 +175,34 @@ export const LoginPage: React.FC = () => {
                       type="email"
                       autoComplete="email"
                       className={`
-                        block w-full px-5 py-4 border-2 rounded-2xl text-white text-base font-medium placeholder-white/60
-                        bg-gradient-to-r from-white/20 to-white/15 backdrop-blur-xl border-white/40
-                        focus:outline-none focus:ring-4 focus:ring-purple-400/30 focus:border-white/70
-                        hover:bg-gradient-to-r hover:from-white/25 hover:to-white/20 hover:border-white/50
+                        block w-full px-5 py-4 border-2 rounded-2xl text-gray-900 dark:text-white text-base font-medium 
+                        placeholder-gray-500 dark:placeholder-white/60
+                        bg-gradient-to-r from-white/70 to-white/60 dark:from-white/20 dark:to-white/15 
+                        backdrop-blur-xl border-gray-300 dark:border-white/40
+                        focus:outline-none focus:ring-4 focus:ring-purple-400/30 focus:border-purple-500 dark:focus:border-white/70
+                        hover:bg-gradient-to-r hover:from-white/80 hover:to-white/70 dark:hover:from-white/25 dark:hover:to-white/20 
+                        hover:border-purple-400 dark:hover:border-white/50
                         transition-all duration-300 shadow-xl hover:shadow-2xl
-                        ${errors.email ? 'border-red-400/70 focus:ring-red-400/30' : ''}
+                        ${errors.email ? 'border-red-500 dark:border-red-400/70 focus:ring-red-400/30' : ''}
                       `}
                       placeholder="Enter your email address"
                     />
                     {/* Input highlight effect */}
                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400/20 to-blue-400/20 opacity-0 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   </div>
-                  {errors.email && (
-                    <div className="bg-red-500/20 backdrop-blur-sm border border-red-400/50 rounded-xl p-3 animate-slide-down">
-                      <p className="text-red-200 text-sm font-medium flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-                        <span>{errors.email.message}</span>
-                      </p>
-                    </div>
-                  )}
+                                     {errors.email && (
+                     <div className="bg-red-100 dark:bg-red-500/20 backdrop-blur-sm border border-red-300 dark:border-red-400/50 rounded-xl p-3 animate-slide-down">
+                       <p className="text-red-700 dark:text-red-200 text-sm font-medium flex items-center space-x-2">
+                         <div className="w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full animate-pulse"></div>
+                         <span>{errors.email.message}</span>
+                       </p>
+                     </div>
+                   )}
                 </div>
 
                 {/* Enhanced Password Field */}
                 <div className="space-y-3">
-                  <label htmlFor="password" className="block text-sm font-bold text-white flex items-center space-x-2 drop-shadow-sm">
+                  <label htmlFor="password" className="block text-sm font-bold text-gray-800 dark:text-white flex items-center space-x-2 drop-shadow-sm">
                     <div className="p-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg shadow-lg">
                       <Lock className="w-4 h-4 text-white" />
                     </div>
@@ -215,18 +218,18 @@ export const LoginPage: React.FC = () => {
                       placeholder="Enter your password"
                       required
                       error={errors.password?.message}
-                      className="block w-full px-5 py-4 border-2 rounded-2xl text-white text-base font-medium placeholder-white/60 bg-gradient-to-r from-white/20 to-white/15 backdrop-blur-xl border-white/40 focus:outline-none focus:ring-4 focus:ring-blue-400/30 focus:border-white/70 hover:bg-gradient-to-r hover:from-white/25 hover:to-white/20 hover:border-white/50 transition-all duration-300 shadow-xl hover:shadow-2xl"
+                      className="block w-full px-5 py-4 border-2 rounded-2xl text-gray-900 dark:text-white text-base font-medium placeholder-gray-500 dark:placeholder-white/60 bg-gradient-to-r from-white/70 to-white/60 dark:from-white/20 dark:to-white/15 backdrop-blur-xl border-gray-300 dark:border-white/40 focus:outline-none focus:ring-4 focus:ring-blue-400/30 focus:border-blue-500 dark:focus:border-white/70 hover:bg-gradient-to-r hover:from-white/80 hover:to-white/70 dark:hover:from-white/25 dark:hover:to-white/20 hover:border-blue-400 dark:hover:border-white/50 transition-all duration-300 shadow-xl hover:shadow-2xl"
                     />
                     <input type="hidden" {...register('password')} />
                   </div>
-                  {errors.password && (
-                    <div className="bg-red-500/20 backdrop-blur-sm border border-red-400/50 rounded-xl p-3 animate-slide-down">
-                      <p className="text-red-200 text-sm font-medium flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-                        <span>{errors.password.message}</span>
-                      </p>
-                    </div>
-                  )}
+                                      {errors.password && (
+                      <div className="bg-red-100 dark:bg-red-500/20 backdrop-blur-sm border border-red-300 dark:border-red-400/50 rounded-xl p-3 animate-slide-down">
+                        <p className="text-red-700 dark:text-red-200 text-sm font-medium flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full animate-pulse"></div>
+                          <span>{errors.password.message}</span>
+                        </p>
+                      </div>
+                    )}
                 </div>
 
                 {/* Spectacular Submit Button */}
@@ -262,38 +265,38 @@ export const LoginPage: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Demo Accounts Info */}
-                <div className="mt-6 p-4 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 backdrop-blur-sm rounded-2xl border border-emerald-400/30">
-                  <div className="text-center">
-                    <div className="text-emerald-100 text-sm font-semibold mb-2 flex items-center justify-center space-x-2">
-                      <Star className="w-4 h-4" />
-                      <span>Demo Accounts Available</span>
-                      <Star className="w-4 h-4" />
-                    </div>
-                    <div className="text-emerald-200/90 text-xs space-y-1">
-                      <div>Customer: <span className="font-mono bg-emerald-900/30 px-2 py-1 rounded">john@example.com</span> / <span className="font-mono bg-emerald-900/30 px-2 py-1 rounded">Customer123!</span></div>
-                      <div>Staff: <span className="font-mono bg-emerald-900/30 px-2 py-1 rounded">sarah@company.co</span> / <span className="font-mono bg-emerald-900/30 px-2 py-1 rounded">Staff123!</span></div>
-                      <div>Admin: <span className="font-mono bg-emerald-900/30 px-2 py-1 rounded">admin@company.co</span> / <span className="font-mono bg-emerald-900/30 px-2 py-1 rounded">Admin123!</span></div>
-                    </div>
-                  </div>
-                </div>
+                                 {/* Demo Accounts Info */}
+                 <div className="mt-6 p-4 bg-gradient-to-r from-emerald-100/70 to-teal-100/70 dark:from-emerald-500/20 dark:to-teal-500/20 backdrop-blur-sm rounded-2xl border border-emerald-300 dark:border-emerald-400/30">
+                   <div className="text-center">
+                     <div className="text-emerald-700 dark:text-emerald-100 text-sm font-semibold mb-2 flex items-center justify-center space-x-2">
+                       <Star className="w-4 h-4" />
+                       <span>Demo Accounts Available</span>
+                       <Star className="w-4 h-4" />
+                     </div>
+                     <div className="text-emerald-600 dark:text-emerald-200/90 text-xs space-y-1">
+                       <div>Customer: <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">john@example.com</span> / <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">Customer123!</span></div>
+                       <div>Staff: <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">sarah@company.co</span> / <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">Staff123!</span></div>
+                       <div>Admin: <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">admin@company.co</span> / <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">Admin123!</span></div>
+                     </div>
+                   </div>
+                 </div>
               </form>
             </div>
           </div>
 
-          {/* Sign up link */}
-          <div className="mt-8 text-center">
-            <div className="bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-xl rounded-2xl border border-white/30 p-4 shadow-xl">
-              <p className="text-white/80 text-sm mb-2">New to SparkSupport?</p>
-              <Link
-                to="/signup"
-                className="group inline-flex items-center space-x-2 text-white font-semibold hover:text-cyan-200 transition-colors duration-300"
-              >
-                <span>Create your account</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-              </Link>
-            </div>
-          </div>
+                     {/* Sign up link */}
+           <div className="mt-8 text-center">
+             <div className="bg-gradient-to-r from-white/80 to-white/70 dark:from-white/20 dark:to-white/10 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/30 p-4 shadow-xl">
+               <p className="text-gray-700 dark:text-white/80 text-sm mb-2">New to SparkSupport?</p>
+               <Link
+                 to="/signup"
+                 className="group inline-flex items-center space-x-2 text-purple-600 dark:text-white font-semibold hover:text-purple-700 dark:hover:text-cyan-200 transition-colors duration-300"
+               >
+                 <span>Create your account</span>
+                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+               </Link>
+             </div>
+           </div>
         </div>
       </div>
     </div>

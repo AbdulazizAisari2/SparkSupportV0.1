@@ -59,11 +59,11 @@ export const SignupPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-slate-900">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-cyan-50 via-purple-50 to-pink-50 dark:bg-slate-900">
       {/* Epic Animated Background - Complementary to login */}
       <div className="absolute inset-0">
-        {/* Base gradient with different colors */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900"></div>
+                  {/* Base gradient with different colors */}
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-200 dark:from-indigo-900 dark:via-purple-900 dark:to-pink-900"></div>
         
         {/* Animated gradient layers */}
         <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/20 via-blue-500/30 to-purple-500/20 animate-gradient-x"></div>
@@ -130,15 +130,15 @@ export const SignupPage: React.FC = () => {
               </div>
             </div>
             
-            <h1 className="text-5xl font-black text-white mb-3 tracking-tight drop-shadow-2xl">
-              <span className="bg-gradient-to-r from-cyan-100 via-purple-100 to-pink-100 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-black text-gray-900 dark:text-white mb-3 tracking-tight drop-shadow-2xl">
+              <span className="bg-gradient-to-r from-cyan-600 via-purple-600 to-pink-600 dark:from-cyan-100 dark:via-purple-100 dark:to-pink-100 bg-clip-text text-transparent">
                 Join SparkSupport
               </span>
             </h1>
-            <h2 className="text-2xl font-bold text-white/95 mb-3 drop-shadow-lg">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white/95 mb-3 drop-shadow-lg">
               Create Your Account 🚀
             </h2>
-            <p className="text-white/80 text-base font-medium drop-shadow-sm">
+            <p className="text-gray-700 dark:text-white/80 text-base font-medium drop-shadow-sm">
               Get started with our amazing support system
             </p>
           </div>
@@ -149,47 +149,50 @@ export const SignupPage: React.FC = () => {
             <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-3xl blur-lg opacity-25 group-hover:opacity-40 transition-opacity duration-500"></div>
             
             {/* Main form container */}
-            <div className="relative bg-gradient-to-br from-white/25 to-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl border-2 border-white/50 p-8">
+            <div className="relative bg-gradient-to-br from-white/90 to-white/80 dark:from-white/25 dark:to-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl border-2 border-gray-200/50 dark:border-white/50 p-8">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* Enhanced Name Field */}
                 <div className="space-y-3">
-                  <label htmlFor="name" className="block text-sm font-bold text-white flex items-center space-x-2 drop-shadow-sm">
-                    <div className="p-1.5 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg shadow-lg">
-                      <User className="w-4 h-4 text-white" />
+                                      <label htmlFor="name" className="block text-sm font-bold text-gray-800 dark:text-white flex items-center space-x-2 drop-shadow-sm">
+                      <div className="p-1.5 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg shadow-lg">
+                        <User className="w-4 h-4 text-white" />
+                      </div>
+                      <span>Full Name</span>
+                    </label>
+                    <div className="relative group">
+                      <input
+                        {...register('name')}
+                        id="name"
+                        type="text"
+                        autoComplete="name"
+                        className={`
+                          block w-full px-5 py-4 border-2 rounded-2xl text-gray-900 dark:text-white text-base font-medium 
+                          placeholder-gray-500 dark:placeholder-white/60
+                          bg-gradient-to-r from-white/70 to-white/60 dark:from-white/20 dark:to-white/15 
+                          backdrop-blur-xl border-gray-300 dark:border-white/40
+                          focus:outline-none focus:ring-4 focus:ring-cyan-400/30 focus:border-cyan-500 dark:focus:border-white/70
+                          hover:bg-gradient-to-r hover:from-white/80 hover:to-white/70 dark:hover:from-white/25 dark:hover:to-white/20 
+                          hover:border-cyan-400 dark:hover:border-white/50
+                          transition-all duration-300 shadow-xl hover:shadow-2xl
+                          ${errors.name ? 'border-red-500 dark:border-red-400/70 focus:ring-red-400/30' : ''}
+                        `}
+                        placeholder="Enter your full name"
+                      />
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-400/20 to-purple-400/20 opacity-0 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
-                    <span>Full Name</span>
-                  </label>
-                  <div className="relative group">
-                    <input
-                      {...register('name')}
-                      id="name"
-                      type="text"
-                      autoComplete="name"
-                      className={`
-                        block w-full px-5 py-4 border-2 rounded-2xl text-white text-base font-medium placeholder-white/60
-                        bg-gradient-to-r from-white/20 to-white/15 backdrop-blur-xl border-white/40
-                        focus:outline-none focus:ring-4 focus:ring-cyan-400/30 focus:border-white/70
-                        hover:bg-gradient-to-r hover:from-white/25 hover:to-white/20 hover:border-white/50
-                        transition-all duration-300 shadow-xl hover:shadow-2xl
-                        ${errors.name ? 'border-red-400/70 focus:ring-red-400/30' : ''}
-                      `}
-                      placeholder="Enter your full name"
-                    />
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-400/20 to-purple-400/20 opacity-0 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                  </div>
-                  {errors.name && (
-                    <div className="bg-red-500/20 backdrop-blur-sm border border-red-400/50 rounded-xl p-3 animate-slide-down">
-                      <p className="text-red-200 text-sm font-medium flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-                        <span>{errors.name.message}</span>
-                      </p>
-                    </div>
-                  )}
+                    {errors.name && (
+                      <div className="bg-red-100 dark:bg-red-500/20 backdrop-blur-sm border border-red-300 dark:border-red-400/50 rounded-xl p-3 animate-slide-down">
+                        <p className="text-red-700 dark:text-red-200 text-sm font-medium flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full animate-pulse"></div>
+                          <span>{errors.name.message}</span>
+                        </p>
+                      </div>
+                    )}
                 </div>
 
-                {/* Enhanced Email Field */}
-                <div className="space-y-3">
-                  <label htmlFor="email" className="block text-sm font-bold text-white flex items-center space-x-2 drop-shadow-sm">
+                                 {/* Enhanced Email Field */}
+                 <div className="space-y-3">
+                   <label htmlFor="email" className="block text-sm font-bold text-gray-800 dark:text-white flex items-center space-x-2 drop-shadow-sm">
                     <div className="p-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg shadow-lg">
                       <Mail className="w-4 h-4 text-white" />
                     </div>
