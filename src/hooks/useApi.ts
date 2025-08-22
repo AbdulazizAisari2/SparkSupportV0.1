@@ -123,6 +123,33 @@ class ApiClient {
     return response.json();
   }
 
+  async updateCategory(token: string, id: string, data: { name?: string; description?: string }): Promise<{ category: Category }> {
+    const response = await fetch(`${API_BASE}/categories/${id}`, {
+      method: 'PATCH',
+      headers: this.getHeaders(token),
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to update category');
+    }
+
+    return response.json();
+  }
+
+  async deleteCategory(token: string, id: string): Promise<void> {
+    const response = await fetch(`${API_BASE}/categories/${id}`, {
+      method: 'DELETE',
+      headers: this.getHeaders(token),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to delete category');
+    }
+  }
+
   async getUsers(token: string, role?: string): Promise<{ users: User[] }> {
     const url = new URL(`${API_BASE}/users`);
     if (role) {
@@ -138,6 +165,48 @@ class ApiClient {
     }
 
     return response.json();
+  }
+
+  async createUser(token: string, data: { name: string; email: string; password: string; role: string; phone?: string; department?: string }): Promise<{ user: User }> {
+    const response = await fetch(`${API_BASE}/users`, {
+      method: 'POST',
+      headers: this.getHeaders(token),
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create user');
+    }
+
+    return response.json();
+  }
+
+  async updateUser(token: string, id: string, data: Partial<User>): Promise<{ user: User }> {
+    const response = await fetch(`${API_BASE}/users/${id}`, {
+      method: 'PATCH',
+      headers: this.getHeaders(token),
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to update user');
+    }
+
+    return response.json();
+  }
+
+  async deleteUser(token: string, id: string): Promise<void> {
+    const response = await fetch(`${API_BASE}/users/${id}`, {
+      method: 'DELETE',
+      headers: this.getHeaders(token),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to delete user');
+    }
   }
 
   async getTickets(token: string, params: {
@@ -288,6 +357,29 @@ export const useCreateCategory = () => {
   });
 };
 
+export const useUpdateCategory = () => {
+  const queryClient = useQueryClient();
+  const { token } = useAuth();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: { name?: string; description?: string } }) => 
+      apiClient.updateCategory(token!, id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+    },
+  });
+};
+
+export const useDeleteCategory = () => {
+  const queryClient = useQueryClient();
+  const { token } = useAuth();
+  return useMutation({
+    mutationFn: (id: string) => apiClient.deleteCategory(token!, id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+    },
+  });
+};
+
 // Users hooks
 export const useUsers = (role?: string) => {
   const { token } = useAuth();
@@ -296,6 +388,41 @@ export const useUsers = (role?: string) => {
     queryFn: () => apiClient.getUsers(token!, role),
     enabled: !!token,
     select: (data) => data.users,
+  });
+};
+
+export const useCreateUser = () => {
+  const queryClient = useQueryClient();
+  const { token } = useAuth();
+  return useMutation({
+    mutationFn: (data: { name: string; email: string; password: string; role: string; phone?: string; department?: string }) => 
+      apiClient.createUser(token!, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+};
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+  const { token } = useAuth();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<User> }) => 
+      apiClient.updateUser(token!, id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+};
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+  const { token } = useAuth();
+  return useMutation({
+    mutationFn: (id: string) => apiClient.deleteUser(token!, id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
   });
 };
 
