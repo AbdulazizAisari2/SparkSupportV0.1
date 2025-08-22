@@ -29,6 +29,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children 
   });
   const [isLoading, setIsLoading] = useState(true);
 
+  const logout = useCallback(() => {
+    setState({ token: null, refreshToken: null, user: null });
+    localStorage.removeItem('auth');
+  }, []);
+
   const refreshAccessToken = useCallback(async (): Promise<boolean> => {
     try {
       if (!state.refreshToken) {
@@ -88,11 +93,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children 
     const newState = { token: accessToken, refreshToken, user };
     setState(newState);
     localStorage.setItem('auth', JSON.stringify(newState));
-  }, []);
-
-  const logout = useCallback(() => {
-    setState({ token: null, refreshToken: null, user: null });
-    localStorage.removeItem('auth');
   }, []);
 
   return (
