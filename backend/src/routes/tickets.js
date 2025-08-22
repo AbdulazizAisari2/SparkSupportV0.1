@@ -2,6 +2,7 @@ const express = require('express');
 const { z } = require('zod');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken, requireStaffOrAdmin } = require('../middleware/auth');
+const emailService = require('../services/emailService');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -173,6 +174,18 @@ router.post('/', authenticateToken, async (req, res, next) => {
     });
 
     console.log(`🎫 New ticket created: ${ticket.id} by ${user.email}`);
+    
+    // Send ticket creation confirmation email (async, don't wait)
+    emailService.sendTicketCreatedEmail({
+      to: ticket.customer.email,
+      name: ticket.customer.name,
+      ticketId: ticket.id,
+      subject: ticket.subject,
+      description: ticket.description
+    }).catch(error => {
+      console.error('📧 Ticket email failed (non-blocking):', error);
+    });
+    
     res.status(201).json({ ticket });
 
   } catch (error) {

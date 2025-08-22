@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const { z } = require('zod');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
+const emailService = require('../services/emailService');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -130,6 +131,15 @@ router.post('/signup', async (req, res, next) => {
     const { passwordHash: _, ...userResponse } = user;
 
     console.log('✅ Signup successful:', user.email);
+    
+    // Send welcome email (async, don't wait for it)
+    emailService.sendWelcomeEmail({
+      to: user.email,
+      name: user.name,
+      userId: user.id
+    }).catch(error => {
+      console.error('📧 Welcome email failed (non-blocking):', error);
+    });
     
     res.status(201).json({
       message: 'Account created successfully',
