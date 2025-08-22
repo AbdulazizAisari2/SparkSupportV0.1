@@ -3,6 +3,7 @@ const { z } = require('zod');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken, requireStaffOrAdmin } = require('../middleware/auth');
 const emailService = require('../services/emailService');
+const slackService = require('../services/slackService');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -186,6 +187,27 @@ router.post('/', authenticateToken, async (req, res, next) => {
       console.error('📧 Ticket email failed (non-blocking):', error);
     });
     
+    // Send Slack notification
+    slackService.sendTicketCreatedNotification({
+      ticket: {
+        id: ticket.id,
+        subject: ticket.subject,
+        description: ticket.description,
+        priority: ticket.priority,
+        status: ticket.status,
+        createdAt: ticket.createdAt
+      },
+      customer: {
+        name: ticket.customer.name,
+        email: ticket.customer.email
+      },
+      category: {
+        name: ticket.category.name
+      }
+    }).catch(error => {
+      console.error('💬 Slack ticket notification failed (non-blocking):', error);
+    });
+    
     res.status(201).json({ ticket });
 
   } catch (error) {
@@ -255,6 +277,32 @@ router.patch('/:id', authenticateToken, requireStaffOrAdmin, async (req, res, ne
         console.error('❌ Failed to award points:', pointsError);
         // Don't fail the ticket update if points awarding fails
       }
+    }
+
+    // Send Slack status update notification
+    if (validatedData.status && validatedData.status !== currentTicket.status) {
+      slackService.sendTicketStatusUpdate({
+        ticket: {
+          id: ticket.id,
+          subject: ticket.subject,
+          status: ticket.status,
+          resolutionTime: ticket.resolutionTime
+        },
+        oldStatus: currentTicket.status,
+        staffMember: {
+          name: user.name,
+          department: user.department
+        },
+        customer: {
+          name: ticket.customer.name,
+          email: ticket.customer.email
+        },
+        category: {
+          name: ticket.category.name
+        }
+      }).catch(error => {
+        console.error('💬 Slack status update failed (non-blocking):', error);
+      });
     }
 
     console.log(`📝 Ticket ${id} updated by ${user.email}`);
@@ -388,11 +436,27 @@ async function awardAchievement(staffId, achievementName) {
       });
 
       // Award bonus points
-      await prisma.user.update({
+      const updatedUser = await prisma.user.update({
         where: { id: staffId },
         data: {
           points: { increment: achievement.pointsReward }
         }
+      });
+
+      // Send Slack achievement notification
+      slackService.sendAchievementNotification({
+        user: {
+          name: updatedUser.name
+        },
+        achievement: {
+          name: achievement.name,
+          description: achievement.description,
+          icon: achievement.icon,
+          pointsReward: achievement.pointsReward
+        },
+        points: updatedUser.points
+      }).catch(error => {
+        console.error('💬 Slack achievement notification failed (non-blocking):', error);
       });
 
       console.log(`🏅 Achievement "${achievementName}" awarded to staff member ${staffId} (+${achievement.pointsReward} points)`);

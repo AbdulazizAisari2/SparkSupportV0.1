@@ -26,6 +26,7 @@ import { StaffLeaderboard } from './pages/staff/StaffLeaderboard';
 import { AdminCategories } from './pages/admin/AdminCategories';
 // import { AdminPriorities } from './pages/admin/AdminPriorities'; // Temporarily disabled
 import { AdminStaff } from './pages/admin/AdminStaff';
+import { AdminSlack } from './pages/admin/AdminSlack';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { AISupport } from './pages/AISupport';
 
@@ -233,6 +234,16 @@ function App() {
                     <ProtectedRoute allowedRoles={['admin']}>
                       <AppShell>
                         <AdminStaff />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/slack" 
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AppShell>
+                        <AdminSlack />
                       </AppShell>
                     </ProtectedRoute>
                   } 

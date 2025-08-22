@@ -20,7 +20,8 @@ import {
   Star,
   Zap,
   Award,
-  Bot
+  Bot,
+  MessageCircle
 } from 'lucide-react';
 import { RoleBadge } from '../ui/Badge';
 import { SimpleThemeToggle } from '../ui/SimpleThemeToggle';
@@ -86,6 +87,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           { path: '/admin/categories', label: 'Categories', icon: Tags },
           // { path: '/admin/priorities', label: 'Priorities', icon: AlertTriangle }, // Temporarily disabled
           { path: '/admin/staff', label: 'Staff', icon: Users },
+          { path: '/admin/slack', label: 'Slack Integration', icon: MessageCircle, badge: 'NEW' },
           { path: '/admin/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/admin/leaderboard', label: 'Leaderboard', icon: Trophy },
           { path: '/admin/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },

@@ -15,6 +15,7 @@ const categoryRoutes = require('./routes/categories');
 const userRoutes = require('./routes/users');
 const emailRoutes = require('./routes/email');
 const leaderboardRoutes = require('./routes/leaderboard');
+const slackRoutes = require('./routes/slack');
 
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
@@ -63,6 +64,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/slack', slackRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
