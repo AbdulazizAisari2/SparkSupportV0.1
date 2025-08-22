@@ -112,15 +112,21 @@ export const NewTicket: React.FC = () => {
     if (!user) return;
 
     try {
-      const ticket = await createTicketMutation.mutateAsync({
-        ...data,
-        customerId: user.id,
+      console.log('🎫 Creating ticket with data:', data);
+      
+      const result = await createTicketMutation.mutateAsync({
+        categoryId: data.categoryId,
+        priority: data.priority,
+        subject: data.subject,
+        description: data.description
       });
 
+      console.log('✅ Ticket created:', result);
       addToast('🎉 Ticket created successfully! Our team will respond soon.', 'success');
-      navigate(`/my/tickets/${ticket.id}`);
-    } catch {
-      addToast('Failed to create ticket. Please try again.', 'error');
+      navigate(`/my/tickets/${result.ticket?.id || result.id}`);
+    } catch (error) {
+      console.error('❌ Ticket creation failed:', error);
+      addToast(`Failed to create ticket: ${error instanceof Error ? error.message : 'Please try again.'}`, 'error');
     }
   };
 
