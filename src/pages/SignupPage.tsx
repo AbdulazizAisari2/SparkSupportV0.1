@@ -9,6 +9,7 @@ import { useToast } from '../context/ToastContext';
 import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
 import { PasswordField } from '../components/auth/PasswordField';
 import { useSignup } from '../hooks/useApi';
+import { useSmartNavigation } from '../hooks/useNavigation';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -30,6 +31,7 @@ export const SignupPage: React.FC = () => {
   const { addToast } = useToast();
   const navigate = useNavigate();
   const signupMutation = useSignup();
+  const { navigateTo } = useSmartNavigation();
 
   const {
     register,
@@ -52,7 +54,7 @@ export const SignupPage: React.FC = () => {
       signup(result.accessToken, result.refreshToken, result.user);
       
       addToast(`🎉 Welcome ${result.user.name}! Your account has been created successfully.`, 'success');
-      navigate('/my/tickets');
+      navigateTo('/my/tickets', { replace: true });
     } catch (error) {
       addToast(error instanceof Error ? error.message : 'Signup failed. Please try again.', 'error');
     }

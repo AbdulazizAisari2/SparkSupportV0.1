@@ -1,6 +1,7 @@
 import React, { ReactNode, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useSmartNavigation } from '../../hooks/useNavigation';
 import { 
   Ticket, 
   Users, 
@@ -37,6 +38,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const { addNotification, unreadCount } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
+  const { logoutAndRedirect } = useSmartNavigation();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   // Add a simple welcome notification on first load
@@ -60,8 +62,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   }
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
+    logoutAndRedirect(logout);
   };
 
   const getNavItems = () => {

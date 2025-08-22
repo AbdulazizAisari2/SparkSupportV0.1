@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { User } from '../types';
 
 interface AuthState {
@@ -21,7 +21,7 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children }) => {
   const [state, setState] = useState<AuthState>({ 
     token: null, 
     refreshToken: null, 
@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  const refreshAccessToken = async (): Promise<boolean> => {
+  const refreshAccessToken = useCallback(async (): Promise<boolean> => {
     try {
       if (!state.refreshToken) {
         return false;
@@ -61,7 +61,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       logout();
       return false;
     }
-  };
+  }, [state.refreshToken, logout]);
 
   useEffect(() => {
     // Load auth state from localStorage on app start
@@ -78,22 +78,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(false);
   }, []);
 
-  const login = (accessToken: string, refreshToken: string, user: User) => {
+  const login = useCallback((accessToken: string, refreshToken: string, user: User) => {
     const newState = { token: accessToken, refreshToken, user };
     setState(newState);
     localStorage.setItem('auth', JSON.stringify(newState));
-  };
+  }, []);
 
-  const signup = (accessToken: string, refreshToken: string, user: User) => {
+  const signup = useCallback((accessToken: string, refreshToken: string, user: User) => {
     const newState = { token: accessToken, refreshToken, user };
     setState(newState);
     localStorage.setItem('auth', JSON.stringify(newState));
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setState({ token: null, refreshToken: null, user: null });
     localStorage.removeItem('auth');
-  };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ 
@@ -107,7 +107,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+});
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

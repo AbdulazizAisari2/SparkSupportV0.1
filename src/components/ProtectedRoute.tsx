@@ -89,6 +89,11 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
   const publicRoutes = ['/login', '/signup'];
   const isPublicRoute = publicRoutes.includes(location.pathname);
 
+  // Skip redirects during loading to prevent navigation conflicts
+  if (isLoading) {
+    return <>{children}</>;
+  }
+
   // If user is authenticated and tries to access login/signup, redirect to dashboard
   if (user && isPublicRoute) {
     const dashboard = getRoleBasedDashboard(user.role);
@@ -96,7 +101,7 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
   }
 
   // If user is not authenticated and tries to access protected route, redirect to login
-  if (!isLoading && !user && !isPublicRoute) {
+  if (!user && !isPublicRoute) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

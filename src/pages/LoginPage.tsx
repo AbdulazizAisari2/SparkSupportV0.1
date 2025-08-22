@@ -9,6 +9,7 @@ import { useToast } from '../context/ToastContext';
 import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
 import { PasswordField } from '../components/auth/PasswordField';
 import { useLogin } from '../hooks/useApi';
+import { useSmartNavigation } from '../hooks/useNavigation';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -23,6 +24,7 @@ export const LoginPage: React.FC = () => {
   const { addToast } = useToast();
   const navigate = useNavigate();
   const loginMutation = useLogin();
+  const { navigateTo, getDashboardPath } = useSmartNavigation();
 
   const {
     register,
@@ -47,20 +49,12 @@ export const LoginPage: React.FC = () => {
       
       addToast(`Welcome back, ${result.user.name}! 🎉`, 'success');
       
-      // Redirect based on role
-      switch (result.user.role) {
-        case 'customer':
-          navigate('/my/tickets');
-          break;
-        case 'staff':
-          navigate('/staff/tickets');
-          break;
-        case 'admin':
-          navigate('/admin/categories');
-          break;
-        default:
-          navigate('/');
-      }
+      // Navigate to role-appropriate dashboard
+      const dashboardPath = result.user.role === 'customer' ? '/my/tickets'
+        : result.user.role === 'staff' ? '/staff/tickets'
+        : '/admin/categories';
+        
+      navigateTo(dashboardPath, { replace: true });
     } catch (error) {
       console.error('Login error:', error);
       addToast(`Login failed: ${error instanceof Error ? error.message : 'Please check your credentials'}`, 'error');

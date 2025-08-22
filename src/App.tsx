@@ -10,7 +10,6 @@ import { ToastContainer } from './components/ui/Toast';
 import { AppShell } from './components/layout/AppShell';
 import { ProtectedRoute, RouteGuard } from './components/ProtectedRoute';
 import { UnauthorizedPage } from './components/AuthGuard';
-import { SecurityWrapper } from './components/SecurityWrapper';
 import { NotFound } from './components/NotFound';
 
 // Pages
@@ -88,9 +87,8 @@ function App() {
           <AuthProvider>
             <ToastProvider>
             <Router>
-              <SecurityWrapper>
-                <RouteGuard>
-                  <div className="min-h-screen transition-all duration-300">
+              <RouteGuard>
+                <div className="min-h-screen transition-all duration-300">
                   <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
@@ -274,7 +272,6 @@ function App() {
             </div>
             <ToastContainer />
           </RouteGuard>
-        </SecurityWrapper>
           </Router>
         </ToastProvider>
       </AuthProvider>

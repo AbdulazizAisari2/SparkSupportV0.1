@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { MessageSquare, Shield, AlertTriangle } from 'lucide-react';
 
@@ -80,6 +80,7 @@ export const UnauthorizedPage: React.FC<UnauthorizedPageProps> = ({
   redirectLabel = 'Sign In'
 }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   
   // Auto-redirect based on user role if they have one
   const getDefaultRedirectPath = () => {
@@ -139,7 +140,7 @@ export const UnauthorizedPage: React.FC<UnauthorizedPageProps> = ({
         
         <div className="space-y-3">
           <button
-            onClick={() => window.location.href = finalRedirectPath}
+            onClick={() => navigate(finalRedirectPath, { replace: true })}
             className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
           >
             {finalRedirectLabel}
