@@ -83,7 +83,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       case 'admin':
         return [
           { path: '/admin/categories', label: 'Categories', icon: Tags },
-          { path: '/admin/priorities', label: 'Priorities', icon: AlertTriangle },
+          // { path: '/admin/priorities', label: 'Priorities', icon: AlertTriangle }, // Temporarily disabled
           { path: '/admin/staff', label: 'Staff', icon: Users },
           { path: '/admin/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/admin/leaderboard', label: 'Leaderboard', icon: Trophy },

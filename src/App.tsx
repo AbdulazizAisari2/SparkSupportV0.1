@@ -21,7 +21,7 @@ import { StaffTicketDetail } from './pages/staff/StaffTicketDetail';
 import { StaffDashboard } from './pages/staff/StaffDashboard';
 import { StaffLeaderboard } from './pages/staff/StaffLeaderboard';
 import { AdminCategories } from './pages/admin/AdminCategories';
-import { AdminPriorities } from './pages/admin/AdminPriorities';
+// import { AdminPriorities } from './pages/admin/AdminPriorities'; // Temporarily disabled
 import { AdminStaff } from './pages/admin/AdminStaff';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { AISupport } from './pages/AISupport';
@@ -207,7 +207,7 @@ function App() {
                     </ProtectedRoute>
                   } 
                 />
-                <Route 
+                {/* <Route 
                   path="/admin/priorities" 
                   element={
                     <ProtectedRoute allowedRoles={['admin']}>
@@ -216,7 +216,7 @@ function App() {
                       </AppShell>
                     </ProtectedRoute>
                   } 
-                />
+                /> */}
                 <Route 
                   path="/admin/staff" 
                   element={
