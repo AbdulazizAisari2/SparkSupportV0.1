@@ -314,10 +314,16 @@ export const SignupPage: React.FC = () => {
                     disabled={signupMutation.isPending}
                     className="
                       group relative w-full overflow-hidden 
+                      rounded-2xl bg-transparent
                       focus:outline-none focus:ring-0 focus:ring-offset-0 
                       outline-none border-none
                     "
-                    style={{ outline: 'none', border: 'none' }}
+                    style={{ 
+                      outline: 'none', 
+                      border: 'none',
+                      background: 'transparent',
+                      boxShadow: 'none'
+                    }}
                   >
                     {/* Button background with animated gradient */}
                     <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-2xl transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-cyan-500/25"></div>
@@ -341,7 +347,7 @@ export const SignupPage: React.FC = () => {
                     </div>
                     
                     {/* Shine effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 rounded-2xl"></div>
                   </button>
                 </div>
 
