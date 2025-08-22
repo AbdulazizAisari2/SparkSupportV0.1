@@ -101,29 +101,41 @@ export const Thread: React.FC<ThreadProps> = ({ messages, users }) => {
                 {message.message}
               </div>
 
-              {message.attachmentUrls && message.attachmentUrls.length > 0 && (
-                <div className="mt-2">
-                  <div className="flex items-center space-x-1 text-xs">
-                    <Paperclip className="w-3 h-3" />
-                    <span>{message.attachmentUrls.length} attachment(s)</span>
+{(() => {
+                // Parse attachmentUrls from JSON string to array
+                let attachments = [];
+                try {
+                  attachments = typeof message.attachmentUrls === 'string' 
+                    ? JSON.parse(message.attachmentUrls) 
+                    : (message.attachmentUrls || []);
+                } catch {
+                  attachments = [];
+                }
+                
+                return attachments && attachments.length > 0 && (
+                  <div className="mt-2">
+                    <div className="flex items-center space-x-1 text-xs">
+                      <Paperclip className="w-3 h-3" />
+                      <span>{attachments.length} attachment(s)</span>
+                    </div>
+                    <div className="mt-1 space-y-1">
+                      {attachments.map((url, urlIndex) => (
+                        <a
+                          key={urlIndex}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`block text-xs underline ${
+                            isCurrentUser ? 'text-blue-100' : 'text-blue-600'
+                          }`}
+                        >
+                          Attachment {urlIndex + 1}
+                        </a>
+                      ))}
+                    </div>
                   </div>
-                  <div className="mt-1 space-y-1">
-                    {message.attachmentUrls.map((url, urlIndex) => (
-                      <a
-                        key={urlIndex}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`block text-xs underline ${
-                          isCurrentUser ? 'text-blue-100' : 'text-blue-600'
-                        }`}
-                      >
-                        Attachment {urlIndex + 1}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           </div>
         );
