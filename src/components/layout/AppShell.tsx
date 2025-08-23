@@ -30,7 +30,6 @@ import { SimpleThemeToggle } from '../ui/SimpleThemeToggle';
 import { useNotifications } from '../../context/NotificationContext';
 import { FloatingNotificationButton } from '../ui/FloatingNotificationButton';
 import { useChat } from '../../context/ChatContext';
-import { ChatSidebar } from '../chat/ChatSidebar';
 
 
 
@@ -47,7 +46,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const navigate = useNavigate();
   const { logoutAndRedirect } = useSmartNavigation();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [showChat, setShowChat] = useState(false);
 
   // Add a simple welcome notification on first load
   React.useEffect(() => {
@@ -86,7 +84,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         return [
           { path: '/staff/tickets', label: 'All Tickets', icon: Ticket },
           { path: '/staff/dashboard', label: 'Dashboard', icon: BarChart3 },
-          { action: 'chat', label: 'Team Chat', icon: MessageSquare, badge: chatState.unreadCount > 0 ? chatState.unreadCount : undefined },
+          { path: '/staff/chat', label: 'Team Chat', icon: MessageSquare, badge: chatState.unreadCount > 0 ? chatState.unreadCount : undefined },
           { path: '/staff/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/staff/marketplace', label: 'Marketplace', icon: ShoppingBag },
           { path: '/staff/leaderboard', label: 'Leaderboard', icon: Trophy },
@@ -97,7 +95,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           { path: '/admin/categories', label: 'Categories', icon: Tags },
           // { path: '/admin/priorities', label: 'Priorities', icon: AlertTriangle }, // Temporarily disabled
           { path: '/admin/staff', label: 'Staff', icon: Users },
-          { action: 'chat', label: 'Team Chat', icon: MessageSquare, badge: chatState.unreadCount > 0 ? chatState.unreadCount : undefined },
+          { path: '/admin/chat', label: 'Team Chat', icon: MessageSquare, badge: chatState.unreadCount > 0 ? chatState.unreadCount : undefined },
           { path: '/admin/slack', label: 'Slack Integration', icon: MessageCircle, badge: 'NEW' },
           { path: '/admin/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/admin/marketplace', label: 'Marketplace', icon: ShoppingBag },
@@ -292,26 +290,19 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
               const Icon = item.icon;
               const isActive = item.path && (location.pathname === item.path || 
                 (item.path !== '/' && location.pathname.startsWith(item.path)));
-              const isChatActive = item.action === 'chat' && showChat;
-
-              const handleClick = () => {
-                if (item.action === 'chat') {
-                  setShowChat(!showChat);
-                }
-              };
 
               const NavElement = item.path ? Link : 'button';
               const elementProps = item.path 
                 ? { to: item.path }
-                : { onClick: handleClick, type: 'button' as const };
+                : { type: 'button' as const };
 
-              return (
+                              return (
                 <NavElement
-                  key={item.path || item.action}
+                  key={item.path}
                   {...elementProps}
                   className={`
                     flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group relative overflow-hidden w-full text-left
-                    ${(isActive || isChatActive)
+                    ${isActive
                       ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg transform scale-105'
                       : 'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-dark-700/50 hover:text-gray-900 dark:hover:text-gray-100 hover:shadow-md backdrop-blur-sm'
                     }
@@ -401,13 +392,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         <FloatingNotificationButton />
       </div>
 
-      {/* Chat Sidebar */}
-      {(user.role === 'staff' || user.role === 'admin') && (
-        <ChatSidebar 
-          isOpen={showChat} 
-          onClose={() => setShowChat(false)} 
-        />
-      )}
+
     </div>
   );
 };

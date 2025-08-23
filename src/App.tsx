@@ -32,6 +32,7 @@ import { AdminSlack } from './pages/admin/AdminSlack';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { AISupport } from './pages/AISupport';
 import { Marketplace } from './pages/Marketplace';
+import { TeamChatPage } from './pages/TeamChatPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -222,6 +223,16 @@ function App() {
                   } 
                 />
                 <Route 
+                  path="/staff/chat" 
+                  element={
+                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                      <AppShell>
+                        <TeamChatPage />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
                   path="/staff/notifications" 
                   element={
                     <ProtectedRoute allowedRoles={['staff', 'admin']}>
@@ -299,6 +310,16 @@ function App() {
                     <ProtectedRoute allowedRoles={['admin']}>
                       <AppShell>
                         <StaffLeaderboard />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/chat" 
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AppShell>
+                        <TeamChatPage />
                       </AppShell>
                     </ProtectedRoute>
                   } 
