@@ -77,6 +77,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         return [
           { path: '/my/tickets', label: 'My Tickets', icon: Ticket },
           { path: '/my/tickets/new', label: 'New Ticket', icon: Plus },
+          { path: '/my/team-chat', label: 'Team Chat', icon: MessageCircle, badge: 'NEW' },
           { path: '/my/marketplace', label: 'Marketplace', icon: ShoppingBag },
           { path: '/my/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
         ];
@@ -84,7 +85,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         return [
           { path: '/staff/tickets', label: 'All Tickets', icon: Ticket },
           { path: '/staff/dashboard', label: 'Dashboard', icon: BarChart3 },
-
+          { path: '/staff/team-chat', label: 'Team Chat', icon: MessageCircle, badge: 'NEW' },
           { path: '/staff/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/staff/marketplace', label: 'Marketplace', icon: ShoppingBag },
           { path: '/staff/leaderboard', label: 'Leaderboard', icon: Trophy },
@@ -95,7 +96,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           { path: '/admin/categories', label: 'Categories', icon: Tags },
           // { path: '/admin/priorities', label: 'Priorities', icon: AlertTriangle }, // Temporarily disabled
           { path: '/admin/staff', label: 'Staff', icon: Users },
-
+          { path: '/admin/team-chat', label: 'Team Chat', icon: Users, badge: 'NEW' },
           { path: '/admin/slack', label: 'Slack Integration', icon: MessageCircle, badge: 'NEW' },
           { path: '/admin/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/admin/marketplace', label: 'Marketplace', icon: ShoppingBag },
