@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Search, Filter, Star, ShoppingCart, Package, Tag, Heart, Eye } from 'lucide-react';
+import { Search, Filter, Star, ShoppingCart, Package, Tag, Heart, Eye, Coins, TrendingUp } from 'lucide-react';
 
 interface MarketplaceItem {
   id: string;
   name: string;
   description: string;
-  price: number;
+  points: number; // Changed from price to points
   category: string;
   rating: number;
   reviews: number;
@@ -13,97 +13,133 @@ interface MarketplaceItem {
   vendor: string;
   inStock: boolean;
   featured: boolean;
+  originalPrice?: number; // Optional field to show original retail price for reference
 }
 
-// Mock marketplace data
+// Mock marketplace data with entertainment/electronics items
 const mockItems: MarketplaceItem[] = [
   {
     id: '1',
-    name: 'Premium Support Plan',
-    description: 'Enhanced support with priority response times and dedicated agent assignment.',
-    price: 99.99,
-    category: 'Support Plans',
+    name: 'Apple AirPods Pro (2nd Gen)',
+    description: 'Active Noise Cancellation, Adaptive Transparency, Personalized Spatial Audio with dynamic head tracking.',
+    points: 2500,
+    category: 'Audio',
     rating: 4.8,
-    reviews: 127,
-    image: '📞',
-    vendor: 'SparkSupport Pro',
+    reviews: 1247,
+    image: '🎧',
+    vendor: 'Apple',
     inStock: true,
-    featured: true
+    featured: true,
+    originalPrice: 249
   },
   {
     id: '2',
-    name: 'AI Chat Integration',
-    description: 'Advanced AI-powered chatbot integration for automated customer support.',
-    price: 149.99,
-    category: 'AI Tools',
+    name: 'iPhone 15 Pro',
+    description: 'The ultimate iPhone with titanium design, A17 Pro chip, and pro camera system.',
+    points: 12000,
+    category: 'Smartphones',
     rating: 4.9,
-    reviews: 89,
-    image: '🤖',
-    vendor: 'TechSolutions',
+    reviews: 892,
+    image: '📱',
+    vendor: 'Apple',
     inStock: true,
-    featured: true
+    featured: true,
+    originalPrice: 999
   },
   {
     id: '3',
-    name: 'Custom Dashboard Theme',
-    description: 'Beautiful, customizable dashboard themes to match your brand identity.',
-    price: 29.99,
-    category: 'Themes',
-    rating: 4.6,
-    reviews: 203,
-    image: '🎨',
-    vendor: 'DesignHub',
+    name: 'Sony PlayStation 5',
+    description: 'Next-gen gaming console with ultra-high speed SSD and stunning 4K graphics.',
+    points: 5500,
+    category: 'Gaming',
+    rating: 4.7,
+    reviews: 2103,
+    image: '🎮',
+    vendor: 'Sony',
     inStock: true,
-    featured: false
+    featured: true,
+    originalPrice: 499
   },
   {
     id: '4',
-    name: 'Analytics Pro',
-    description: 'Advanced analytics and reporting tools for detailed insights.',
-    price: 79.99,
-    category: 'Analytics',
-    rating: 4.7,
-    reviews: 156,
-    image: '📊',
-    vendor: 'DataViz Inc',
+    name: 'MacBook Air M3',
+    description: 'Supercharged by the M3 chip, up to 18 hours of battery life, and incredibly thin design.',
+    points: 15000,
+    category: 'Laptops',
+    rating: 4.8,
+    reviews: 567,
+    image: '💻',
+    vendor: 'Apple',
     inStock: true,
-    featured: false
+    featured: false,
+    originalPrice: 1299
   },
   {
     id: '5',
-    name: 'Multi-Language Pack',
-    description: 'Support for 20+ languages with professional translations.',
-    price: 39.99,
-    category: 'Localization',
-    rating: 4.5,
-    reviews: 91,
-    image: '🌍',
-    vendor: 'GlobalLang',
+    name: 'Samsung Galaxy Watch 6',
+    description: 'Advanced health monitoring, sleep tracking, and seamless smartphone integration.',
+    points: 3200,
+    category: 'Wearables',
+    rating: 4.6,
+    reviews: 891,
+    image: '⌚',
+    vendor: 'Samsung',
     inStock: true,
-    featured: false
+    featured: false,
+    originalPrice: 329
   },
   {
     id: '6',
-    name: 'Mobile App Add-on',
-    description: 'Native mobile application for iOS and Android platforms.',
-    price: 199.99,
-    category: 'Mobile',
-    rating: 4.8,
-    reviews: 74,
-    image: '📱',
-    vendor: 'MobileFirst',
+    name: 'Nintendo Switch OLED',
+    description: 'Vibrant 7-inch OLED screen, enhanced audio, and wide adjustable stand.',
+    points: 3800,
+    category: 'Gaming',
+    rating: 4.7,
+    reviews: 1534,
+    image: '🕹️',
+    vendor: 'Nintendo',
     inStock: false,
-    featured: true
+    featured: false,
+    originalPrice: 349
+  },
+  {
+    id: '7',
+    name: 'iPad Pro 12.9"',
+    description: 'M2 chip, Liquid Retina XDR display, and works with Apple Pencil.',
+    points: 11000,
+    category: 'Tablets',
+    rating: 4.8,
+    reviews: 423,
+    image: '📲',
+    vendor: 'Apple',
+    inStock: true,
+    featured: false,
+    originalPrice: 1099
+  },
+  {
+    id: '8',
+    name: 'Bose QuietComfort Headphones',
+    description: 'World-class noise cancellation, premium comfort, and crystal-clear calls.',
+    points: 3500,
+    category: 'Audio',
+    rating: 4.6,
+    reviews: 756,
+    image: '🎵',
+    vendor: 'Bose',
+    inStock: true,
+    featured: false,
+    originalPrice: 349
   }
 ];
 
-const categories = ['All', 'Support Plans', 'AI Tools', 'Themes', 'Analytics', 'Localization', 'Mobile'];
+const categories = ['All', 'Audio', 'Smartphones', 'Gaming', 'Laptops', 'Wearables', 'Tablets'];
 
 export const Marketplace: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [userPoints] = useState(8500); // Mock user points - would come from context/API
 
   const filteredItems = mockItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -123,6 +159,8 @@ export const Marketplace: React.FC = () => {
     );
   };
 
+  const canAfford = (points: number) => userPoints >= points;
+
   const renderStars = (rating: number) => {
     return (
       <div className="flex items-center space-x-1">
@@ -140,104 +178,136 @@ export const Marketplace: React.FC = () => {
     );
   };
 
-  const MarketplaceCard = ({ item }: { item: MarketplaceItem }) => (
-    <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200/50 dark:border-dark-700/50 group hover:scale-105">
-      {/* Header */}
-      <div className="relative p-6 bg-gradient-to-br from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20">
-        <div className="flex items-start justify-between">
-          <div className="text-4xl mb-4">{item.image}</div>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => toggleFavorite(item.id)}
-              className={`p-2 rounded-full transition-all duration-200 ${
-                favorites.includes(item.id)
-                  ? 'bg-red-100 dark:bg-red-900/30 text-red-500'
-                  : 'bg-white/50 dark:bg-dark-700/50 text-gray-400 hover:text-red-500'
-              }`}
-            >
-              <Heart className="w-4 h-4" />
-            </button>
-            <button className="p-2 rounded-full bg-white/50 dark:bg-dark-700/50 text-gray-400 hover:text-primary-500 transition-colors">
-              <Eye className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-        
-        {item.featured && (
-          <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-400 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-            Featured
-          </div>
-        )}
-        
-        {!item.inStock && (
-          <div className="absolute top-4 right-4 bg-gray-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-            Out of Stock
-          </div>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-3">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-            {item.name}
-          </h3>
-          <div className="flex items-center space-x-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-2 py-1 rounded-lg text-xs font-medium">
-            <Tag className="w-3 h-3" />
-            <span>{item.category}</span>
-          </div>
-        </div>
-
-        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
-          {item.description}
-        </p>
-
-        <div className="flex items-center space-x-4 mb-4">
-          {renderStars(item.rating)}
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            ({item.reviews} reviews)
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-sm text-gray-500 dark:text-gray-400">by {item.vendor}</span>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              ${item.price}
+  const MarketplaceCard = ({ item }: { item: MarketplaceItem }) => {
+    const affordable = canAfford(item.points);
+    
+    return (
+      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200/50 dark:border-dark-700/50 group hover:scale-105">
+        {/* Header */}
+        <div className="relative p-6 bg-gradient-to-br from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20">
+          <div className="flex items-start justify-between">
+            <div className="text-4xl mb-4">{item.image}</div>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => toggleFavorite(item.id)}
+                className={`p-2 rounded-full transition-all duration-200 ${
+                  favorites.includes(item.id)
+                    ? 'bg-red-100 dark:bg-red-900/30 text-red-500'
+                    : 'bg-white/50 dark:bg-dark-700/50 text-gray-400 hover:text-red-500'
+                }`}
+              >
+                <Heart className="w-4 h-4" />
+              </button>
+              <button className="p-2 rounded-full bg-white/50 dark:bg-dark-700/50 text-gray-400 hover:text-primary-500 transition-colors">
+                <Eye className="w-4 h-4" />
+              </button>
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">one-time</div>
           </div>
+          
+          {item.featured && (
+            <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-400 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+              Featured
+            </div>
+          )}
+          
+          {!item.inStock && (
+            <div className="absolute top-4 right-4 bg-gray-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+              Out of Stock
+            </div>
+          )}
         </div>
 
-        <button
-          disabled={!item.inStock}
-          className={`w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${
-            item.inStock
-              ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 shadow-lg hover:shadow-xl transform hover:scale-105'
-              : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-          }`}
-        >
-          <ShoppingCart className="w-5 h-5" />
-          <span>{item.inStock ? 'Add to Cart' : 'Out of Stock'}</span>
-        </button>
+        {/* Content */}
+        <div className="p-6">
+          <div className="flex items-start justify-between mb-3">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+              {item.name}
+            </h3>
+            <div className="flex items-center space-x-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-2 py-1 rounded-lg text-xs font-medium">
+              <Tag className="w-3 h-3" />
+              <span>{item.category}</span>
+            </div>
+          </div>
+
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+            {item.description}
+          </p>
+
+          <div className="flex items-center space-x-4 mb-4">
+            {renderStars(item.rating)}
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              ({item.reviews} reviews)
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm text-gray-500 dark:text-gray-400">by {item.vendor}</span>
+            <div className="text-right">
+              <div className="flex items-center space-x-2">
+                <Coins className="w-5 h-5 text-yellow-500" />
+                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  {item.points.toLocaleString()}
+                </div>
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">points</div>
+              {item.originalPrice && (
+                <div className="text-xs text-gray-400 dark:text-gray-500">
+                  (${item.originalPrice} value)
+                </div>
+              )}
+            </div>
+          </div>
+
+          <button
+            disabled={!item.inStock || !affordable}
+            className={`w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${
+              item.inStock && affordable
+                ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 shadow-lg hover:shadow-xl transform hover:scale-105'
+                : !item.inStock
+                ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 cursor-not-allowed'
+            }`}
+          >
+            <ShoppingCart className="w-5 h-5" />
+            <span>
+              {!item.inStock 
+                ? 'Out of Stock' 
+                : !affordable 
+                ? 'Insufficient Points' 
+                : 'Redeem with Points'
+              }
+            </span>
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {/* Header with Points Balance */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center space-x-3">
             <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-2xl shadow-lg">
               <Package className="w-8 h-8" />
             </div>
-            <span>Marketplace</span>
+            <span>Points Marketplace</span>
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Discover and purchase add-ons to enhance your support experience
+            Redeem your points for amazing electronics and entertainment products
           </p>
+        </div>
+        
+        {/* Points Balance Card */}
+        <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-6 rounded-2xl shadow-lg">
+          <div className="flex items-center space-x-3">
+            <Coins className="w-8 h-8" />
+            <div>
+              <div className="text-sm font-medium opacity-90">Your Points</div>
+              <div className="text-3xl font-bold">{userPoints.toLocaleString()}</div>
+            </div>
+          </div>
         </div>
       </div>
 
