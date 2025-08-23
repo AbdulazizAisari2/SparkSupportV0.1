@@ -1,12 +1,12 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
-const { authMiddleware } = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 // Apply auth middleware to all chat routes
-router.use(authMiddleware);
+router.use(authenticateToken);
 
 // Get all chat messages
 router.get('/messages', async (req, res) => {
