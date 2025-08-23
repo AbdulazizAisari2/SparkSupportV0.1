@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Trophy, Medal, Award, Star, Zap, Target, Crown, TrendingUp, Calendar, Users, Sparkles, Gift, Flame } from 'lucide-react';
+import { Trophy, Medal, Award, Star, Zap, Target, Crown, TrendingUp, Calendar, Users, Sparkles, Gift, Flame, ShoppingCart } from 'lucide-react';
 import { Achievement } from '../ui/Badge';
+import { SimpleMarketplace } from './SimpleMarketplace';
 
 export interface StaffStats {
   userId: string;
@@ -136,6 +137,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
 }) => {
   const [selectedMetric, setSelectedMetric] = useState<'points' | 'resolved' | 'satisfaction' | 'growth'>(metric);
   const [showAchievements, setShowAchievements] = useState(false);
+  const [showMarketplace, setShowMarketplace] = useState(false);
 
   // Handle metric change
   const handleMetricChange = (newMetric: 'points' | 'resolved' | 'satisfaction' | 'growth') => {
@@ -404,12 +406,21 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Detailed Rankings</h2>
-          <button
-            onClick={() => setShowAchievements(!showAchievements)}
-            className="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-xl hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors font-medium text-sm"
-          >
-            {showAchievements ? 'Hide' : 'Show'} Achievements
-          </button>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setShowMarketplace(!showMarketplace)}
+              className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors font-medium text-sm flex items-center space-x-2"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              <span>{showMarketplace ? 'Hide' : 'Show'} Marketplace</span>
+            </button>
+            <button
+              onClick={() => setShowAchievements(!showAchievements)}
+              className="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-xl hover:bg-purple-200 dark:hover:bg-blue-900/50 transition-colors font-medium text-sm"
+            >
+              {showAchievements ? 'Hide' : 'Show'} Achievements
+            </button>
+          </div>
         </div>
 
         {sortedStats.map((staff, index) => {
@@ -533,6 +544,8 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                       </div>
                     </div>
                   )}
+
+
                 </div>
               </div>
             </div>
@@ -620,6 +633,31 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Marketplace Section */}
+      {showMarketplace && (
+        <div className="bg-white/80 dark:bg-dark-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 dark:border-dark-700/50 p-6 animate-slide-up">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-xl blur opacity-75 animate-glow"></div>
+              <div className="relative bg-white dark:bg-dark-800 p-3 rounded-xl shadow-lg">
+                <ShoppingCart className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              </div>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Tech Marketplace</h2>
+              <p className="text-gray-600 dark:text-gray-400">Spend your points on premium tech rewards</p>
+            </div>
+          </div>
+          
+          <SimpleMarketplace 
+            userPoints={staffStats[0]?.points || 0}
+            onPurchase={(item) => {
+              alert(`Purchase successful! You've ordered ${item.name} for ${item.pointsCost} points.`);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
