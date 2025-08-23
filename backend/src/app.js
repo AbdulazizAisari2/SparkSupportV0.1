@@ -16,6 +16,7 @@ const userRoutes = require('./routes/users');
 const emailRoutes = require('./routes/email');
 const leaderboardRoutes = require('./routes/leaderboard');
 const slackRoutes = require('./routes/slack');
+const chatRoutes = require('./routes/chat');
 
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
@@ -57,6 +58,9 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Static file serving for uploads
+app.use('/uploads', express.static('uploads'));
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tickets', ticketRoutes);
@@ -65,6 +69,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/slack', slackRoutes);
+app.use('/api/chat', chatRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
