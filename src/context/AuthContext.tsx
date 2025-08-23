@@ -46,18 +46,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children 
         body: JSON.stringify({ refreshToken: state.refreshToken }),
       });
 
+      // Read the response body only once
+      const responseText = await response.text();
+
       if (!response.ok) {
-        try {
-          const error = await response.json();
-          throw new Error(error.error || 'Token refresh failed');
-        } catch (jsonError) {
-          // If response is not valid JSON, try to get text
-          const text = await response.text();
-          throw new Error(text || `Token refresh failed with status ${response.status}`);
+        // Try to parse as JSON for error message
+        let errorMessage = `Token refresh failed with status ${response.status}`;
+        if (responseText) {
+          try {
+            const errorData = JSON.parse(responseText);
+            errorMessage = errorData.error || errorData.message || errorMessage;
+          } catch {
+            // If not valid JSON, use the raw text
+            errorMessage = responseText;
+          }
         }
+        throw new Error(errorMessage);
       }
 
-      const { accessToken, refreshToken: newRefreshToken } = await response.json();
+      // Handle successful response
+      if (!responseText) {
+        throw new Error('Empty response from token refresh');
+      }
+
+      let refreshData;
+      try {
+        refreshData = JSON.parse(responseText);
+      } catch {
+        throw new Error('Invalid response format from server');
+      }
+
+      const { accessToken, refreshToken: newRefreshToken } = refreshData;
       
       const newState = { 
         ...state, 

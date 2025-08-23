@@ -40,7 +40,7 @@ export const LoginPage: React.FC = () => {
     console.log('Form submission data:', data);
     
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('http://localhost:8000/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,13 +50,38 @@ export const LoginPage: React.FC = () => {
 
       console.log('Login response status:', response.status);
       
+      // Read the response body only once
+      const responseText = await response.text();
+      
       if (!response.ok) {
-        const errorData = await response.json();
-        console.log('Login error:', errorData);
-        throw new Error(errorData.error || 'Login failed');
+        let errorMessage = `Login failed with status ${response.status}`;
+        if (responseText) {
+          try {
+            const errorData = JSON.parse(responseText);
+            console.log('Login error:', errorData);
+            errorMessage = errorData.error || errorData.message || errorMessage;
+          } catch {
+            errorMessage = responseText;
+          }
+        }
+        throw new Error(errorMessage);
       }
 
-      const result = await response.json();
+      if (!responseText) {
+        throw new Error('Empty response from server');
+      }
+
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch {
+        throw new Error('Invalid response format from server');
+      }
+
+      if (!result.accessToken || !result.user) {
+        throw new Error('Invalid login response: missing required data');
+      }
+
       console.log('Login successful:', result);
       login(result.accessToken, result.refreshToken, result.user);
       
