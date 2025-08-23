@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSecureParams } from '../../hooks/useSecureParams';
 import { ArrowLeft, UserPlus, Clock } from 'lucide-react';
@@ -22,9 +22,15 @@ export const StaffTicketDetail: React.FC = () => {
   const { addToast } = useToast();
   const [isAssignDrawerOpen, setIsAssignDrawerOpen] = useState(false);
 
-  // Security: Validate ticket ID
+  // Security: Validate ticket ID - moved to useEffect to prevent render-time navigation
+  useEffect(() => {
+    if (!id) {
+      navigate('/staff/tickets', { replace: true });
+    }
+  }, [id, navigate]);
+
+  // Early return if no ID - but don't navigate here
   if (!id) {
-    navigate('/staff/tickets', { replace: true });
     return null;
   }
 

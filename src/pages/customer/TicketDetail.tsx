@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSecureParams } from '../../hooks/useSecureParams';
 import { ArrowLeft, Clock } from 'lucide-react';
@@ -17,9 +17,15 @@ export const TicketDetail: React.FC = () => {
   const { user } = useAuth();
   const { addToast } = useToast();
 
-  // Security: Validate ticket ID
+  // Security: Validate ticket ID - moved to useEffect to prevent render-time navigation
+  useEffect(() => {
+    if (!id) {
+      navigate('/my/tickets', { replace: true });
+    }
+  }, [id, navigate]);
+
+  // Early return if no ID - but don't navigate here
   if (!id) {
-    navigate('/my/tickets', { replace: true });
     return null;
   }
 
