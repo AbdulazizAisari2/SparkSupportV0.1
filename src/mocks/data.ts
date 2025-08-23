@@ -19,7 +19,7 @@ export const mockUsers: User[] = [
   },
   {
     id: '3',
-    name: 'Sarah',
+    name: 'Ahmed',
     email: 'staff2@example.com',
     role: 'staff',
     department: 'Customer Success',
@@ -27,6 +27,14 @@ export const mockUsers: User[] = [
   },
   {
     id: '4',
+    name: 'Sarah',
+    email: 'staff3@example.com',
+    role: 'staff',
+    department: 'Billing Support',
+    password: 'Staff123!' // Secure default password
+  },
+  {
+    id: '5',
     name: 'Abdulaziz',
     email: 'admin@example.com',
     role: 'admin',

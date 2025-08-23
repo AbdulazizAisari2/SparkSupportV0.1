@@ -142,8 +142,8 @@ async function main() {
   const staffUsers = await Promise.all([
     prisma.user.create({
       data: {
-        name: 'Mohammed Hassan',
-        email: 'mohammed@company.co',
+        name: 'Mohammed',
+        email: 'staff1@example.com',
         phone: '+1 (555) 234-5678',
         role: 'staff',
         department: 'Technical Support',
@@ -163,8 +163,8 @@ async function main() {
     }),
     prisma.user.create({
       data: {
-        name: 'Sarah Johnson',
-        email: 'sarah@company.co',
+        name: 'Ahmed',
+        email: 'staff2@example.com',
         phone: '+1 (555) 345-6789',
         role: 'staff',
         department: 'Customer Success',
@@ -183,14 +183,34 @@ async function main() {
     }),
     prisma.user.create({
       data: {
-        name: 'Admin User',
-        email: 'admin@company.co',
+        name: 'Sarah',
+        email: 'staff3@example.com',
         phone: '+1 (555) 456-7890',
+        role: 'staff',
+        department: 'Billing Support',
+        passwordHash: await bcrypt.hash('Staff123!', 12),
+        points: 2420,
+        level: 6,
+        ticketsResolved: 118,
+        averageResolutionTimeHours: 5.1,
+        customerSatisfactionRating: 4.7,
+        currentStreak: 15,
+        totalTicketsHandled: 142,
+        averageResponseTimeMinutes: 10,
+        monthlyGrowth: 10.2,
+        lastActiveDate: new Date()
+      }
+    }),
+    prisma.user.create({
+      data: {
+        name: 'Abdulaziz',
+        email: 'admin@example.com',
+        phone: '+1 (555) 567-8901',
         role: 'admin',
         department: 'IT Administration',
         passwordHash: await bcrypt.hash('Admin123!', 12),
         points: 1780,
-        level: 6,
+        level: 5,
         ticketsResolved: 89,
         averageResolutionTimeHours: 2.1,
         customerSatisfactionRating: 4.7,
@@ -240,7 +260,7 @@ async function main() {
     })
   );
 
-  // Sarah's achievements
+  // Ahmed's achievements
   userAchievements.push(
     prisma.userAchievement.create({
       data: {
@@ -265,18 +285,36 @@ async function main() {
     })
   );
 
-  // Admin's achievements
+  // Sarah's achievements
   userAchievements.push(
     prisma.userAchievement.create({
       data: {
         userId: staffUsers[2].id,
+        achievementId: achievements[0].id, // First Resolution
+        unlockedAt: new Date('2024-01-08')
+      }
+    }),
+    prisma.userAchievement.create({
+      data: {
+        userId: staffUsers[2].id,
+        achievementId: achievements[4].id, // Team Player
+        unlockedAt: new Date('2024-01-22')
+      }
+    })
+  );
+
+  // Admin's achievements
+  userAchievements.push(
+    prisma.userAchievement.create({
+      data: {
+        userId: staffUsers[3].id,
         achievementId: achievements[0].id, // First Resolution
         unlockedAt: new Date('2024-01-12')
       }
     }),
     prisma.userAchievement.create({
       data: {
-        userId: staffUsers[2].id,
+        userId: staffUsers[3].id,
         achievementId: achievements[6].id, // Lightning Fast
         unlockedAt: new Date('2024-01-30')
       }
@@ -295,9 +333,10 @@ async function main() {
   console.log(`🎫 Tickets: 0 (ready for new tickets)`);
   console.log(`💬 Messages: 0 (ready for conversations)`);
   console.log('\n🔐 Demo Login Credentials:');
-  console.log('Staff (Top Performer): mohammed@company.co / Staff123!');
-  console.log('Staff (Customer Success): sarah@company.co / Staff123!');
-  console.log('Admin: admin@company.co / Admin123!');
+  console.log('Staff (Top Performer): staff1@example.com / Staff123! (Mohammed)');
+  console.log('Staff (Customer Success): staff2@example.com / Staff123! (Ahmed)');
+  console.log('Staff (Billing Support): staff3@example.com / Staff123! (Sarah)');
+  console.log('Admin: admin@example.com / Admin123! (Abdulaziz)');
   console.log('\n✅ Database is ready for leaderboard functionality!');
   console.log('🚀 You can now signup with any email and see real leaderboard data!');
 }

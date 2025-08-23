@@ -40,6 +40,7 @@ export const LoginPage: React.FC = () => {
       { email: 'customer@example.com', role: 'customer' },
       { email: 'staff1@example.com', role: 'staff' },
       { email: 'staff2@example.com', role: 'staff' },
+      { email: 'staff3@example.com', role: 'staff' },
       { email: 'admin@example.com', role: 'admin' }
     ];
     
@@ -278,7 +279,9 @@ export const LoginPage: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 gap-2 text-xs text-indigo-600 dark:text-indigo-400">
                 <div><strong>Customer:</strong> customer@example.com • Customer123!</div>
-                <div><strong>Staff:</strong> staff1@example.com • Staff123!</div>
+                <div><strong>Mohammed (Staff):</strong> staff1@example.com • Staff123!</div>
+                <div><strong>Ahmed (Staff):</strong> staff2@example.com • Staff123!</div>
+                <div><strong>Sarah (Staff):</strong> staff3@example.com • Staff123!</div>
                 <div><strong>Admin:</strong> admin@example.com • Admin123!</div>
               </div>
             </div>

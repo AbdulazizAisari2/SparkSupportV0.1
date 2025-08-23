@@ -13,19 +13,27 @@ let messages = [...mockMessages];
 let chatMessages: ChatMessage[] = [
   {
     id: '1',
-    senderId: '1',
-    senderName: 'Sarah Wilson',
+    senderId: '2',
+    senderName: 'Mohammed',
     senderRole: 'staff',
     message: 'Good morning team! Ready for another productive day? 🌟',
     timestamp: '2024-01-15T09:00:00Z',
   },
   {
     id: '2',
-    senderId: '2',
-    senderName: 'Mike Johnson',
+    senderId: '3',
+    senderName: 'Ahmed',
     senderRole: 'staff',
-    message: 'Morning Sarah! Just reviewed the overnight tickets - looking good.',
+    message: 'Morning Mohammed! Just reviewed the overnight tickets - looking good.',
     timestamp: '2024-01-15T09:05:00Z',
+  },
+  {
+    id: '3',
+    senderId: '4',
+    senderName: 'Sarah',
+    senderRole: 'staff',
+    message: 'Great to see everyone active early! Let me know if you need help with any billing issues today.',
+    timestamp: '2024-01-15T09:10:00Z',
   },
 ];
 

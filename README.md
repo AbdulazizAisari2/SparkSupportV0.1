@@ -77,13 +77,17 @@ The system includes pre-configured demo accounts for testing:
 - **Access:** Personal tickets only
 
 ### Staff Accounts
-- **Email:** `staff1@example.com` (Sarah Support)
+- **Email:** `staff1@example.com` (Mohammed)
 - **Role:** Staff
 - **Department:** Technical Support
 
-- **Email:** `staff2@example.com` (Mike Manager)  
+- **Email:** `staff2@example.com` (Ahmed)  
 - **Role:** Staff
 - **Department:** Customer Success
+
+- **Email:** `staff3@example.com` (Sarah)
+- **Role:** Staff
+- **Department:** Billing Support
 
 ### Admin Account
 - **Email:** `admin@example.com`
