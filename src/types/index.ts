@@ -10,6 +10,7 @@ export interface User {
   role: Role;
   department?: string;
   password?: string; // Optional for security - not included in API responses
+  points?: number; // User points for marketplace redemption
 }
 
 export interface Category {

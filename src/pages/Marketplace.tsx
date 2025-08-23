@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Filter, Star, ShoppingCart, Package, Tag, Heart, Eye, Coins, TrendingUp } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface MarketplaceItem {
   id: string;
@@ -135,11 +136,14 @@ const mockItems: MarketplaceItem[] = [
 const categories = ['All', 'Audio', 'Smartphones', 'Gaming', 'Laptops', 'Wearables', 'Tablets'];
 
 export const Marketplace: React.FC = () => {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [userPoints] = useState(8500); // Mock user points - would come from context/API
+  
+  // Get user points from auth context, fallback to mock data for demo
+  const userPoints = user?.points || 8500;
 
   const filteredItems = mockItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -160,6 +164,25 @@ export const Marketplace: React.FC = () => {
   };
 
   const canAfford = (points: number) => userPoints >= points;
+
+  const handlePurchase = async (item: MarketplaceItem) => {
+    if (!canAfford(item.points) || !item.inStock) {
+      return;
+    }
+
+    try {
+      // In a real app, this would make an API call to process the purchase
+      // For now, we'll just show a success message
+      alert(`🎉 Successfully redeemed ${item.name} for ${item.points.toLocaleString()} points!`);
+      
+      // TODO: Update user points in backend and refresh auth context
+      // await purchaseItem(item.id, item.points);
+      
+    } catch (error) {
+      console.error('Purchase failed:', error);
+      alert('Purchase failed. Please try again.');
+    }
+  };
 
   const renderStars = (rating: number) => {
     return (
@@ -258,26 +281,27 @@ export const Marketplace: React.FC = () => {
             </div>
           </div>
 
-          <button
-            disabled={!item.inStock || !affordable}
-            className={`w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${
-              item.inStock && affordable
-                ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 shadow-lg hover:shadow-xl transform hover:scale-105'
-                : !item.inStock
-                ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 cursor-not-allowed'
-            }`}
-          >
-            <ShoppingCart className="w-5 h-5" />
-            <span>
-              {!item.inStock 
-                ? 'Out of Stock' 
-                : !affordable 
-                ? 'Insufficient Points' 
-                : 'Redeem with Points'
-              }
-            </span>
-          </button>
+                     <button
+             onClick={() => handlePurchase(item)}
+             disabled={!item.inStock || !affordable}
+             className={`w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${
+               item.inStock && affordable
+                 ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 shadow-lg hover:shadow-xl transform hover:scale-105'
+                 : !item.inStock
+                 ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                 : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 cursor-not-allowed'
+             }`}
+           >
+             <ShoppingCart className="w-5 h-5" />
+             <span>
+               {!item.inStock 
+                 ? 'Out of Stock' 
+                 : !affordable 
+                 ? 'Insufficient Points' 
+                 : 'Redeem with Points'
+               }
+             </span>
+           </button>
         </div>
       </div>
     );
@@ -301,11 +325,23 @@ export const Marketplace: React.FC = () => {
         
         {/* Points Balance Card */}
         <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-6 rounded-2xl shadow-lg">
-          <div className="flex items-center space-x-3">
-            <Coins className="w-8 h-8" />
-            <div>
-              <div className="text-sm font-medium opacity-90">Your Points</div>
-              <div className="text-3xl font-bold">{userPoints.toLocaleString()}</div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Coins className="w-8 h-8" />
+              <div>
+                <div className="text-sm font-medium opacity-90">Your Points</div>
+                <div className="text-3xl font-bold">{userPoints.toLocaleString()}</div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-xs opacity-75 mb-2">Earn more points</div>
+              <button 
+                onClick={() => window.location.href = '/staff/leaderboard'}
+                className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+              >
+                <TrendingUp className="w-4 h-4" />
+                <span>View Leaderboard</span>
+              </button>
             </div>
           </div>
         </div>
