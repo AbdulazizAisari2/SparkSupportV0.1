@@ -5,15 +5,14 @@ import { useAuth } from '../context/AuthContext';
 const API_BASE = 'http://localhost:8000/api';
 
 export const useChat = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<ChatUser[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Get auth token
+  // Get auth token from auth context
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('token');
     return {
       'Content-Type': 'application/json',
       'Authorization': token ? `Bearer ${token}` : '',
@@ -22,6 +21,11 @@ export const useChat = () => {
 
   // Fetch chat messages
   const fetchMessages = async () => {
+    if (!token) {
+      setError('No authentication token');
+      return;
+    }
+
     try {
       setIsLoading(true);
       const response = await fetch(`${API_BASE}/chat/messages`, {
@@ -29,7 +33,10 @@ export const useChat = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch messages');
+        if (response.status === 401) {
+          throw new Error('Authentication failed. Please login again.');
+        }
+        throw new Error(`Failed to fetch messages: ${response.status}`);
       }
 
       const data = await response.json();
@@ -45,12 +52,18 @@ export const useChat = () => {
 
   // Fetch online users
   const fetchOnlineUsers = async () => {
+    if (!token) return;
+
     try {
       const response = await fetch(`${API_BASE}/chat/users`, {
         headers: getAuthHeaders(),
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          console.error('Authentication failed when fetching users');
+          return;
+        }
         throw new Error('Failed to fetch users');
       }
 
@@ -63,7 +76,7 @@ export const useChat = () => {
 
   // Send a message
   const sendMessage = async (message: string) => {
-    if (!message.trim() || !user) return;
+    if (!message.trim() || !user || !token) return;
 
     try {
       const response = await fetch(`${API_BASE}/chat/messages`, {
@@ -73,7 +86,10 @@ export const useChat = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send message');
+        if (response.status === 401) {
+          throw new Error('Authentication failed. Please login again.');
+        }
+        throw new Error(`Failed to send message: ${response.status}`);
       }
 
       const newMessage = await response.json();
@@ -89,7 +105,7 @@ export const useChat = () => {
 
   // Update user online status
   const updateOnlineStatus = async (isOnline: boolean) => {
-    if (!user) return;
+    if (!user || !token) return;
 
     try {
       await fetch(`${API_BASE}/chat/users/${user.id}/status`, {
@@ -104,7 +120,7 @@ export const useChat = () => {
 
   // Set user online when component mounts
   useEffect(() => {
-    if (user && (user.role === 'staff' || user.role === 'admin')) {
+    if (user && token && (user.role === 'staff' || user.role === 'admin')) {
       updateOnlineStatus(true);
       fetchMessages();
       fetchOnlineUsers();
@@ -120,26 +136,26 @@ export const useChat = () => {
         updateOnlineStatus(false);
       };
     }
-  }, [user]);
+  }, [user, token]);
 
   // Set user offline when page unloads
   useEffect(() => {
     const handleBeforeUnload = () => {
-      if (user) {
+      if (user && token) {
         // Use navigator.sendBeacon for reliable offline status update
-        const token = localStorage.getItem('token');
-        if (token) {
-          navigator.sendBeacon(
-            `${API_BASE}/chat/users/${user.id}/status`,
-            JSON.stringify({ isOnline: false })
-          );
-        }
+        const blob = new Blob([JSON.stringify({ isOnline: false })], {
+          type: 'application/json'
+        });
+        navigator.sendBeacon(
+          `${API_BASE}/chat/users/${user.id}/status`,
+          blob
+        );
       }
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [user]);
+  }, [user, token]);
 
   return {
     messages,

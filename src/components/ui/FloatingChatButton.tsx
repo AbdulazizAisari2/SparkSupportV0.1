@@ -4,19 +4,16 @@ import { useAuth } from '../../context/AuthContext';
 import { TeamChatDrawer } from '../chat/TeamChatDrawer';
 
 export const FloatingChatButton: React.FC = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [hasNewMessages, setHasNewMessages] = useState(false);
 
   // Check for new messages periodically
   useEffect(() => {
-    if (!user || user.role === 'customer') return;
+    if (!user || user.role === 'customer' || !token) return;
 
     const checkNewMessages = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
         const response = await fetch('http://localhost:8000/api/chat/messages', {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -47,7 +44,7 @@ export const FloatingChatButton: React.FC = () => {
     const interval = setInterval(checkNewMessages, 30000);
 
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, token]);
 
   // Mark messages as read when chat is opened
   const handleOpenChat = () => {
