@@ -29,6 +29,7 @@ import { RoleBadge } from '../ui/Badge';
 import { SimpleThemeToggle } from '../ui/SimpleThemeToggle';
 import { useNotifications } from '../../context/NotificationContext';
 import { FloatingNotificationButton } from '../ui/FloatingNotificationButton';
+import { TeamChatDrawer } from '../chat/TeamChatDrawer';
 
 
 
@@ -46,6 +47,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const navigate = useNavigate();
   const { logoutAndRedirect } = useSmartNavigation();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Add a simple welcome notification on first load
   React.useEffect(() => {
@@ -77,6 +79,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         return [
           { path: '/my/tickets', label: 'My Tickets', icon: Ticket },
           { path: '/my/tickets/new', label: 'New Ticket', icon: Plus },
+          { onClick: () => setIsChatOpen(true), label: 'Team Chat', icon: MessageCircle, badge: 'NEW' },
           { path: '/my/marketplace', label: 'Marketplace', icon: ShoppingBag },
           { path: '/my/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
         ];
@@ -84,7 +87,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         return [
           { path: '/staff/tickets', label: 'All Tickets', icon: Ticket },
           { path: '/staff/dashboard', label: 'Dashboard', icon: BarChart3 },
-
+          { onClick: () => setIsChatOpen(true), label: 'Team Chat', icon: MessageCircle, badge: 'NEW' },
           { path: '/staff/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/staff/marketplace', label: 'Marketplace', icon: ShoppingBag },
           { path: '/staff/leaderboard', label: 'Leaderboard', icon: Trophy },
@@ -95,7 +98,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           { path: '/admin/categories', label: 'Categories', icon: Tags },
           // { path: '/admin/priorities', label: 'Priorities', icon: AlertTriangle }, // Temporarily disabled
           { path: '/admin/staff', label: 'Staff', icon: Users },
-
+          { onClick: () => setIsChatOpen(true), label: 'Team Chat', icon: MessageCircle, badge: 'NEW' },
           { path: '/admin/slack', label: 'Slack Integration', icon: MessageCircle, badge: 'NEW' },
           { path: '/admin/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/admin/marketplace', label: 'Marketplace', icon: ShoppingBag },
@@ -288,7 +291,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-3 bg-gradient-to-b from-transparent to-white/20 dark:to-dark-800/20">
-            {navItems.map((item) => {
+            {navItems.map((item, index) => {
               const Icon = item.icon;
               const isActive = item.path && (location.pathname === item.path || 
                 (item.path !== '/' && location.pathname.startsWith(item.path)));
@@ -296,11 +299,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
               const NavElement = item.path ? Link : 'button';
               const elementProps = item.path 
                 ? { to: item.path }
-                : { type: 'button' as const };
+                : { type: 'button' as const, onClick: item.onClick };
 
-                              return (
+              return (
                 <NavElement
-                  key={item.path}
+                  key={item.path || `button-${index}`}
                   {...elementProps}
                   className={`
                     flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group relative overflow-hidden w-full text-left
@@ -394,7 +397,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         <FloatingNotificationButton />
       </div>
 
-
+      {/* Team Chat Drawer */}
+      <TeamChatDrawer 
+        isOpen={isChatOpen} 
+        onClose={() => setIsChatOpen(false)} 
+      />
     </div>
   );
 };

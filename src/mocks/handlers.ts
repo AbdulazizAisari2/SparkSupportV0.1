@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { mockUsers, mockCategories, mockPriorities, mockTickets, mockMessages } from './data';
-import { User, Ticket, TicketMessage, Role } from '../types';
+import { User, Ticket, TicketMessage, Role, ChatMessage, ChatUser } from '../types';
 
 // In-memory storage for runtime data
 let users = [...mockUsers];
@@ -8,6 +8,26 @@ let categories = [...mockCategories];
 let priorities = [...mockPriorities];
 let tickets = [...mockTickets];
 let messages = [...mockMessages];
+
+// Chat data
+let chatMessages: ChatMessage[] = [
+  {
+    id: '1',
+    senderId: '1',
+    senderName: 'Sarah Wilson',
+    senderRole: 'staff',
+    message: 'Good morning team! Ready for another productive day? 🌟',
+    timestamp: '2024-01-15T09:00:00Z',
+  },
+  {
+    id: '2',
+    senderId: '2',
+    senderName: 'Mike Johnson',
+    senderRole: 'staff',
+    message: 'Morning Sarah! Just reviewed the overnight tickets - looking good.',
+    timestamp: '2024-01-15T09:05:00Z',
+  },
+];
 
 export const handlers = [
   // Authentication
@@ -32,6 +52,12 @@ export const handlers = [
     }
     
     console.log('Login successful for:', user.name);
+    
+    // Set user as online
+    const userIndex = users.findIndex(u => u.id === user.id);
+    if (userIndex !== -1) {
+      users[userIndex].isOnline = true;
+    }
     
     // Return user without password for security
     const { password: _, ...userWithoutPassword } = user;
@@ -69,7 +95,8 @@ export const handlers = [
       phone,
       role: role as Role,
       department: role === 'staff' ? 'General Support' : undefined,
-      password // Store password for demo purposes
+      password, // Store password for demo purposes
+      isOnline: true,
     };
     
     users.push(newUser);
@@ -370,5 +397,56 @@ export const handlers = [
     messages.push(note);
     
     return HttpResponse.json(note, { status: 201 });
+  }),
+
+  // Team Chat endpoints
+  http.get('/api/chat/messages', () => {
+    return HttpResponse.json(chatMessages);
+  }),
+
+  http.post('/api/chat/messages', async ({ request }) => {
+    const messageData = await request.json() as Omit<ChatMessage, 'id' | 'timestamp'>;
+    
+    const message: ChatMessage = {
+      id: Date.now().toString(),
+      ...messageData,
+      timestamp: new Date().toISOString()
+    };
+    
+    chatMessages.push(message);
+    
+    return HttpResponse.json(message, { status: 201 });
+  }),
+
+  http.get('/api/chat/users', () => {
+    // Return online staff and admin users
+    const onlineUsers: ChatUser[] = users
+      .filter(u => (u.role === 'staff' || u.role === 'admin'))
+      .map(u => ({
+        id: u.id,
+        name: u.name,
+        role: u.role,
+        department: u.department,
+        isOnline: u.isOnline || false,
+        lastSeen: u.lastSeen
+      }));
+    
+    return HttpResponse.json(onlineUsers);
+  }),
+
+  http.put('/api/chat/users/:id/status', async ({ params, request }) => {
+    const { id } = params;
+    const { isOnline } = await request.json() as { isOnline: boolean };
+    
+    const userIndex = users.findIndex(u => u.id === id);
+    if (userIndex !== -1) {
+      users[userIndex].isOnline = isOnline;
+      if (!isOnline) {
+        users[userIndex].lastSeen = new Date().toISOString();
+      }
+      return HttpResponse.json({ success: true });
+    }
+    
+    return HttpResponse.json({ error: 'User not found' }, { status: 404 });
   })
 ];
