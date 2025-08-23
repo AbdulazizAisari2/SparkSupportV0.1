@@ -229,7 +229,9 @@ router.patch('/:id', authenticateToken, requireStaffOrAdmin, async (req, res, ne
         status: true, 
         assignedStaffId: true, 
         createdAt: true,
-        customerId: true
+        customerId: true,
+        resolvedAt: true,
+        resolutionTime: true
       }
     });
 
@@ -240,10 +242,14 @@ router.patch('/:id', authenticateToken, requireStaffOrAdmin, async (req, res, ne
     // Prepare update data
     const updateData = { ...validatedData };
 
-    // If ticket is being resolved/closed, calculate resolution time and award points
+    // Check if ticket is being resolved/closed
     const isResolved = validatedData.status === 'resolved' || validatedData.status === 'closed';
     const wasNotResolved = currentTicket.status !== 'resolved' && currentTicket.status !== 'closed';
     const ticketJustResolved = isResolved && wasNotResolved;
+
+    // Check if ticket is being reopened
+    const wasResolved = currentTicket.status === 'resolved' || currentTicket.status === 'closed';
+    const isBeingReopened = (validatedData.status === 'open' || validatedData.status === 'in_progress') && wasResolved;
 
     if (ticketJustResolved) {
       const resolutionTime = (new Date() - new Date(currentTicket.createdAt)) / (1000 * 60 * 60); // hours
@@ -251,6 +257,13 @@ router.patch('/:id', authenticateToken, requireStaffOrAdmin, async (req, res, ne
       updateData.resolutionTime = resolutionTime;
 
       console.log(`🎯 Ticket ${id} resolved in ${resolutionTime.toFixed(2)} hours`);
+    }
+
+    // If ticket is being reopened, clear resolution data
+    if (isBeingReopened) {
+      updateData.resolvedAt = null;
+      updateData.resolutionTime = null;
+      console.log(`🔄 Ticket ${id} reopened - resolution data cleared`);
     }
 
     // Update the ticket
@@ -268,7 +281,7 @@ router.patch('/:id', authenticateToken, requireStaffOrAdmin, async (req, res, ne
       }
     });
 
-    // Award points if ticket was just resolved
+    // Handle points for resolution
     if (ticketJustResolved && currentTicket.assignedStaffId) {
       try {
         await awardPointsForResolution(currentTicket.assignedStaffId, ticket.resolutionTime);
@@ -276,6 +289,17 @@ router.patch('/:id', authenticateToken, requireStaffOrAdmin, async (req, res, ne
       } catch (pointsError) {
         console.error('❌ Failed to award points:', pointsError);
         // Don't fail the ticket update if points awarding fails
+      }
+    }
+
+    // Handle points deduction for reopening
+    if (isBeingReopened && currentTicket.assignedStaffId) {
+      try {
+        await deductPointsForReopening(currentTicket.assignedStaffId, currentTicket.resolutionTime);
+        console.log(`⚠️ Points deducted from staff member for ticket ${id} being reopened`);
+      } catch (pointsError) {
+        console.error('❌ Failed to deduct points:', pointsError);
+        // Don't fail the ticket update if points deduction fails
       }
     }
 
@@ -312,6 +336,50 @@ router.patch('/:id', authenticateToken, requireStaffOrAdmin, async (req, res, ne
     next(error);
   }
 });
+
+// Helper function to deduct points when tickets are reopened
+async function deductPointsForReopening(staffId, originalResolutionTimeHours) {
+  // Calculate how many points were originally awarded
+  let pointsToDeduct = 20; // Base points for resolving
+  
+  // Add bonus points that were originally awarded based on resolution speed
+  if (originalResolutionTimeHours && originalResolutionTimeHours <= 1) {
+    pointsToDeduct += 30; // Lightning fast bonus
+  } else if (originalResolutionTimeHours && originalResolutionTimeHours <= 4) {
+    pointsToDeduct += 20; // Very fast bonus
+  } else if (originalResolutionTimeHours && originalResolutionTimeHours <= 24) {
+    pointsToDeduct += 10; // Good bonus
+  }
+
+  // Get current user data
+  const currentUser = await prisma.user.findUnique({
+    where: { id: staffId },
+    select: { points: true, level: true, ticketsResolved: true }
+  });
+
+  if (!currentUser) return 0;
+
+  // Ensure points don't go below 0
+  const newPoints = Math.max(0, currentUser.points - pointsToDeduct);
+  const newLevel = Math.max(1, Math.floor(newPoints / 500) + 1);
+
+  // Update staff member's stats
+  await prisma.user.update({
+    where: { id: staffId },
+    data: {
+      points: newPoints,
+      level: newLevel,
+      ticketsResolved: Math.max(0, currentUser.ticketsResolved - 1), // Decrement resolved count
+      lastActiveDate: new Date()
+    }
+  });
+
+  // Recalculate averages
+  await recalculateStaffAverages(staffId);
+
+  console.log(`⚠️ Deducted ${pointsToDeduct} points from staff member ${staffId} for ticket reopening`);
+  return pointsToDeduct;
+}
 
 // Helper function to award points for ticket resolution
 async function awardPointsForResolution(staffId, resolutionTimeHours) {
@@ -351,7 +419,18 @@ async function awardPointsForResolution(staffId, resolutionTimeHours) {
     }
   });
 
-  // Recalculate averages (simplified - in production this would be more sophisticated)
+  // Recalculate averages
+  await recalculateStaffAverages(staffId);
+
+  // Check for achievements
+  await checkAndAwardAchievements(staffId);
+
+  console.log(`🎯 Awarded ${points} points to staff member ${staffId} for ticket resolution (${resolutionTimeHours.toFixed(2)}h)`);
+  return points;
+}
+
+// Helper function to recalculate staff averages
+async function recalculateStaffAverages(staffId) {
   const staffTickets = await prisma.ticket.findMany({
     where: {
       assignedStaffId: staffId,
@@ -368,20 +447,19 @@ async function awardPointsForResolution(staffId, resolutionTimeHours) {
       ? ratingsWithValues.reduce((sum, t) => sum + t.customerRating, 0) / ratingsWithValues.length 
       : null;
 
+    const updateData = {
+      averageResolutionTimeHours: avgResolutionTime
+    };
+
+    if (avgRating !== null) {
+      updateData.customerSatisfactionRating = avgRating;
+    }
+
     await prisma.user.update({
       where: { id: staffId },
-      data: {
-        averageResolutionTimeHours: avgResolutionTime,
-        ...(avgRating && { customerSatisfactionRating: avgRating })
-      }
+      data: updateData
     });
   }
-
-  // Check for achievements
-  await checkAndAwardAchievements(staffId);
-
-  console.log(`🎯 Awarded ${points} points to staff member ${staffId} for ticket resolution`);
-  return points;
 }
 
 // Helper function to check and award achievements
