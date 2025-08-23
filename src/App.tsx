@@ -7,6 +7,7 @@ import { SessionProvider } from './context/SessionContext';
 import { ToastProvider } from './context/ToastContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { ChatProvider } from './context/ChatContext';
 import { ToastContainer } from './components/ui/Toast';
 import { AppShell } from './components/layout/AppShell';
 import { ProtectedRoute, RouteGuard } from './components/ProtectedRoute';
@@ -87,11 +88,12 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
+            <QueryClientProvider client={queryClient}>
         <NotificationProvider>
-          <AuthProvider>
-            <SessionProvider>
-              <ToastProvider>
+            <AuthProvider>
+              <ChatProvider>
+              <SessionProvider>
+                <ToastProvider>
             <Router>
               <RouteGuard>
                 <div className="min-h-screen transition-all duration-300">
@@ -321,6 +323,7 @@ function App() {
           </Router>
                 </ToastProvider>
               </SessionProvider>
+              </ChatProvider>
             </AuthProvider>
         </NotificationProvider>
       </QueryClientProvider>

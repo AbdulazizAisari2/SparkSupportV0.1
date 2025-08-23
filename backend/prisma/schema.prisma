@@ -16,6 +16,11 @@ model User {
   department      String?
   passwordHash    String          @map("password_hash")
   
+  // Chat & Status fields
+  isOnline        Boolean         @default(false) @map("is_online")
+  lastSeen        DateTime?       @map("last_seen")
+  status          String?         // Custom status message
+  
   // Leaderboard fields
   points                    Int     @default(0)
   level                     Int     @default(1)
@@ -35,6 +40,11 @@ model User {
   assignedTickets Ticket[]        @relation("AssignedTickets")
   createdTickets  Ticket[]        @relation("CustomerTickets")
   achievements    UserAchievement[]
+  
+  // Chat relationships
+  sentChatMessages    ChatMessage[] @relation("SentChatMessages")
+  conversations1      ChatConversation[] @relation("User1Conversations")
+  conversations2      ChatConversation[] @relation("User2Conversations")
 
   @@map("users")
 }
@@ -116,4 +126,39 @@ model TicketMessage {
   ticket         Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
   @@map("ticket_messages")
+}
+
+model ChatConversation {
+  id          String   @id @default(cuid())
+  user1Id     String   @map("user1_id")
+  user2Id     String   @map("user2_id")
+  lastMessageAt DateTime? @map("last_message_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  user1       User     @relation("User1Conversations", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2       User     @relation("User2Conversations", fields: [user2Id], references: [id], onDelete: Cascade)
+  messages    ChatMessage[]
+  
+  @@unique([user1Id, user2Id])
+  @@map("chat_conversations")
+}
+
+model ChatMessage {
+  id             String   @id @default(cuid())
+  conversationId String   @map("conversation_id")
+  senderId       String   @map("sender_id")
+  content        String
+  messageType    String   @default("text") @map("message_type") // text, file, image
+  attachmentUrl  String?  @map("attachment_url")
+  attachmentName String?  @map("attachment_name")
+  isRead         Boolean  @default(false) @map("is_read")
+  readAt         DateTime? @map("read_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User     @relation("SentChatMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  @@map("chat_messages")
 }
