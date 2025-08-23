@@ -280,7 +280,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   // Helper function to make authenticated API calls
   const apiCall = async (endpoint: string, options: RequestInit = {}) => {
-    const token = localStorage.getItem('token');
+    const authData = localStorage.getItem('auth');
+    const token = authData ? JSON.parse(authData).token : null;
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
       headers: {
@@ -404,7 +405,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       const formData = new FormData();
       formData.append('file', file);
       
-      const token = localStorage.getItem('token');
+      const authData = localStorage.getItem('auth');
+      const token = authData ? JSON.parse(authData).token : null;
       const uploadResponse = await fetch(`${API_BASE}/chat/upload`, {
         method: 'POST',
         headers: {
