@@ -12,9 +12,7 @@ import {
   Search,
   TrendingUp
 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
-import { useApi } from '../hooks/useApi';
 import { AnimatedBackground } from '../components/ui/AnimatedBackground';
 import { GlassmorphismCard } from '../components/ui/GlassmorphismCard';
 import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';

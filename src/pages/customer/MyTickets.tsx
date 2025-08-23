@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Filter, Search, Sparkles } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
-import { useApi } from '../../hooks/useApi';
+import { useTickets } from '../../hooks/useApi';
 import { AnimatedBackground } from '../../components/ui/AnimatedBackground';
 import { GlassmorphismCard } from '../../components/ui/GlassmorphismCard';
 import { HeroSection } from '../../components/ui/HeroSection';
@@ -14,14 +13,10 @@ import { useNavigate } from 'react-router-dom';
 export const MyTickets: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { fetchTickets } = useApi();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  const { data: tickets, isLoading, error } = useQuery({
-    queryKey: ['tickets', 'customer'],
-    queryFn: () => fetchTickets({ role: 'customer' }),
-  });
+  const { data: tickets = [], isLoading, error } = useTickets({});
 
   const filteredTickets = tickets?.filter(ticket => {
     const matchesSearch = ticket.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||

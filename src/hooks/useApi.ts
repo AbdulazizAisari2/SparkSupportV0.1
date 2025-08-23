@@ -815,3 +815,43 @@ export const useAwardPoints = () => {
     },
   });
 };
+
+// Main useApi hook that provides direct access to API functions
+export const useApi = () => {
+  const { token } = useAuth();
+  
+  return {
+    // Direct API functions
+    fetchTickets: (params?: { role?: string; status?: string; priority?: string }) => {
+      return apiClient.getTickets(token!, params);
+    },
+    fetchUsers: () => {
+      return apiClient.getUsers(token!);
+    },
+    fetchCategories: () => {
+      return apiClient.getCategories(token!);
+    },
+    fetchTicket: (id: string) => {
+      return apiClient.getTicket(token!, id);
+    },
+    createTicket: (data: any) => {
+      return apiClient.createTicket(token!, data);
+    },
+    updateTicket: (id: string, data: any) => {
+      return apiClient.updateTicket(token!, id, data);
+    },
+    deleteTicket: (id: string) => {
+      return apiClient.deleteTicket(token!, id);
+    },
+    // Hook exports for convenience
+    useTickets,
+    useUsers,
+    useCategories,
+    useTicket,
+    useCreateTicket,
+    useUpdateTicket,
+    useDeleteTicket,
+    useLeaderboard,
+    useUserStats,
+  };
+};

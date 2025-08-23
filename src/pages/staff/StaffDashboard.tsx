@@ -11,9 +11,8 @@ import {
   Target,
   Activity
 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
-import { useApi } from '../../hooks/useApi';
+import { useTickets, useUsers } from '../../hooks/useApi';
 import { AnimatedBackground } from '../../components/ui/AnimatedBackground';
 import { GlassmorphismCard } from '../../components/ui/GlassmorphismCard';
 import { HeroSection } from '../../components/ui/HeroSection';
@@ -23,17 +22,9 @@ import { useNavigate } from 'react-router-dom';
 export const StaffDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { fetchTickets, fetchUsers } = useApi();
 
-  const { data: tickets, isLoading: ticketsLoading } = useQuery({
-    queryKey: ['tickets', 'staff'],
-    queryFn: () => fetchTickets({ role: 'staff' }),
-  });
-
-  const { data: users, isLoading: usersLoading } = useQuery({
-    queryKey: ['users', 'staff'],
-    queryFn: fetchUsers,
-  });
+  const { data: tickets = [], isLoading: ticketsLoading } = useTickets({});
+  const { data: users = [], isLoading: usersLoading } = useUsers();
 
   const myTickets = tickets?.filter(ticket => ticket.assignedStaffId === user?.id) || [];
   const resolvedTickets = myTickets.filter(ticket => ticket.status === 'resolved');
