@@ -3,8 +3,21 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// Using real backend - MSW disabled
-console.log('🚀 SparkSupport starting with real backend API...');
+// Enable MSW for demo
+async function enableMocking() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  const { worker } = await import('./mocks/browser');
+
+  // Start the MSW worker
+  return worker.start({
+    onUnhandledRequest: 'bypass',
+  });
+}
+
+console.log('🚀 SparkSupport starting with MSW mock API...');
 
 const root = document.getElementById('root');
 if (!root) {
@@ -12,12 +25,25 @@ if (!root) {
 }
 
 try {
-  createRoot(root).render(
-    <StrictMode>
-      <App />
-    </StrictMode>
-  );
-  console.log('✅ React app mounted successfully');
+  // Initialize MSW and then mount the React app
+  enableMocking().then(() => {
+    console.log('✅ MSW initialized successfully');
+    
+    createRoot(root).render(
+      <StrictMode>
+        <App />
+      </StrictMode>
+    );
+    console.log('✅ React app mounted successfully');
+  }).catch((error) => {
+    console.error('❌ MSW initialization failed:', error);
+    // Mount the app anyway, but API calls might fail
+    createRoot(root).render(
+      <StrictMode>
+        <App />
+      </StrictMode>
+    );
+  });
 } catch (error) {
   console.error('❌ React mounting failed:', error);
   
