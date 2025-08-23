@@ -144,6 +144,18 @@
   }
 }
 
+/* Slide Up Animation */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Pulse Glow Animation */
 @keyframes pulse-glow {
   0%, 100% {
@@ -184,6 +196,10 @@
 
 .animate-slide-down {
   animation: slide-down 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out;
 }
 
 .animate-pulse-glow {

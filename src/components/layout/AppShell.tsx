@@ -21,7 +21,8 @@ import {
   Zap,
   Award,
   Bot,
-  MessageCircle
+  MessageCircle,
+  ShoppingCart
 } from 'lucide-react';
 import { RoleBadge } from '../ui/Badge';
 import { SimpleThemeToggle } from '../ui/SimpleThemeToggle';
@@ -80,6 +81,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           { path: '/staff/dashboard', label: 'Dashboard', icon: BarChart3 },
           { path: '/staff/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/staff/leaderboard', label: 'Leaderboard', icon: Trophy },
+          { path: '/staff/marketplace', label: 'Marketplace', icon: ShoppingCart, badge: 'NEW' },
           { path: '/staff/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
         ];
       case 'admin':
@@ -90,6 +92,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           { path: '/admin/slack', label: 'Slack Integration', icon: MessageCircle, badge: 'NEW' },
           { path: '/admin/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/admin/leaderboard', label: 'Leaderboard', icon: Trophy },
+          { path: '/admin/marketplace', label: 'Marketplace', icon: ShoppingCart, badge: 'NEW' },
           { path: '/admin/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
         ];
       default:

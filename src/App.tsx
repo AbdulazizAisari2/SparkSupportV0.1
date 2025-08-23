@@ -23,6 +23,7 @@ import { StaffTickets } from './pages/staff/StaffTickets';
 import { StaffTicketDetail } from './pages/staff/StaffTicketDetail';
 import { StaffDashboard } from './pages/staff/StaffDashboard';
 import { StaffLeaderboard } from './pages/staff/StaffLeaderboard';
+import { MarketplaceDemo } from './pages/staff/MarketplaceDemo';
 import { AdminCategories } from './pages/admin/AdminCategories';
 // import { AdminPriorities } from './pages/admin/AdminPriorities'; // Temporarily disabled
 import { AdminStaff } from './pages/admin/AdminStaff';
@@ -197,6 +198,16 @@ function App() {
                   } 
                 />
                 <Route 
+                  path="/staff/marketplace" 
+                  element={
+                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                      <AppShell>
+                        <MarketplaceDemo />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
                   path="/staff/notifications" 
                   element={
                     <ProtectedRoute allowedRoles={['staff', 'admin']}>
@@ -264,6 +275,16 @@ function App() {
                     <ProtectedRoute allowedRoles={['admin']}>
                       <AppShell>
                         <StaffLeaderboard />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/marketplace" 
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AppShell>
+                        <MarketplaceDemo />
                       </AppShell>
                     </ProtectedRoute>
                   } 

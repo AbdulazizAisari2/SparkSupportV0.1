@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Gift, Star, Zap, Crown } from 'lucide-react';
+import { Gift, Star, Zap, Crown, CheckCircle, AlertCircle } from 'lucide-react';
 
 interface TechItem {
   id: string;
@@ -74,12 +74,30 @@ export const SimpleMarketplace: React.FC<SimpleMarketplaceProps> = ({
   userPoints,
   onPurchase
 }) => {
-  const [selectedItem, setSelectedItem] = useState<TechItem | null>(null);
+  const [purchasingItem, setPurchasingItem] = useState<TechItem | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const canAfford = (item: TechItem) => userPoints >= item.pointsCost;
 
+  const handlePurchase = async (item: TechItem) => {
+    if (!canAfford(item)) return;
+    
+    setPurchasingItem(item);
+    
+    // Simulate purchase processing
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    onPurchase(item);
+    setShowSuccess(true);
+    setPurchasingItem(null);
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => setShowSuccess(false), 3000);
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -94,11 +112,31 @@ export const SimpleMarketplace: React.FC<SimpleMarketplaceProps> = ({
         </div>
       </div>
 
+      {/* Success Message */}
+      {showSuccess && (
+        <div className="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 animate-slide-up">
+          <div className="flex items-center space-x-3">
+            <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+            <div>
+              <p className="font-medium text-green-800 dark:text-green-200">
+                Purchase Successful! 🎉
+              </p>
+              <p className="text-sm text-green-700 dark:text-green-400">
+                Your order has been confirmed. You'll receive an email with delivery details.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Items Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {techItems.map((item) => (
           <div
             key={item.id}
-            className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
+            className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-all duration-200 ${
+              purchasingItem?.id === item.id ? 'ring-2 ring-blue-500 scale-105' : ''
+            }`}
           >
             <div className="flex items-start justify-between mb-3">
               <div>
@@ -110,7 +148,10 @@ export const SimpleMarketplace: React.FC<SimpleMarketplaceProps> = ({
                 </p>
               </div>
               {item.isExclusive && (
-                <Crown className="w-5 h-5 text-purple-500" />
+                <div className="flex items-center space-x-1">
+                  <Crown className="w-4 h-4 text-purple-500" />
+                  <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">EXCLUSIVE</span>
+                </div>
               )}
             </div>
             
@@ -124,8 +165,8 @@ export const SimpleMarketplace: React.FC<SimpleMarketplaceProps> = ({
               </span>
               {item.stock && (
                 <span className={`text-xs px-2 py-1 rounded-full ${
-                  item.stock > 3 ? 'bg-green-100 text-green-800' : 
-                  item.stock > 1 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
+                  item.stock > 3 ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' : 
+                  item.stock > 1 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400' : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                 }`}>
                   {item.stock} left
                 </span>
@@ -133,18 +174,49 @@ export const SimpleMarketplace: React.FC<SimpleMarketplaceProps> = ({
             </div>
 
             <button
-              onClick={() => onPurchase(item)}
-              disabled={!canAfford(item)}
-              className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+              onClick={() => handlePurchase(item)}
+              disabled={!canAfford(item) || purchasingItem?.id === item.id}
+              className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                 canAfford(item)
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                  ? purchasingItem?.id === item.id
+                    ? 'bg-blue-400 cursor-wait'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white hover:scale-105'
                   : 'bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed'
               }`}
             >
-              {canAfford(item) ? 'Purchase' : 'Need More Points'}
+              {purchasingItem?.id === item.id ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Processing...</span>
+                </div>
+              ) : !canAfford(item) ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <AlertCircle className="w-4 h-4" />
+                  <span>Need More Points</span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center space-x-2">
+                  <Gift className="w-4 h-4" />
+                  <span>Purchase</span>
+                </div>
+              )}
             </button>
+
+            {!canAfford(item) && (
+              <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Need {item.pointsCost - userPoints} more points
+              </p>
+            )}
           </div>
         ))}
+      </div>
+
+      {/* Footer Info */}
+      <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+          <p className="mb-2">💡 <strong>Pro Tip:</strong> Focus on quick ticket resolution and high customer satisfaction to earn points faster!</p>
+          <p>🎯 <strong>Goal:</strong> Save up for exclusive items like the iPhone 15 Pro or MacBook Air!</p>
+        </div>
       </div>
     </div>
   );
