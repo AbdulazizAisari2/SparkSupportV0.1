@@ -29,7 +29,7 @@ import { RoleBadge } from '../ui/Badge';
 import { SimpleThemeToggle } from '../ui/SimpleThemeToggle';
 import { useNotifications } from '../../context/NotificationContext';
 import { FloatingNotificationButton } from '../ui/FloatingNotificationButton';
-import { useChat } from '../../context/ChatContext';
+
 
 
 
@@ -41,7 +41,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const { user, logout } = useAuth();
   const { sessionTimeRemaining, formatTimeRemaining, extendSession } = useSession();
   const { addNotification, unreadCount } = useNotifications();
-  const { state: chatState } = useChat();
+
   const location = useLocation();
   const navigate = useNavigate();
   const { logoutAndRedirect } = useSmartNavigation();
@@ -84,7 +84,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         return [
           { path: '/staff/tickets', label: 'All Tickets', icon: Ticket },
           { path: '/staff/dashboard', label: 'Dashboard', icon: BarChart3 },
-          { path: '/staff/chat', label: 'Team Chat', icon: MessageSquare, badge: chatState.unreadCount > 0 ? chatState.unreadCount : undefined },
+
           { path: '/staff/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/staff/marketplace', label: 'Marketplace', icon: ShoppingBag },
           { path: '/staff/leaderboard', label: 'Leaderboard', icon: Trophy },
@@ -95,7 +95,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           { path: '/admin/categories', label: 'Categories', icon: Tags },
           // { path: '/admin/priorities', label: 'Priorities', icon: AlertTriangle }, // Temporarily disabled
           { path: '/admin/staff', label: 'Staff', icon: Users },
-          { path: '/admin/chat', label: 'Team Chat', icon: MessageSquare, badge: chatState.unreadCount > 0 ? chatState.unreadCount : undefined },
+
           { path: '/admin/slack', label: 'Slack Integration', icon: MessageCircle, badge: 'NEW' },
           { path: '/admin/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },
           { path: '/admin/marketplace', label: 'Marketplace', icon: ShoppingBag },
@@ -109,8 +109,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
   const navItems = getNavItems();
 
-  // Check if current route is a chat route
-  const isChatActive = location.pathname.includes('/chat');
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-800 transition-all duration-300">
@@ -312,15 +311,15 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                   `}
                 >
                   <div className="flex items-center">
-                    <Icon className={`w-5 h-5 mr-3 transition-transform duration-200 ${(isActive || isChatActive) ? 'animate-bounce-gentle' : 'group-hover:scale-110'}`} />
+                    <Icon className={`w-5 h-5 mr-3 transition-transform duration-200 ${isActive ? 'animate-bounce-gentle' : 'group-hover:scale-110'}`} />
                     {item.label}
                   </div>
                   {item.badge && (
                     <span className={`
                       px-2 py-1 rounded-full text-xs font-bold
                       ${typeof item.badge === 'string'
-                        ? `animate-pulse ${(isActive || isChatActive) ? 'bg-white/20 text-white' : 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'}`
-                        : `animate-pulse ${(isActive || isChatActive) ? 'bg-white/20 text-white' : 'bg-red-500 text-white shadow-lg'}`
+                        ? `animate-pulse ${isActive ? 'bg-white/20 text-white' : 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'}`
+                        : `animate-pulse ${isActive ? 'bg-white/20 text-white' : 'bg-red-500 text-white shadow-lg'}`
                       }
                     `}>
                       {typeof item.badge === 'string' ? item.badge : (item.badge > 9 ? '9+' : item.badge)}

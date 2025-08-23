@@ -7,7 +7,7 @@ import { SessionProvider } from './context/SessionContext';
 import { ToastProvider } from './context/ToastContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
-import { ChatProvider } from './context/ChatContext';
+
 import { ToastContainer } from './components/ui/Toast';
 import { AppShell } from './components/layout/AppShell';
 import { ProtectedRoute, RouteGuard } from './components/ProtectedRoute';
@@ -32,7 +32,7 @@ import { AdminSlack } from './pages/admin/AdminSlack';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { AISupport } from './pages/AISupport';
 import { Marketplace } from './pages/Marketplace';
-import { TeamChatPage } from './pages/TeamChatPage';
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -92,7 +92,6 @@ function App() {
             <QueryClientProvider client={queryClient}>
         <NotificationProvider>
             <AuthProvider>
-              <ChatProvider>
               <SessionProvider>
                 <ToastProvider>
             <Router>
@@ -222,16 +221,7 @@ function App() {
                     </ProtectedRoute>
                   } 
                 />
-                <Route 
-                  path="/staff/chat" 
-                  element={
-                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
-                      <AppShell>
-                        <TeamChatPage />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
+
                 <Route 
                   path="/staff/notifications" 
                   element={
@@ -314,16 +304,7 @@ function App() {
                     </ProtectedRoute>
                   } 
                 />
-                <Route 
-                  path="/admin/chat" 
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AppShell>
-                        <TeamChatPage />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
+
                 <Route 
                   path="/admin/notifications" 
                   element={
@@ -344,7 +325,6 @@ function App() {
           </Router>
                 </ToastProvider>
               </SessionProvider>
-              </ChatProvider>
             </AuthProvider>
         </NotificationProvider>
       </QueryClientProvider>
