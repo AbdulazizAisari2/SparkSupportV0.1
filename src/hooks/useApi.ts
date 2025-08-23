@@ -48,13 +48,15 @@ class ApiClient {
     });
 
     if (!response.ok) {
+      // Read the response body once and then decide how to parse it
+      const responseText = await response.text();
+      
       try {
-        const error = await response.json();
+        const error = JSON.parse(responseText);
         throw new Error(error.error || 'Login failed');
       } catch (jsonError) {
-        // If response is not valid JSON, try to get text
-        const text = await response.text();
-        throw new Error(text || `Login failed with status ${response.status}`);
+        // If response is not valid JSON, use the text directly
+        throw new Error(responseText || `Login failed with status ${response.status}`);
       }
     }
 
@@ -69,13 +71,15 @@ class ApiClient {
     });
 
     if (!response.ok) {
+      // Read the response body once and then decide how to parse it
+      const responseText = await response.text();
+      
       try {
-        const error = await response.json();
+        const error = JSON.parse(responseText);
         throw new Error(error.error || 'Signup failed');
       } catch (jsonError) {
-        // If response is not valid JSON, try to get text
-        const text = await response.text();
-        throw new Error(text || `Signup failed with status ${response.status}`);
+        // If response is not valid JSON, use the text directly
+        throw new Error(responseText || `Signup failed with status ${response.status}`);
       }
     }
 
@@ -90,13 +94,15 @@ class ApiClient {
     });
 
     if (!response.ok) {
+      // Read the response body once and then decide how to parse it
+      const responseText = await response.text();
+      
       try {
-        const error = await response.json();
+        const error = JSON.parse(responseText);
         throw new Error(error.error || 'Token refresh failed');
       } catch (jsonError) {
-        // If response is not valid JSON, try to get text
-        const text = await response.text();
-        throw new Error(text || `Token refresh failed with status ${response.status}`);
+        // If response is not valid JSON, use the text directly
+        throw new Error(responseText || `Token refresh failed with status ${response.status}`);
       }
     }
 
