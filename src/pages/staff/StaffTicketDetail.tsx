@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSecureParams } from '../../hooks/useSecureParams';
+import { useSecureParams, validateParamValue } from '../../hooks/useSecureParams';
 import { ArrowLeft, UserPlus, Clock } from 'lucide-react';
 import { useTicket, useCreateMessage, useUpdateTicket, useCategories, useUsers } from '../../hooks/useApi';
 import { useAuth } from '../../context/AuthContext';
@@ -22,14 +22,24 @@ export const StaffTicketDetail: React.FC = () => {
   const { addToast } = useToast();
   const [isAssignDrawerOpen, setIsAssignDrawerOpen] = useState(false);
 
-  // Security: Validate ticket ID using useEffect to avoid render warnings
+  // Enhanced security validation for ticket ID
   useEffect(() => {
     if (!id) {
+      // No ID provided or ID failed validation in useSecureParams
+      console.warn('Invalid or missing ticket ID, redirecting to tickets list');
       navigate('/staff/tickets', { replace: true });
+      return;
+    }
+    
+    // Additional client-side validation as a fallback
+    if (!validateParamValue('id', id)) {
+      console.warn(`Ticket ID format validation failed for: ${id}`);
+      navigate('/staff/tickets', { replace: true });
+      return;
     }
   }, [id, navigate]);
 
-  // Early return if no ID (component will be redirected via useEffect)
+  // Early return if no valid ID (component will be redirected via useEffect)
   if (!id) {
     return null;
   }
