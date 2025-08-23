@@ -31,7 +31,6 @@ import { AdminStaff } from './pages/admin/AdminStaff';
 import { AdminSlack } from './pages/admin/AdminSlack';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { AISupport } from './pages/AISupport';
-import { TeamChat } from './pages/TeamChat';
 import { Marketplace } from './pages/Marketplace';
 
 
@@ -160,16 +159,6 @@ function App() {
                     </ProtectedRoute>
                   } 
                 />
-                <Route 
-                  path="/my/team-chat" 
-                  element={
-                    <ProtectedRoute allowedRoles={['customer']}>
-                      <AppShell>
-                        <TeamChat />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
 
                 {/* Staff Routes */}
                 <Route 
@@ -239,16 +228,6 @@ function App() {
                     <ProtectedRoute allowedRoles={['staff', 'admin']}>
                       <AppShell>
                         <NotificationsPage />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/staff/team-chat" 
-                  element={
-                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
-                      <AppShell>
-                        <TeamChat />
                       </AppShell>
                     </ProtectedRoute>
                   } 
@@ -332,16 +311,6 @@ function App() {
                     <ProtectedRoute allowedRoles={['admin']}>
                       <AppShell>
                         <NotificationsPage />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/admin/team-chat" 
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AppShell>
-                        <TeamChat />
                       </AppShell>
                     </ProtectedRoute>
                   } 
