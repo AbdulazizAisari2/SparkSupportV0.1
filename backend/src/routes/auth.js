@@ -34,7 +34,7 @@ const generateTokens = (userId) => {
   const JWT_REFRESH_SECRET = 'sparksupport-local-dev-refresh-secret-456';
 
   const accessToken = jwt.sign(
-    { userId },
+    { userId, iat: Math.floor(Date.now() / 1000) },
     JWT_SECRET,
     { expiresIn: '1h' }
   );

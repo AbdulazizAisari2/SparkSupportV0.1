@@ -87,12 +87,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children 
     const newState = { token: accessToken, refreshToken, user };
     setState(newState);
     localStorage.setItem('auth', JSON.stringify(newState));
+    // Reset session timer when logging in
+    localStorage.removeItem('sessionStartTime');
   }, []);
 
   const signup = useCallback((accessToken: string, refreshToken: string, user: User) => {
     const newState = { token: accessToken, refreshToken, user };
     setState(newState);
     localStorage.setItem('auth', JSON.stringify(newState));
+    // Reset session timer when signing up
+    localStorage.removeItem('sessionStartTime');
   }, []);
 
   return (

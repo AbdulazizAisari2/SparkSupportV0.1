@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useSecureParams } from '../../hooks/useSecureParams';
 import { ArrowLeft, UserPlus, Clock } from 'lucide-react';
 import { useTicket, useCreateMessage, useUpdateTicket, useCategories, useUsers } from '../../hooks/useApi';
 import { useAuth } from '../../context/AuthContext';
@@ -15,20 +16,19 @@ import { formatDistanceToNow } from 'date-fns';
 import { Status } from '../../types';
 
 export const StaffTicketDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useSecureParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToast } = useToast();
   const [isAssignDrawerOpen, setIsAssignDrawerOpen] = useState(false);
 
-  // Safety check for ID
+  // Security: Validate ticket ID
   if (!id) {
-    console.error('No ticket ID provided in route params');
-    navigate('/staff/tickets');
+    navigate('/staff/tickets', { replace: true });
     return null;
   }
 
-  const { data: ticketData, isLoading, error } = useTicket(id || '');
+  const { data: ticketData, isLoading, error } = useTicket(id);
   const { data: categories = [] } = useCategories();
   const { data: users = [] } = useUsers();
   const { data: staff = [] } = useUsers('staff');

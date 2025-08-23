@@ -1,5 +1,6 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useSecureParams } from '../../hooks/useSecureParams';
 import { ArrowLeft, Clock } from 'lucide-react';
 import { useTicket, useCreateMessage, useCategories, useUsers } from '../../hooks/useApi';
 import { useAuth } from '../../context/AuthContext';
@@ -11,12 +12,18 @@ import { Skeleton } from '../../components/ui/Loading';
 import { formatDistanceToNow } from 'date-fns';
 
 export const TicketDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useSecureParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToast } = useToast();
 
-  const { data: ticketData, isLoading, error } = useTicket(id!);
+  // Security: Validate ticket ID
+  if (!id) {
+    navigate('/my/tickets', { replace: true });
+    return null;
+  }
+
+  const { data: ticketData, isLoading, error } = useTicket(id);
   const { data: categories = [] } = useCategories();
   const { data: users = [] } = useUsers();
   const createMessageMutation = useCreateMessage();

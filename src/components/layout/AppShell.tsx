@@ -1,6 +1,7 @@
 import React, { ReactNode, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useSession } from '../../context/SessionContext';
 import { useSmartNavigation } from '../../hooks/useNavigation';
 import { 
   Ticket, 
@@ -37,6 +38,7 @@ interface AppShellProps {
 
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const { user, logout } = useAuth();
+  const { sessionTimeRemaining, formatTimeRemaining, extendSession } = useSession();
   const { addNotification, unreadCount } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
@@ -342,8 +344,25 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
               
               <div className="mt-3 text-center">
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Session expires in <span className="text-primary-600 dark:text-primary-400 font-semibold">2h 45m</span>
+                  Session expires in{' '}
+                  <span className={`font-semibold ${
+                    sessionTimeRemaining <= 300 // 5 minutes warning
+                      ? 'text-red-600 dark:text-red-400 animate-pulse' 
+                      : sessionTimeRemaining <= 600 // 10 minutes warning
+                      ? 'text-yellow-600 dark:text-yellow-400'
+                      : 'text-primary-600 dark:text-primary-400'
+                  }`}>
+                    {formatTimeRemaining()}
+                  </span>
                 </p>
+                {sessionTimeRemaining <= 600 && (
+                  <button
+                    onClick={extendSession}
+                    className="mt-2 text-xs px-3 py-1 bg-primary-500 hover:bg-primary-600 text-white rounded-full transition-colors duration-200"
+                  >
+                    Extend Session
+                  </button>
+                )}
               </div>
             </div>
           </div>
