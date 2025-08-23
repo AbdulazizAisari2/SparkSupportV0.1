@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useChat } from '../../context/ChatContext';
 import { Employee, ChatMessage } from '../../context/ChatContext';
+import RateLimitStatus from './RateLimitStatus';
 
 interface ChatWindowProps {
   conversation: {
@@ -136,6 +137,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onClose })
         </div>
       </div>
 
+      {/* Rate Limit Status */}
+      <RateLimitStatus />
+      
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-dark-900">
         {state.activeMessages.length === 0 ? (
