@@ -193,9 +193,51 @@ router.post('/refresh', async (req, res, next) => {
   }
 });
 
-// GET /api/auth/me
-router.get('/me', authenticateToken, async (req, res) => {
-  res.json({ user: req.user });
+// GET /api/auth/me - Get current user data
+router.get('/me', authenticateToken, async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    // Get updated user data from database
+    const currentUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+        department: true,
+        points: true,
+        level: true,
+        ticketsResolved: true,
+        averageResolutionTimeHours: true,
+        customerSatisfactionRating: true,
+        currentStreak: true,
+        totalTicketsHandled: true,
+        averageResponseTimeMinutes: true,
+        monthlyGrowth: true,
+        specialRecognition: true,
+        lastActiveDate: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    });
+
+    if (!currentUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    console.log(`👤 User data requested: ${currentUser.email} (${currentUser.points} points)`);
+
+    res.json({
+      user: currentUser
+    });
+
+  } catch (error) {
+    console.error('❌ Failed to get user data:', error);
+    next(error);
+  }
 });
 
 // POST /api/auth/logout

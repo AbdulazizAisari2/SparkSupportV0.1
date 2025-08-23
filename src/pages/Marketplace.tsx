@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, Star, ShoppingCart, Package, Tag, Heart, Eye, Coins, TrendingUp } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { PurchaseModal } from '../components/ui/PurchaseModal';
 
 interface MarketplaceItem {
   id: string;
@@ -136,14 +138,25 @@ const mockItems: MarketplaceItem[] = [
 const categories = ['All', 'Audio', 'Smartphones', 'Gaming', 'Laptops', 'Wearables', 'Tablets'];
 
 export const Marketplace: React.FC = () => {
-  const { user } = useAuth();
+  const { user, token, refreshUser } = useAuth();
+  const { addToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<MarketplaceItem | null>(null);
+  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
   
   // Get user points from auth context, fallback to mock data for demo
-  const userPoints = user?.points || 8500;
+  const userPoints = user?.points || 0;
+
+  // Refresh user data when component mounts
+  useEffect(() => {
+    if (refreshUser) {
+      refreshUser();
+    }
+  }, [refreshUser]);
 
   const filteredItems = mockItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -165,22 +178,64 @@ export const Marketplace: React.FC = () => {
 
   const canAfford = (points: number) => userPoints >= points;
 
-  const handlePurchase = async (item: MarketplaceItem) => {
-    if (!canAfford(item.points) || !item.inStock) {
+  const handlePurchaseClick = (item: MarketplaceItem) => {
+    if (!item.inStock) {
+      addToast('This item is currently out of stock', 'error');
       return;
     }
 
+    if (!canAfford(item.points)) {
+      addToast(`You need ${(item.points - userPoints).toLocaleString()} more points to purchase this item`, 'error');
+      return;
+    }
+
+    setSelectedItem(item);
+    setIsPurchaseModalOpen(true);
+  };
+
+  const handlePurchaseConfirm = async () => {
+    if (!selectedItem || !token) {
+      throw new Error('No item selected or user not authenticated');
+    }
+
+    setIsLoading(true);
+
     try {
-      // In a real app, this would make an API call to process the purchase
-      // For now, we'll just show a success message
-      alert(`🎉 Successfully redeemed ${item.name} for ${item.points.toLocaleString()} points!`);
+      const response = await fetch('http://localhost:8000/api/marketplace/purchase', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          itemId: selectedItem.id,
+          itemName: selectedItem.name,
+          pointsCost: selectedItem.points,
+          category: selectedItem.category,
+          vendor: selectedItem.vendor
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Purchase failed');
+      }
+
+      const result = await response.json();
       
-      // TODO: Update user points in backend and refresh auth context
-      // await purchaseItem(item.id, item.points);
+      // Update user context with new points
+      if (refreshUser) {
+        await refreshUser();
+      }
+
+      addToast(`🎉 Successfully purchased ${selectedItem.name}!`, 'success');
       
     } catch (error) {
       console.error('Purchase failed:', error);
-      alert('Purchase failed. Please try again.');
+      addToast(error instanceof Error ? error.message : 'Purchase failed. Please try again.', 'error');
+      throw error; // Re-throw so the modal can handle it
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -281,27 +336,27 @@ export const Marketplace: React.FC = () => {
             </div>
           </div>
 
-                     <button
-             onClick={() => handlePurchase(item)}
-             disabled={!item.inStock || !affordable}
-             className={`w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${
-               item.inStock && affordable
-                 ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 shadow-lg hover:shadow-xl transform hover:scale-105'
-                 : !item.inStock
-                 ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                 : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 cursor-not-allowed'
-             }`}
-           >
-             <ShoppingCart className="w-5 h-5" />
-             <span>
-               {!item.inStock 
-                 ? 'Out of Stock' 
-                 : !affordable 
-                 ? 'Insufficient Points' 
-                 : 'Redeem with Points'
-               }
-             </span>
-           </button>
+          <button
+            onClick={() => handlePurchaseClick(item)}
+            disabled={!item.inStock || isLoading}
+            className={`w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${
+              item.inStock && !isLoading
+                ? affordable
+                  ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 shadow-lg hover:shadow-xl transform hover:scale-105'
+                  : 'bg-gradient-to-r from-orange-400 to-red-500 text-white hover:from-orange-500 hover:to-red-600 shadow-lg hover:shadow-xl transform hover:scale-105'
+                : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            <ShoppingCart className="w-5 h-5" />
+            <span>
+              {!item.inStock 
+                ? 'Out of Stock' 
+                : affordable 
+                ? 'Redeem with Points'
+                : 'Buy Anyway'
+              }
+            </span>
+          </button>
         </div>
       </div>
     );
@@ -448,6 +503,20 @@ export const Marketplace: React.FC = () => {
             Clear Filters
           </button>
         </div>
+      )}
+
+      {/* Purchase Modal */}
+      {selectedItem && (
+        <PurchaseModal
+          isOpen={isPurchaseModalOpen}
+          onClose={() => {
+            setIsPurchaseModalOpen(false);
+            setSelectedItem(null);
+          }}
+          onConfirm={handlePurchaseConfirm}
+          item={selectedItem}
+          userPoints={userPoints}
+        />
       )}
     </div>
   );

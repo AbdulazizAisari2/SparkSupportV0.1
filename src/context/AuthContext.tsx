@@ -13,6 +13,7 @@ interface AuthContextType extends AuthState {
   logout: () => void;
   isLoading: boolean;
   refreshAccessToken: () => Promise<boolean>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -125,6 +126,39 @@ export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children 
     localStorage.removeItem('sessionStartTime');
   }, []);
 
+  const refreshUser = useCallback(async (): Promise<void> => {
+    try {
+      if (!state.token) {
+        return;
+      }
+
+      const response = await fetch('http://localhost:8000/api/auth/me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${state.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+
+      const userData = await response.json();
+      
+      const newState = { 
+        ...state, 
+        user: userData.user 
+      };
+      setState(newState);
+      localStorage.setItem('auth', JSON.stringify(newState));
+      
+    } catch (error) {
+      console.error('Failed to refresh user data:', error);
+      // Don't logout on user refresh failure, just log the error
+    }
+  }, [state.token, state.refreshToken]);
+
   return (
     <AuthContext.Provider value={{ 
       ...state, 
@@ -132,7 +166,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children 
       signup, 
       logout, 
       isLoading, 
-      refreshAccessToken 
+      refreshAccessToken,
+      refreshUser
     }}>
       {children}
     </AuthContext.Provider>

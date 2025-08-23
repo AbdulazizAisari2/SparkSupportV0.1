@@ -17,6 +17,7 @@ const emailRoutes = require('./routes/email');
 const leaderboardRoutes = require('./routes/leaderboard');
 const slackRoutes = require('./routes/slack');
 const chatRoutes = require('./routes/chat');
+const marketplaceRoutes = require('./routes/marketplace');
 
 
 // Import middleware
@@ -83,6 +84,7 @@ app.use('/api/email', emailRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/slack', slackRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/marketplace', marketplaceRoutes);
 
 
 // 404 handler
