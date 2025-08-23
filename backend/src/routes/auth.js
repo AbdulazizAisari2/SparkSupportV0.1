@@ -72,11 +72,18 @@ router.post('/login', async (req, res, next) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
+    // Update user online status
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { isOnline: true }
+    });
+
     // Generate tokens
     const { accessToken, refreshToken } = generateTokens(user.id);
 
     // Return user without password hash
     const { passwordHash, ...userResponse } = user;
+    userResponse.isOnline = true; // Update response object
 
     console.log('✅ Login successful:', user.email, user.role);
     

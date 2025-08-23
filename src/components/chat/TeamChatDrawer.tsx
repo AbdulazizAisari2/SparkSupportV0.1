@@ -1,64 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, Users, Circle } from 'lucide-react';
+import { X, Send, Users, AlertCircle, Loader } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { ChatMessage, ChatUser } from '../../types';
 import { formatDistanceToNow } from 'date-fns';
+import { useChat } from '../../hooks/useChat';
 
 interface TeamChatDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Mock data for now - will be replaced with real API calls
-const mockChatUsers: ChatUser[] = [
-  { id: '1', name: 'Sarah Wilson', role: 'staff', department: 'Technical Support', isOnline: true },
-  { id: '2', name: 'Mike Johnson', role: 'staff', department: 'Customer Success', isOnline: true },
-  { id: '3', name: 'Admin User', role: 'admin', isOnline: false, lastSeen: '2024-01-15T10:30:00Z' },
-  { id: '4', name: 'Emily Chen', role: 'staff', department: 'Technical Support', isOnline: true },
-];
-
-const mockMessages: ChatMessage[] = [
-  {
-    id: '1',
-    senderId: '1',
-    senderName: 'Sarah Wilson',
-    senderRole: 'staff',
-    message: 'Good morning team! Ready for another productive day? 🌟',
-    timestamp: '2024-01-15T09:00:00Z',
-  },
-  {
-    id: '2',
-    senderId: '2',
-    senderName: 'Mike Johnson',
-    senderRole: 'staff',
-    message: 'Morning Sarah! Just reviewed the overnight tickets - looking good.',
-    timestamp: '2024-01-15T09:05:00Z',
-  },
-  {
-    id: '3',
-    senderId: '4',
-    senderName: 'Emily Chen',
-    senderRole: 'staff',
-    message: 'Has anyone dealt with the payment processing issue from yesterday? Customer is asking for an update.',
-    timestamp: '2024-01-15T09:15:00Z',
-  },
-  {
-    id: '4',
-    senderId: '1',
-    senderName: 'Sarah Wilson',
-    senderRole: 'staff',
-    message: 'Yes! I resolved it this morning. The issue was with their billing address format. Already updated the customer.',
-    timestamp: '2024-01-15T09:18:00Z',
-  },
-];
-
 export const TeamChatDrawer: React.FC<TeamChatDrawerProps> = ({ isOpen, onClose }) => {
   const { user } = useAuth();
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<ChatMessage[]>(mockMessages);
-  const [onlineUsers, setOnlineUsers] = useState<ChatUser[]>(mockChatUsers);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  const { 
+    messages, 
+    onlineUsers, 
+    isLoading, 
+    error, 
+    sendMessage 
+  } = useChat();
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -72,20 +35,15 @@ export const TeamChatDrawer: React.FC<TeamChatDrawerProps> = ({ isOpen, onClose 
     }
   }, [isOpen]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!message.trim() || !user) return;
 
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
-      senderId: user.id,
-      senderName: user.name,
-      senderRole: user.role,
-      message: message.trim(),
-      timestamp: new Date().toISOString(),
-    };
-
-    setMessages(prev => [...prev, newMessage]);
-    setMessage('');
+    try {
+      await sendMessage(message);
+      setMessage('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -151,23 +109,23 @@ export const TeamChatDrawer: React.FC<TeamChatDrawerProps> = ({ isOpen, onClose 
           <div className="p-4 border-b border-gray-200 dark:border-dark-600 bg-gray-50/50 dark:bg-dark-900/50">
             <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Online Now</h4>
             <div className="flex flex-wrap gap-2">
-              {onlineUsers.filter(u => u.isOnline).map(user => (
+              {onlineUsers.filter(u => u.isOnline).map(chatUser => (
                 <div
-                  key={user.id}
+                  key={chatUser.id}
                   className="flex items-center space-x-2 px-3 py-1 bg-white dark:bg-dark-800 rounded-full border border-gray-200 dark:border-dark-600"
                 >
                   <div className="relative">
                     <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
                       <span className="text-xs font-bold text-white">
-                        {user.name.charAt(0)}
+                        {chatUser.name.charAt(0)}
                       </span>
                     </div>
                     <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white dark:border-dark-800 rounded-full" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name}</p>
-                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${getRoleBadge(user.role)}`}>
-                      {user.role}
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{chatUser.name}</p>
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${getRoleBadge(chatUser.role)}`}>
+                      {chatUser.role}
                     </span>
                   </div>
                 </div>
@@ -177,35 +135,52 @@ export const TeamChatDrawer: React.FC<TeamChatDrawerProps> = ({ isOpen, onClose 
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map(msg => (
-              <div key={msg.id} className="group">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-bold text-white">
-                      {msg.senderName.charAt(0)}
-                    </span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <span className={`font-semibold text-sm ${getRoleColor(msg.senderRole)}`}>
-                        {msg.senderName}
-                      </span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${getRoleBadge(msg.senderRole)}`}>
-                        {msg.senderRole}
-                      </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {formatDistanceToNow(new Date(msg.timestamp), { addSuffix: true })}
+            {isLoading && messages.length === 0 ? (
+              <div className="flex items-center justify-center h-32">
+                <Loader className="w-6 h-6 animate-spin text-blue-500" />
+                <span className="ml-2 text-gray-500 dark:text-gray-400">Loading messages...</span>
+              </div>
+            ) : error ? (
+              <div className="flex items-center justify-center h-32 text-red-500 dark:text-red-400">
+                <AlertCircle className="w-6 h-6 mr-2" />
+                <span>{error}</span>
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="flex items-center justify-center h-32 text-gray-500 dark:text-gray-400">
+                <Users className="w-6 h-6 mr-2" />
+                <span>No messages yet. Start the conversation!</span>
+              </div>
+            ) : (
+              messages.map(msg => (
+                <div key={msg.id} className="group">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-sm font-bold text-white">
+                        {msg.senderName.charAt(0)}
                       </span>
                     </div>
-                    <div className="bg-gray-100 dark:bg-dark-700 rounded-2xl rounded-tl-sm px-4 py-2">
-                      <p className="text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
-                        {msg.message}
-                      </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <span className={`font-semibold text-sm ${getRoleColor(msg.senderRole)}`}>
+                          {msg.senderName}
+                        </span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${getRoleBadge(msg.senderRole)}`}>
+                          {msg.senderRole}
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {formatDistanceToNow(new Date(msg.timestamp), { addSuffix: true })}
+                        </span>
+                      </div>
+                      <div className="bg-gray-100 dark:bg-dark-700 rounded-2xl rounded-tl-sm px-4 py-2">
+                        <p className="text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
+                          {msg.message}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
             <div ref={messagesEndRef} />
           </div>
 
@@ -220,10 +195,11 @@ export const TeamChatDrawer: React.FC<TeamChatDrawerProps> = ({ isOpen, onClose 
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message..."
                 className="flex-1 px-4 py-3 bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                disabled={isLoading}
               />
               <button
                 onClick={handleSendMessage}
-                disabled={!message.trim()}
+                disabled={!message.trim() || isLoading}
                 className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100"
               >
                 <Send className="w-5 h-5" />

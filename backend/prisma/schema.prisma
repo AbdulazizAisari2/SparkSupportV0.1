@@ -15,7 +15,8 @@ model User {
   role            String
   department      String?
   passwordHash    String          @map("password_hash")
-  
+  isOnline        Boolean         @default(false) @map("is_online")
+  lastSeen        DateTime?       @map("last_seen")
 
   
   // Leaderboard fields
@@ -37,7 +38,7 @@ model User {
   assignedTickets Ticket[]        @relation("AssignedTickets")
   createdTickets  Ticket[]        @relation("CustomerTickets")
   achievements    UserAchievement[]
-  
+  chatMessages    ChatMessage[]
 
 
   @@map("users")
@@ -120,6 +121,19 @@ model TicketMessage {
   ticket         Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
   @@map("ticket_messages")
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  senderId  String   @map("sender_id")
+  message   String
+  isEdited  Boolean  @default(false) @map("is_edited")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
 }
 
 
