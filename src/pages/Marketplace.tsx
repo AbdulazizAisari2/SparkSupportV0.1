@@ -144,14 +144,14 @@ export const Marketplace: React.FC = () => {
     setShowPurchaseModal(true);
   };
 
-  const MarketplaceCard = ({ item, index }: { item: any; index: number }) => (
+  const MarketplaceCard: React.FC<{ item: any; index: number }> = ({ item, index }) => (
     <motion.div
       variants={itemVariants}
       whileHover={{ y: -8, scale: 1.02 }}
       className="group h-full"
     >
       <GlassmorphismCard 
-        variant="intense" 
+        variant={"intense" as const} 
         glow={item.popular || item.premium}
         className="h-full relative overflow-hidden"
       >
@@ -328,7 +328,7 @@ export const Marketplace: React.FC = () => {
               Enhance your support experience with premium features, tools, and personalization options
             </p>
 
-            <GlassmorphismCard variant="subtle" className="inline-flex items-center space-x-4 px-6 py-3">
+            <GlassmorphismCard variant={"subtle" as const} className="inline-flex items-center space-x-4 px-6 py-3">
               <Sparkles className="w-5 h-5 text-purple-400" />
               <span className="text-white font-semibold">Your Balance:</span>
               <span className="text-2xl font-bold text-white">{user?.points || 0}</span>
@@ -346,7 +346,7 @@ export const Marketplace: React.FC = () => {
         >
           {/* Search and Filter */}
           <motion.div variants={itemVariants} className="mb-8">
-            <GlassmorphismCard variant="subtle" className="p-6">
+            <GlassmorphismCard variant={"subtle" as const} className="p-6">
               <div className="flex flex-col lg:flex-row gap-6">
                 {/* Search */}
                 <div className="flex-1">
@@ -392,7 +392,7 @@ export const Marketplace: React.FC = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center py-16"
               >
-                <GlassmorphismCard variant="colorful" size="lg" className="max-w-md mx-auto">
+                <GlassmorphismCard variant={"colorful" as const} size={"lg" as const} className="max-w-md mx-auto">
                   <motion.div
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
