@@ -67,7 +67,17 @@ export const LoginPage: React.FC = () => {
       navigateTo(dashboardPath, { replace: true });
     } catch (error) {
       console.error('Login error:', error);
-      addToast(`Login failed: ${error instanceof Error ? error.message : 'Please check your credentials'}`, 'error');
+      
+      let errorMessage = 'Please check your credentials';
+      if (error instanceof Error) {
+        if (error.message.includes('Too many requests')) {
+          errorMessage = 'Server is busy, but we\'re automatically retrying. Please wait a moment...';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      addToast(`Login failed: ${errorMessage}`, 'error');
     }
   };
 
