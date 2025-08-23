@@ -14,6 +14,7 @@ import { ProtectedRoute, RouteGuard } from './components/ProtectedRoute';
 import { UnauthorizedPage } from './components/AuthGuard';
 import { NotFound } from './components/NotFound';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { PageTransition } from './components/ui/PageTransition';
 
 // Pages
 import { LoginPage } from './pages/LoginPage';
@@ -98,8 +99,16 @@ function App() {
                     <RouteGuard>
                       <div className="min-h-screen transition-all duration-300">
                         <Routes>
-                          <Route path="/login" element={<LoginPage />} />
-                          <Route path="/signup" element={<SignupPage />} />
+                          <Route path="/login" element={
+                            <PageTransition>
+                              <LoginPage />
+                            </PageTransition>
+                          } />
+                          <Route path="/signup" element={
+                            <PageTransition>
+                              <SignupPage />
+                            </PageTransition>
+                          } />
                           
                           <Route path="/" element={<RoleBasedRedirect />} />
 
@@ -114,7 +123,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['customer']}>
                                 <AppShell>
-                                  <MyTickets />
+                                  <PageTransition>
+                                    <MyTickets />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -124,7 +135,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['customer']}>
                                 <AppShell>
-                                  <NewTicket />
+                                  <PageTransition>
+                                    <NewTicket />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -134,7 +147,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['customer']}>
                                 <AppShell>
-                                  <TicketDetail />
+                                  <PageTransition>
+                                    <TicketDetail />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -144,7 +159,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['customer']}>
                                 <AppShell>
-                                  <Marketplace />
+                                  <PageTransition>
+                                    <Marketplace />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -154,7 +171,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['customer']}>
                                 <AppShell>
-                                  <NotificationsPage />
+                                  <PageTransition>
+                                    <NotificationsPage />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -166,7 +185,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['staff', 'admin']}>
                                 <AppShell>
-                                  <StaffTickets />
+                                  <PageTransition>
+                                    <StaffTickets />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -176,7 +197,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['staff', 'admin']}>
                                 <AppShell>
-                                  <StaffTicketDetail />
+                                  <PageTransition>
+                                    <StaffTicketDetail />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -186,7 +209,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['staff', 'admin']}>
                                 <AppShell>
-                                  <StaffDashboard />
+                                  <PageTransition>
+                                    <StaffDashboard />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -196,7 +221,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['staff', 'admin']}>
                                 <AppShell>
-                                  <AISupport />
+                                  <PageTransition>
+                                    <AISupport />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -206,7 +233,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['staff', 'admin']}>
                                 <AppShell>
-                                  <Marketplace />
+                                  <PageTransition>
+                                    <Marketplace />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -216,7 +245,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['staff', 'admin']}>
                                 <AppShell>
-                                  <StaffLeaderboard />
+                                  <PageTransition>
+                                    <StaffLeaderboard />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -227,7 +258,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['staff', 'admin']}>
                                 <AppShell>
-                                  <NotificationsPage />
+                                  <PageTransition>
+                                    <NotificationsPage />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -239,7 +272,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <AppShell>
-                                  <AdminCategories />
+                                  <PageTransition>
+                                    <AdminCategories />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -249,7 +284,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <AppShell>
-                                  <AdminPriorities />
+                                  <PageTransition>
+                                    <AdminPriorities />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -259,7 +296,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <AppShell>
-                                  <AdminStaff />
+                                  <PageTransition>
+                                    <AdminStaff />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -269,7 +308,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <AppShell>
-                                  <AdminSlack />
+                                  <PageTransition>
+                                    <AdminSlack />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -279,7 +320,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <AppShell>
-                                  <AISupport />
+                                  <PageTransition>
+                                    <AISupport />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -289,7 +332,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <AppShell>
-                                  <Marketplace />
+                                  <PageTransition>
+                                    <Marketplace />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -299,7 +344,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <AppShell>
-                                  <StaffLeaderboard />
+                                  <PageTransition>
+                                    <StaffLeaderboard />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
@@ -310,7 +357,9 @@ function App() {
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <AppShell>
-                                  <NotificationsPage />
+                                  <PageTransition>
+                                    <NotificationsPage />
+                                  </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>
                             } 
