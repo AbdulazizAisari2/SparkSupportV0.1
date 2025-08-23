@@ -88,248 +88,248 @@ const RoleBasedRedirect: React.FC = () => {
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-            <QueryClientProvider client={queryClient}>
-        <NotificationProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <NotificationProvider>
             <AuthProvider>
               <SessionProvider>
                 <ToastProvider>
-            <Router>
-              <RouteGuard>
-                <div className="min-h-screen transition-all duration-300">
-                  <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                
-                <Route path="/" element={<RoleBasedRedirect />} />
+                  <Router>
+                    <RouteGuard>
+                      <div className="min-h-screen transition-all duration-300">
+                        <Routes>
+                          <Route path="/login" element={<LoginPage />} />
+                          <Route path="/signup" element={<SignupPage />} />
+                          
+                          <Route path="/" element={<RoleBasedRedirect />} />
 
-                {/* Security Routes - Block direct access to base paths */}
-                <Route path="/my" element={<Navigate to="/my/tickets" replace />} />
-                <Route path="/staff" element={<Navigate to="/staff/tickets" replace />} />
-                <Route path="/admin" element={<Navigate to="/admin/categories" replace />} />
+                          {/* Security Routes - Block direct access to base paths */}
+                          <Route path="/my" element={<Navigate to="/my/tickets" replace />} />
+                          <Route path="/staff" element={<Navigate to="/staff/tickets" replace />} />
+                          <Route path="/admin" element={<Navigate to="/admin/categories" replace />} />
 
-                {/* Customer Routes */}
-                <Route 
-                  path="/my/tickets" 
-                  element={
-                    <ProtectedRoute allowedRoles={['customer']}>
-                      <AppShell>
-                        <MyTickets />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/my/tickets/new" 
-                  element={
-                    <ProtectedRoute allowedRoles={['customer']}>
-                      <AppShell>
-                        <NewTicket />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/my/tickets/:id" 
-                  element={
-                    <ProtectedRoute allowedRoles={['customer']}>
-                      <AppShell>
-                        <TicketDetail />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/my/marketplace" 
-                  element={
-                    <ProtectedRoute allowedRoles={['customer']}>
-                      <AppShell>
-                        <Marketplace />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/my/notifications" 
-                  element={
-                    <ProtectedRoute allowedRoles={['customer']}>
-                      <AppShell>
-                        <NotificationsPage />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
+                          {/* Customer Routes */}
+                          <Route 
+                            path="/my/tickets" 
+                            element={
+                              <ProtectedRoute allowedRoles={['customer']}>
+                                <AppShell>
+                                  <MyTickets />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/my/tickets/new" 
+                            element={
+                              <ProtectedRoute allowedRoles={['customer']}>
+                                <AppShell>
+                                  <NewTicket />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/my/tickets/:id" 
+                            element={
+                              <ProtectedRoute allowedRoles={['customer']}>
+                                <AppShell>
+                                  <TicketDetail />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/my/marketplace" 
+                            element={
+                              <ProtectedRoute allowedRoles={['customer']}>
+                                <AppShell>
+                                  <Marketplace />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/my/notifications" 
+                            element={
+                              <ProtectedRoute allowedRoles={['customer']}>
+                                <AppShell>
+                                  <NotificationsPage />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
 
-                {/* Staff Routes */}
-                <Route 
-                  path="/staff/tickets" 
-                  element={
-                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
-                      <AppShell>
-                        <StaffTickets />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/staff/tickets/:id" 
-                  element={
-                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
-                      <AppShell>
-                        <StaffTicketDetail />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/staff/dashboard" 
-                  element={
-                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
-                      <AppShell>
-                        <StaffDashboard />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/staff/ai-support" 
-                  element={
-                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
-                      <AppShell>
-                        <AISupport />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/staff/marketplace" 
-                  element={
-                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
-                      <AppShell>
-                        <Marketplace />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/staff/leaderboard" 
-                  element={
-                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
-                      <AppShell>
-                        <StaffLeaderboard />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
+                          {/* Staff Routes */}
+                          <Route 
+                            path="/staff/tickets" 
+                            element={
+                              <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                                <AppShell>
+                                  <StaffTickets />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/staff/tickets/:id" 
+                            element={
+                              <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                                <AppShell>
+                                  <StaffTicketDetail />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/staff/dashboard" 
+                            element={
+                              <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                                <AppShell>
+                                  <StaffDashboard />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/staff/ai-support" 
+                            element={
+                              <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                                <AppShell>
+                                  <AISupport />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/staff/marketplace" 
+                            element={
+                              <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                                <AppShell>
+                                  <Marketplace />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/staff/leaderboard" 
+                            element={
+                              <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                                <AppShell>
+                                  <StaffLeaderboard />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
 
-                <Route 
-                  path="/staff/notifications" 
-                  element={
-                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
-                      <AppShell>
-                        <NotificationsPage />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
+                          <Route 
+                            path="/staff/notifications" 
+                            element={
+                              <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                                <AppShell>
+                                  <NotificationsPage />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
 
-                {/* Admin Routes */}
-                <Route 
-                  path="/admin/categories" 
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AppShell>
-                        <AdminCategories />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                {/* <Route 
-                  path="/admin/priorities" 
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AppShell>
-                        <AdminPriorities />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                /> */}
-                <Route 
-                  path="/admin/staff" 
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AppShell>
-                        <AdminStaff />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/admin/slack" 
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AppShell>
-                        <AdminSlack />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/admin/ai-support" 
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AppShell>
-                        <AISupport />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/admin/marketplace" 
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AppShell>
-                        <Marketplace />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/admin/leaderboard" 
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AppShell>
-                        <StaffLeaderboard />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
+                          {/* Admin Routes */}
+                          <Route 
+                            path="/admin/categories" 
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <AppShell>
+                                  <AdminCategories />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          {/* <Route 
+                            path="/admin/priorities" 
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <AppShell>
+                                  <AdminPriorities />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          /> */}
+                          <Route 
+                            path="/admin/staff" 
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <AppShell>
+                                  <AdminStaff />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/admin/slack" 
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <AppShell>
+                                  <AdminSlack />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/admin/ai-support" 
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <AppShell>
+                                  <AISupport />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/admin/marketplace" 
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <AppShell>
+                                  <Marketplace />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/admin/leaderboard" 
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <AppShell>
+                                  <StaffLeaderboard />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
 
-                <Route 
-                  path="/admin/notifications" 
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AppShell>
-                        <NotificationsPage />
-                      </AppShell>
-                    </ProtectedRoute>
-                  } 
-                />
+                          <Route 
+                            path="/admin/notifications" 
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <AppShell>
+                                  <NotificationsPage />
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
 
-                {/* Catch-all route for 404 and unauthorized access */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </div>
-            <ToastContainer />
-          </RouteGuard>
-          </Router>
+                          {/* Catch-all route for 404 and unauthorized access */}
+                          <Route path="*" element={<NotFound />} />
+                        </Routes>
+                      </div>
+                      <ToastContainer />
+                    </RouteGuard>
+                  </Router>
                 </ToastProvider>
               </SessionProvider>
             </AuthProvider>
-        </NotificationProvider>
+          </NotificationProvider>
+        </ThemeProvider>
       </QueryClientProvider>
-    </ThemeProvider>
-  </ErrorBoundary>
+    </ErrorBoundary>
   );
 }
 
