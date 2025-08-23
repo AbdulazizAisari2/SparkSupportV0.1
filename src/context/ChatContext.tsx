@@ -280,8 +280,29 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   // Helper function to make authenticated API calls
   const apiCall = async (endpoint: string, options: RequestInit = {}) => {
+    console.log(`🔗 Making API call to: ${API_BASE}${endpoint}`);
+    
     const authData = localStorage.getItem('auth');
-    const token = authData ? JSON.parse(authData).token : null;
+    let token = null;
+    
+    if (authData) {
+      try {
+        const parsedAuth = JSON.parse(authData);
+        token = parsedAuth.token;
+        console.log('🔑 Token found, length:', token?.length);
+      } catch (error) {
+        console.error('❌ Failed to parse auth data:', error);
+        // Clear invalid auth data
+        localStorage.removeItem('auth');
+        throw new Error('Invalid authentication data');
+      }
+    }
+    
+    if (!token) {
+      console.error('❌ No authentication token available');
+      throw new Error('No authentication token available');
+    }
+    
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
       headers: {
@@ -291,9 +312,28 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       },
     });
 
+    console.log(`📡 API response status: ${response.status} ${response.statusText}`);
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'API request failed');
+      if (response.status === 401) {
+        console.error('❌ Authentication failed (401)');
+        // Token is invalid or expired, clear auth data
+        localStorage.removeItem('auth');
+        throw new Error('Authentication failed - please log in again');
+      }
+      
+      let errorMessage = 'API request failed';
+      try {
+        const error = await response.json();
+        errorMessage = error.error || errorMessage;
+        console.error('❌ API error response:', error);
+      } catch {
+        // If response is not JSON, use status text
+        errorMessage = response.statusText || errorMessage;
+        console.error('❌ Non-JSON error response:', response.statusText);
+      }
+      
+      throw new Error(errorMessage);
     }
 
     return response.json();
@@ -303,10 +343,23 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const fetchEmployees = async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
+      console.log('🔄 Fetching employees...');
       const data = await apiCall('/chat/employees');
+      console.log('✅ Employees fetched successfully:', data.employees?.length, 'employees');
       dispatch({ type: 'SET_EMPLOYEES', payload: data.employees });
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to fetch employees' });
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch employees';
+      console.error('❌ Failed to fetch employees:', errorMessage);
+      dispatch({ type: 'SET_ERROR', payload: errorMessage });
+      
+      // If it's an authentication error, also show notification
+      if (errorMessage.includes('Authentication failed')) {
+        addNotification({
+          type: 'error',
+          title: 'Authentication Error',
+          message: 'Your session has expired. Please log in again.'
+        });
+      }
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
@@ -327,10 +380,23 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   // Fetch conversations
   const fetchConversations = async () => {
     try {
+      console.log('🔄 Fetching conversations...');
       const data = await apiCall('/chat/conversations');
+      console.log('✅ Conversations fetched successfully:', data.conversations?.length, 'conversations');
       dispatch({ type: 'SET_CONVERSATIONS', payload: data.conversations });
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to fetch conversations' });
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch conversations';
+      console.error('❌ Failed to fetch conversations:', errorMessage);
+      dispatch({ type: 'SET_ERROR', payload: errorMessage });
+      
+      // If it's an authentication error, also show notification
+      if (errorMessage.includes('Authentication failed')) {
+        addNotification({
+          type: 'error',
+          title: 'Authentication Error', 
+          message: 'Your session has expired. Please log in again.'
+        });
+      }
     }
   };
 
@@ -371,7 +437,17 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       const data = await apiCall(`/chat/conversations/${conversationId}/messages`);
       dispatch({ type: 'SET_ACTIVE_MESSAGES', payload: data.messages });
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to fetch messages' });
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch messages';
+      dispatch({ type: 'SET_ERROR', payload: errorMessage });
+      
+      // If it's an authentication error, also show notification
+      if (errorMessage.includes('Authentication failed')) {
+        addNotification({
+          type: 'error',
+          title: 'Authentication Error',
+          message: 'Your session has expired. Please log in again.'
+        });
+      }
     }
   };
 
@@ -406,7 +482,23 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       formData.append('file', file);
       
       const authData = localStorage.getItem('auth');
-      const token = authData ? JSON.parse(authData).token : null;
+      let token = null;
+      
+      if (authData) {
+        try {
+          const parsedAuth = JSON.parse(authData);
+          token = parsedAuth.token;
+        } catch (error) {
+          console.error('Failed to parse auth data:', error);
+          localStorage.removeItem('auth');
+          throw new Error('Invalid authentication data');
+        }
+      }
+      
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+      
       const uploadResponse = await fetch(`${API_BASE}/chat/upload`, {
         method: 'POST',
         headers: {
@@ -491,6 +583,10 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   // Initialize data when user changes
   useEffect(() => {
     if (user && (user.role === 'staff' || user.role === 'admin')) {
+      // Clear any previous error state
+      dispatch({ type: 'SET_ERROR', payload: null });
+      
+      // Initialize chat data
       fetchEmployees();
       fetchConversations();
       getUnreadCount();
@@ -508,6 +604,9 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
         // Set user as offline when component unmounts
         updateEmployeeStatus({ isOnline: false });
       };
+    } else if (user && user.role === 'customer') {
+      // Customers don't have access to team chat
+      dispatch({ type: 'SET_ERROR', payload: 'Team chat is only available for staff and admin users' });
     }
   }, [user]);
 
