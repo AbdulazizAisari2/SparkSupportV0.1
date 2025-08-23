@@ -55,12 +55,37 @@ export const LoginPage: React.FC = () => {
         body: JSON.stringify(loginData),
       });
       
+      // Read the response body only once
+      const responseText = await response.text();
+      
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Login failed');
+        let errorMessage = `Login failed with status ${response.status}`;
+        if (responseText) {
+          try {
+            const errorData = JSON.parse(responseText);
+            errorMessage = errorData.error || errorData.message || errorMessage;
+          } catch {
+            errorMessage = responseText;
+          }
+        }
+        throw new Error(errorMessage);
       }
 
-      const result = await response.json();
+      if (!responseText) {
+        throw new Error('Empty response from server');
+      }
+
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch {
+        throw new Error('Invalid response format from server');
+      }
+
+      if (!result.accessToken || !result.user) {
+        throw new Error('Invalid login response: missing required data');
+      }
+
       login(result.accessToken, result.refreshToken, result.user);
       
       addToast(`Welcome back, ${result.user.name}! 🎉`, 'success');

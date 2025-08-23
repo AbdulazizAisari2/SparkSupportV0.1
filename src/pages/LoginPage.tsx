@@ -45,6 +45,16 @@ export const LoginPage: React.FC = () => {
       });
 
       console.log('Login successful:', result);
+      
+      // Handle case where result might be null (empty response)
+      if (!result) {
+        throw new Error('Empty response from server');
+      }
+
+      if (!result.accessToken || !result.user) {
+        throw new Error('Invalid login response: missing required data');
+      }
+
       login(result.accessToken, result.refreshToken, result.user);
       
       addToast(`Welcome back, ${result.user.name}! 🎉`, 'success');
