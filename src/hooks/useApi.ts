@@ -41,41 +41,88 @@ class ApiClient {
   }
 
   async login(email: string, password: string): Promise<LoginResponse> {
-    const response = await fetch(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify({ email, password }),
-    });
+    return this.makeRequestWithRetry(async () => {
+      const response = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ email, password }),
+      });
 
-    // Read the response body only once
-    const responseText = await response.text();
+      // Read the response body only once
+      const responseText = await response.text();
 
-    if (!response.ok) {
-      // Try to parse as JSON for error message
-      let errorMessage = `Login failed with status ${response.status}`;
-      if (responseText) {
-        try {
-          const errorData = JSON.parse(responseText);
-          errorMessage = errorData.error || errorData.message || errorMessage;
-        } catch {
-          // If not valid JSON, use the raw text
-          errorMessage = responseText;
+      if (!response.ok) {
+        // Try to parse as JSON for error message
+        let errorMessage = `Login failed with status ${response.status}`;
+        if (responseText) {
+          try {
+            const errorData = JSON.parse(responseText);
+            errorMessage = errorData.error || errorData.message || errorMessage;
+          } catch {
+            // If not valid JSON, use the raw text
+            errorMessage = responseText;
+          }
         }
+        
+        // For rate limiting errors, throw a specific error that can be retried
+        if (response.status === 429) {
+          const retryError = new Error(errorMessage);
+          (retryError as any).isRetryable = true;
+          (retryError as any).status = 429;
+          throw retryError;
+        }
+        
+        throw new Error(errorMessage);
       }
-      throw new Error(errorMessage);
-    }
 
-    // Handle successful response
-    if (!responseText) {
-      // Handle empty 204 responses or similar
-      return null;
-    }
+      // Handle successful response
+      if (!responseText) {
+        // Handle empty 204 responses or similar
+        return null;
+      }
 
-    try {
-      return JSON.parse(responseText);
-    } catch {
-      throw new Error('Invalid response format from server');
+      try {
+        return JSON.parse(responseText);
+      } catch {
+        throw new Error('Invalid response format from server');
+      }
+    });
+  }
+
+  private async makeRequestWithRetry<T>(
+    request: () => Promise<T>,
+    maxRetries: number = 3,
+    baseDelay: number = 1000
+  ): Promise<T> {
+    let lastError: Error;
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        return await request();
+      } catch (error) {
+        lastError = error as Error;
+        
+        // Check if this is a retryable error (429)
+        const isRetryable = (error as any).isRetryable === true || (error as any).status === 429;
+        
+        // Don't retry on the last attempt or if not retryable
+        if (attempt === maxRetries || !isRetryable) {
+          break;
+        }
+        
+        // Calculate delay with exponential backoff and jitter
+        const delay = Math.min(baseDelay * Math.pow(2, attempt), 30000); // Max 30 seconds
+        const jitter = Math.random() * 1000; // Add up to 1 second of jitter
+        const totalDelay = delay + jitter;
+        
+        console.log(`Rate limit hit, retrying in ${Math.round(totalDelay)}ms (attempt ${attempt + 1}/${maxRetries + 1})`);
+        
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, totalDelay));
+      }
     }
+    
+    throw lastError;
   }
 
   async signup(data: SignupRequest): Promise<LoginResponse> {
