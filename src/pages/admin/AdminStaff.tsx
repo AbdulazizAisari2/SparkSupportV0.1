@@ -14,7 +14,16 @@ import { CrudDialog } from '../../components/admin/CrudDialog';
 import { RoleBadge } from '../../components/ui/Badge';
 import { User } from '../../types';
 
-const userSchema = z.object({
+const createUserSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  phone: z.string().optional(),
+  role: z.enum(['staff', 'admin'] as const),
+  department: z.string().optional(),
+});
+
+const updateUserSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
   email: z.string().email('Invalid email address'),
   phone: z.string().optional(),
@@ -22,7 +31,9 @@ const userSchema = z.object({
   department: z.string().optional(),
 });
 
-type UserFormData = z.infer<typeof userSchema>;
+type CreateUserFormData = z.infer<typeof createUserSchema>;
+type UpdateUserFormData = z.infer<typeof updateUserSchema>;
+type UserFormData = CreateUserFormData | UpdateUserFormData;
 
 export const AdminStaff: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -36,20 +47,23 @@ export const AdminStaff: React.FC = () => {
   const updateUserMutation = useUpdateUser();
   const deleteUserMutation = useDeleteUser();
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<UserFormData>({
-    resolver: zodResolver(userSchema),
+  const createForm = useForm<CreateUserFormData>({
+    resolver: zodResolver(createUserSchema),
   });
+
+  const updateForm = useForm<UpdateUserFormData>({
+    resolver: zodResolver(updateUserSchema),
+  });
+
+  const currentForm = editingUser ? updateForm : createForm;
+  const { register, handleSubmit, reset, formState: { errors } } = currentForm;
 
   const handleCreate = () => {
     setEditingUser(null);
-    reset({ 
+    createForm.reset({ 
       name: '', 
       email: '', 
+      password: '',
       phone: '', 
       role: 'staff', 
       department: '' 
@@ -59,7 +73,7 @@ export const AdminStaff: React.FC = () => {
 
   const handleEdit = (user: User) => {
     setEditingUser(user);
-    reset({
+    updateForm.reset({
       name: user.name,
       email: user.email,
       phone: user.phone || '',
@@ -83,15 +97,15 @@ export const AdminStaff: React.FC = () => {
       if (editingUser) {
         await updateUserMutation.mutateAsync({
           id: editingUser.id,
-          data,
+          data: data as UpdateUserFormData,
         });
         addToast('User updated successfully!', 'success');
       } else {
-        await createUserMutation.mutateAsync(data);
+        await createUserMutation.mutateAsync(data as CreateUserFormData);
         addToast('User created successfully!', 'success');
       }
       setIsDialogOpen(false);
-      reset();
+      currentForm.reset();
     } catch {
       addToast('Operation failed. Please try again.', 'error');
     }
@@ -100,7 +114,7 @@ export const AdminStaff: React.FC = () => {
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     setEditingUser(null);
-    reset();
+    currentForm.reset();
   };
 
   const renderUser = (user: User) => (
@@ -191,6 +205,27 @@ export const AdminStaff: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
             )}
           </div>
+
+          {!editingUser && (
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Password *
+              </label>
+              <input
+                {...register('password')}
+                id="password"
+                type="password"
+                className={`
+                  w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                  ${errors.password ? 'border-red-300' : 'border-gray-300'}
+                `}
+                placeholder="Enter password (min. 8 characters)"
+              />
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+              )}
+            </div>
+          )}
 
           <div>
             <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
