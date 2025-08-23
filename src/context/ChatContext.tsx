@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, ReactNode, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { useNotifications } from './NotificationContext';
 
@@ -278,7 +278,21 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   // API base URL
   const API_BASE = 'http://localhost:8000/api';
 
-  // Helper function to make authenticated API calls
+  // Rate limit helpers and state
+  const hasShownRateLimitNoticeRef = useRef<boolean>(false);
+  const rateLimitedUntilRef = useRef<number | null>(null);
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const parseRetryAfterMs = (retryAfter: string | null): number | null => {
+    if (!retryAfter) return null;
+    const seconds = Number(retryAfter);
+    if (!Number.isNaN(seconds) && seconds > 0) return seconds * 1000;
+    // If it's a HTTP-date, fall back to calculating difference
+    const date = new Date(retryAfter);
+    const diff = date.getTime() - Date.now();
+    return Number.isFinite(diff) && diff > 0 ? diff : null;
+  };
+
+  // Helper function to make authenticated API calls with 429 handling
   const apiCall = async (endpoint: string, options: RequestInit = {}) => {
     console.log(`🔗 Making API call to: ${API_BASE}${endpoint}`);
     
@@ -288,41 +302,76 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     }
     
     console.log('🔑 Token found, length:', token?.length);
-    
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-        ...options.headers,
-      },
-    });
 
-    console.log(`📡 API response status: ${response.status} ${response.statusText}`);
+    const maxRetries = 3;
+    let attempt = 0;
+    let lastErrorMessage = 'API request failed';
 
-    if (!response.ok) {
+    while (attempt <= maxRetries) {
+      // If we're currently rate-limited, wait before making the next attempt
+      if (rateLimitedUntilRef.current && Date.now() < rateLimitedUntilRef.current) {
+        const waitMs = rateLimitedUntilRef.current - Date.now();
+        await sleep(waitMs);
+      }
+
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          ...options.headers,
+        },
+      });
+  
+      console.log(`📡 API response status: ${response.status} ${response.statusText}`);
+  
+      if (response.ok) {
+        return response.json();
+      }
+  
       if (response.status === 401) {
         console.error('❌ Authentication failed (401)');
-        // Token is invalid or expired, clear auth data
         localStorage.removeItem('auth');
         throw new Error('Authentication failed - please log in again');
       }
-      
-      let errorMessage = 'API request failed';
+
+      // Try to extract error message for non-OK responses
       try {
         const error = await response.json();
-        errorMessage = error.error || errorMessage;
+        lastErrorMessage = error.error || lastErrorMessage;
         console.error('❌ API error response:', error);
       } catch {
-        // If response is not JSON, use status text
-        errorMessage = response.statusText || errorMessage;
+        lastErrorMessage = response.statusText || lastErrorMessage;
         console.error('❌ Non-JSON error response:', response.statusText);
       }
-      
-      throw new Error(errorMessage);
+
+      if (response.status === 429 && attempt < maxRetries) {
+        // Determine backoff duration
+        const retryHeaderMs = parseRetryAfterMs(response.headers.get('Retry-After'));
+        const base = 2000; // 2s base
+        const backoffMs = retryHeaderMs ?? (base * Math.pow(2, attempt));
+        const jitter = Math.floor(Math.random() * 500);
+        const waitMs = backoffMs + jitter;
+        rateLimitedUntilRef.current = Date.now() + waitMs;
+        if (!hasShownRateLimitNoticeRef.current) {
+          addNotification({
+            type: 'warning',
+            title: 'Rate limited',
+            message: 'You are sending requests too quickly. We will retry automatically.',
+          });
+          hasShownRateLimitNoticeRef.current = true;
+        }
+        console.warn(`⏳ Rate limited. Retrying in ${waitMs}ms (attempt ${attempt + 1}/${maxRetries}).`);
+        await sleep(waitMs);
+        attempt += 1;
+        continue;
+      }
+
+      // Other errors or exhausted retries
+      break;
     }
 
-    return response.json();
+    throw new Error(lastErrorMessage);
   };
 
   // Fetch employees
@@ -588,23 +637,29 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       let previousUnreadCount = state.unreadCount;
       
       const refreshInterval = setInterval(async () => {
-        await fetchConversations();
-        
-        // Check for new messages and show notifications
-        const newUnreadData = await apiCall('/chat/unread-count');
-        const newUnreadCount = newUnreadData.unreadCount;
-        
-        if (newUnreadCount > previousUnreadCount) {
-          const newMessagesCount = newUnreadCount - previousUnreadCount;
-          addNotification({
-            type: 'info',
-            title: '💬 New Chat Message',
-            message: `You have ${newMessagesCount} new message${newMessagesCount > 1 ? 's' : ''} from your team.`
-          });
+        // Skip refresh while we're rate-limited
+        if (rateLimitedUntilRef.current && Date.now() < rateLimitedUntilRef.current) {
+          return;
         }
-        
-        dispatch({ type: 'SET_UNREAD_COUNT', payload: newUnreadCount });
-        previousUnreadCount = newUnreadCount;
+        try {
+          await fetchConversations();
+          const newUnreadData = await apiCall('/chat/unread-count');
+          const newUnreadCount = newUnreadData.unreadCount;
+          
+          if (newUnreadCount > previousUnreadCount) {
+            const newMessagesCount = newUnreadCount - previousUnreadCount;
+            addNotification({
+              type: 'info',
+              title: '💬 New Chat Message',
+              message: `You have ${newMessagesCount} new message${newMessagesCount > 1 ? 's' : ''} from your team.`
+            });
+          }
+          
+          dispatch({ type: 'SET_UNREAD_COUNT', payload: newUnreadCount });
+          previousUnreadCount = newUnreadCount;
+        } catch (err) {
+          console.warn('Skipping refresh due to error:', err instanceof Error ? err.message : err);
+        }
       }, 10000); // Refresh every 10 seconds
       
       return () => clearInterval(refreshInterval);

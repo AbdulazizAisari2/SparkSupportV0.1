@@ -32,14 +32,26 @@ app.use(cors({
 }));
 
 // Rate limiting
+const RATE_LIMIT_WINDOW_MS = parseInt(process.env.RATE_LIMIT_WINDOW_MS || `${60 * 60 * 1000}`, 10); // default 1 hour
+const RATE_LIMIT_MAX = parseInt(process.env.RATE_LIMIT_MAX || '1000', 10); // default 1000 requests per window
+
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: RATE_LIMIT_WINDOW_MS,
+  max: RATE_LIMIT_MAX,
   message: {
     error: 'Too many requests from this IP, please try again later.'
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Skip limiting certain safe endpoints
+  skip: (req) => {
+    const path = req.path || '';
+    // Allow health checks and static assets without rate limits
+    if (path.startsWith('/health') || path.startsWith('/uploads')) {
+      return true;
+    }
+    return false;
+  },
 });
 app.use('/api', limiter);
 
