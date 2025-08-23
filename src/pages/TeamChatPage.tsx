@@ -63,6 +63,90 @@ export const TeamChatPage: React.FC = () => {
     setActiveConversation(null);
   };
 
+  // Show error state if there's an error
+  if (state.error) {
+    return (
+      <div className="h-full flex flex-col bg-gray-50 dark:bg-dark-900">
+        {/* Header */}
+        <div className="bg-white dark:bg-dark-800 border-b dark:border-dark-600 px-6 py-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-primary-100 dark:bg-primary-900/20 rounded-lg">
+              <MessageCircle className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Team Chat
+              </h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Connect and collaborate with your team
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Error Content */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center max-w-md">
+            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MessageCircle className="w-8 h-8 text-red-500" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Unable to load Team Chat
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
+              {state.error}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state
+  if (state.isLoading) {
+    return (
+      <div className="h-full flex flex-col bg-gray-50 dark:bg-dark-900">
+        {/* Header */}
+        <div className="bg-white dark:bg-dark-800 border-b dark:border-dark-600 px-6 py-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-primary-100 dark:bg-primary-900/20 rounded-lg">
+              <MessageCircle className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Team Chat
+              </h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Loading...
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Loading Content */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-primary-100 dark:bg-primary-900/20 rounded-full flex items-center justify-center mx-auto mb-4 animate-spin">
+              <MessageCircle className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Loading Team Chat
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400">
+              Please wait while we set up your chat...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full flex flex-col bg-gray-50 dark:bg-dark-900">
       {/* Header */}

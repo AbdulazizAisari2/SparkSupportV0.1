@@ -13,8 +13,8 @@ const authenticateToken = async (req, res, next) => {
       return res.status(401).json({ error: 'Access token required' });
     }
 
-    // Verify token with stricter validation
-    const decoded = jwt.verify(token, 'sparksupport-local-dev-secret-123');
+    // Verify token with environment variable or fallback
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'sparksupport-local-dev-secret-123');
     
     // Check if token is expired (additional check)
     const currentTime = Math.floor(Date.now() / 1000);
