@@ -48,8 +48,14 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Login failed');
+      try {
+        const error = await response.json();
+        throw new Error(error.error || 'Login failed');
+      } catch (jsonError) {
+        // If response is not valid JSON, try to get text
+        const text = await response.text();
+        throw new Error(text || `Login failed with status ${response.status}`);
+      }
     }
 
     return response.json();
@@ -63,8 +69,14 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Signup failed');
+      try {
+        const error = await response.json();
+        throw new Error(error.error || 'Signup failed');
+      } catch (jsonError) {
+        // If response is not valid JSON, try to get text
+        const text = await response.text();
+        throw new Error(text || `Signup failed with status ${response.status}`);
+      }
     }
 
     return response.json();
@@ -78,7 +90,14 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      throw new Error('Token refresh failed');
+      try {
+        const error = await response.json();
+        throw new Error(error.error || 'Token refresh failed');
+      } catch (jsonError) {
+        // If response is not valid JSON, try to get text
+        const text = await response.text();
+        throw new Error(text || `Token refresh failed with status ${response.status}`);
+      }
     }
 
     return response.json();
