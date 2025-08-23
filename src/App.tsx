@@ -29,6 +29,7 @@ import { AdminStaff } from './pages/admin/AdminStaff';
 import { AdminSlack } from './pages/admin/AdminSlack';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { AISupport } from './pages/AISupport';
+import { Marketplace } from './pages/Marketplace';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -135,6 +136,16 @@ function App() {
                   } 
                 />
                 <Route 
+                  path="/my/marketplace" 
+                  element={
+                    <ProtectedRoute allowedRoles={['customer']}>
+                      <AppShell>
+                        <Marketplace />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
                   path="/my/notifications" 
                   element={
                     <ProtectedRoute allowedRoles={['customer']}>
@@ -182,6 +193,16 @@ function App() {
                     <ProtectedRoute allowedRoles={['staff', 'admin']}>
                       <AppShell>
                         <AISupport />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/staff/marketplace" 
+                  element={
+                    <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                      <AppShell>
+                        <Marketplace />
                       </AppShell>
                     </ProtectedRoute>
                   } 
@@ -254,6 +275,16 @@ function App() {
                     <ProtectedRoute allowedRoles={['admin']}>
                       <AppShell>
                         <AISupport />
+                      </AppShell>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/marketplace" 
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AppShell>
+                        <Marketplace />
                       </AppShell>
                     </ProtectedRoute>
                   } 
