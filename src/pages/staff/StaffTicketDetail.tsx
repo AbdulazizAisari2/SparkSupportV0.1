@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSecureParams } from '../../hooks/useSecureParams';
 import { ArrowLeft, UserPlus, Clock } from 'lucide-react';
@@ -22,9 +22,15 @@ export const StaffTicketDetail: React.FC = () => {
   const { addToast } = useToast();
   const [isAssignDrawerOpen, setIsAssignDrawerOpen] = useState(false);
 
-  // Security: Validate ticket ID
+  // Security: Validate ticket ID using useEffect to avoid render warnings
+  useEffect(() => {
+    if (!id) {
+      navigate('/staff/tickets', { replace: true });
+    }
+  }, [id, navigate]);
+
+  // Early return if no ID (component will be redirected via useEffect)
   if (!id) {
-    navigate('/staff/tickets', { replace: true });
     return null;
   }
 
@@ -38,6 +44,14 @@ export const StaffTicketDetail: React.FC = () => {
 
   const ticket = ticketData?.ticket;
   const messages = ticket?.messages || [];
+
+  // Handle case where ticket doesn't exist after loading
+  useEffect(() => {
+    if (!isLoading && !error && !ticket) {
+      // Ticket not found, redirect will be handled by the render return
+      console.log('Ticket not found after loading completed');
+    }
+  }, [isLoading, error, ticket]);
 
   const handleReply = async (data: { message: string }) => {
     if (!user || !ticket) return;
