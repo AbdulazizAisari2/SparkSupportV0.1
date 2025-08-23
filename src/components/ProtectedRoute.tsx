@@ -26,8 +26,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const allowedPaths = [
     '/my/tickets', '/my/tickets/new', '/my/tickets/', '/my/marketplace', '/my/notifications',
     '/staff/tickets', '/staff/tickets/', '/staff/dashboard', '/staff/ai-support', 
-    '/staff/marketplace', '/staff/leaderboard', '/staff/notifications',
-    '/admin/categories', '/admin/staff', '/admin/slack', '/admin/ai-support',
+    '/staff/marketplace', '/staff/leaderboard', '/staff/notifications', '/staff/chat',
+    '/admin/categories', '/admin/staff', '/admin/slack', '/admin/ai-support', '/admin/chat',
     '/admin/marketplace', '/admin/leaderboard', '/admin/notifications'
   ];
   

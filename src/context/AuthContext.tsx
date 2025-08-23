@@ -47,14 +47,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children 
       });
 
       if (!response.ok) {
-        try {
-          const error = await response.json();
-          throw new Error(error.error || 'Token refresh failed');
-        } catch (jsonError) {
-          // If response is not valid JSON, try to get text
-          const text = await response.text();
-          throw new Error(text || `Token refresh failed with status ${response.status}`);
-        }
+        const raw = await response.text();
+        let parsed: any;
+        try { parsed = JSON.parse(raw); } catch {}
+        const message = (parsed && (parsed.error || parsed.message)) || raw || `Token refresh failed with status ${response.status}`;
+        throw new Error(message);
       }
 
       const { accessToken, refreshToken: newRefreshToken } = await response.json();
