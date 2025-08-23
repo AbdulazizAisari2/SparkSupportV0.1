@@ -5,6 +5,7 @@ const { z } = require('zod');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
 const emailService = require('../services/emailService');
+const { loginLimiter } = require('../middleware/rateLimit');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -50,7 +51,7 @@ const generateTokens = (userId) => {
 };
 
 // POST /api/auth/login
-router.post('/login', async (req, res, next) => {
+const loginHandler = async (req, res, next) => {
   try {
     console.log('🔐 Login attempt:', req.body.email);
     
@@ -90,7 +91,14 @@ router.post('/login', async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
+
+// Apply rate limiter conditionally based on environment
+if (process.env.NODE_ENV === 'production' && loginLimiter) {
+  router.post('/login', loginLimiter, loginHandler);
+} else {
+  router.post('/login', loginHandler);
+}
 
 // POST /api/auth/signup
 router.post('/signup', async (req, res, next) => {
