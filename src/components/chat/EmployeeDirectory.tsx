@@ -169,15 +169,31 @@ export const EmployeeDirectory: React.FC<EmployeeDirectoryProps> = ({ onStartCha
 
             {/* Online Status Filter */}
             <div>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={state.showOnlineOnly}
-                  onChange={(e) => setShowOnlineOnly(e.target.checked)}
-                  className="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500 dark:bg-dark-700"
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">Show online only</span>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                Status Filter
               </label>
+              <div className="space-y-2">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="statusFilter"
+                    checked={!state.showOnlineOnly}
+                    onChange={() => setShowOnlineOnly(false)}
+                    className="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 focus:ring-primary-500 dark:bg-dark-700"
+                  />
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Show all employees</span>
+                </label>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="statusFilter"
+                    checked={state.showOnlineOnly}
+                    onChange={() => setShowOnlineOnly(true)}
+                    className="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 focus:ring-primary-500 dark:bg-dark-700"
+                  />
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Show online only</span>
+                </label>
+              </div>
             </div>
           </div>
         )}
@@ -207,7 +223,11 @@ export const EmployeeDirectory: React.FC<EmployeeDirectoryProps> = ({ onStartCha
             {filteredEmployees.map((employee) => (
               <div
                 key={employee.id}
-                className="p-4 hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors"
+                className={`p-4 transition-colors border-l-4 ${
+                  employee.isOnline
+                    ? 'hover:bg-gray-50 dark:hover:bg-dark-700 border-l-green-400'
+                    : 'hover:bg-gray-50 dark:hover:bg-dark-700 border-l-gray-300 dark:border-l-gray-600 opacity-75'
+                }`}
               >
                 <div className="flex items-center space-x-3">
                   <div className="relative">
@@ -221,8 +241,15 @@ export const EmployeeDirectory: React.FC<EmployeeDirectoryProps> = ({ onStartCha
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
-                      <h3 className="font-medium text-gray-900 dark:text-white truncate">
+                      <h3 className={`font-medium truncate ${
+                        employee.isOnline
+                          ? 'text-gray-900 dark:text-white'
+                          : 'text-gray-600 dark:text-gray-400'
+                      }`}>
                         {employee.name}
+                        {!employee.isOnline && (
+                          <span className="ml-1 text-xs text-gray-400 dark:text-gray-500">(offline)</span>
+                        )}
                       </h3>
                       <RoleBadge role={employee.role} />
                     </div>
@@ -264,15 +291,24 @@ export const EmployeeDirectory: React.FC<EmployeeDirectoryProps> = ({ onStartCha
                   <div className="flex items-center space-x-1">
                     <button
                       onClick={() => onStartChat(employee)}
-                      className="p-2 bg-primary-100 dark:bg-primary-900/20 hover:bg-primary-200 dark:hover:bg-primary-800/40 text-primary-600 dark:text-primary-400 rounded-lg transition-colors group"
-                      title="Start chat"
+                      className={`p-2 rounded-lg transition-colors group ${
+                        employee.isOnline
+                          ? 'bg-primary-100 dark:bg-primary-900/20 hover:bg-primary-200 dark:hover:bg-primary-800/40 text-primary-600 dark:text-primary-400'
+                          : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-500 dark:text-gray-400'
+                      }`}
+                      title={employee.isOnline ? "Start chat" : "Start chat (user offline)"}
                     >
                       <MessageCircle className="w-4 h-4 group-hover:scale-110 transition-transform" />
                     </button>
                     
                     <button
-                      className="p-2 hover:bg-gray-100 dark:hover:bg-dark-600 text-gray-500 dark:text-gray-400 rounded-lg transition-colors"
-                      title="Call"
+                      className={`p-2 rounded-lg transition-colors ${
+                        employee.isOnline
+                          ? 'hover:bg-gray-100 dark:hover:bg-dark-600 text-gray-500 dark:text-gray-400'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                      }`}
+                      title={employee.isOnline ? "Call" : "Call (user offline)"}
+                      disabled={!employee.isOnline}
                     >
                       <Phone className="w-4 h-4" />
                     </button>
