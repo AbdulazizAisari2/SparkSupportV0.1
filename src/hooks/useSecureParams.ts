@@ -1,9 +1,9 @@
-import { useParams, useSearchParams } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { useMemo, useEffect } from 'react';
 
 // Whitelist of allowed parameter names and their validation patterns
 const ALLOWED_PARAMS = {
-  id: /^[0-9]+$/,           // Only numeric IDs
+  id: /^[A-Za-z0-9_-]+$/,      // Allow alphanumeric IDs with hyphens and underscores (e.g., T001, T-001_A)
   status: /^(open|in_progress|resolved|closed)$/,
   priority: /^(low|medium|high|urgent)$/,
   category: /^[a-zA-Z0-9_-]+$/,
@@ -26,6 +26,7 @@ interface SecureSearchParams {
 
 export const useSecureParams = (): SecureParams => {
   const params = useParams();
+  const navigate = useNavigate();
   
   return useMemo(() => {
     const secureParams: SecureParams = {};
@@ -37,6 +38,8 @@ export const useSecureParams = (): SecureParams => {
           secureParams[key] = value;
         } else {
           console.warn(`Invalid parameter value for ${key}: ${value}`);
+          // For critical parameters like 'id', we might want to handle this more gracefully
+          // but we'll let the consuming component handle the redirect logic
         }
       } else if (value) {
         console.warn(`Unauthorized parameter: ${key}`);
@@ -90,11 +93,11 @@ export const sanitizeNavigationPath = (path: string): string => {
   const allowedPatterns = [
     /^\/login$/,
     /^\/signup$/,
-    /^\/my\/tickets(\/[0-9]+)?$/,
+    /^\/my\/tickets(\/[A-Za-z0-9_-]+)?$/,
     /^\/my\/tickets\/new$/,
     /^\/my\/marketplace$/,
     /^\/my\/notifications$/,
-    /^\/staff\/tickets(\/[0-9]+)?$/,
+    /^\/staff\/tickets(\/[A-Za-z0-9_-]+)?$/,
     /^\/staff\/dashboard$/,
     /^\/staff\/ai-support$/,
     /^\/staff\/marketplace$/,
