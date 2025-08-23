@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { X, ShoppingCart, Coins, Star, Check, Sparkles, Gift, TrendingUp } from 'lucide-react';
-import { Confetti } from './Confetti';
 
 interface PurchaseModalProps {
   isOpen: boolean;
@@ -19,6 +18,28 @@ interface PurchaseModalProps {
   };
   userPoints: number;
 }
+
+// Simple inline confetti component to avoid import issues
+const SimpleConfetti: React.FC = () => {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {[...Array(50)].map((_, i) => (
+        <div
+          key={i}
+          className={`absolute w-2 h-2 ${
+            ['bg-yellow-400', 'bg-blue-400', 'bg-green-400', 'bg-red-400', 'bg-purple-400'][i % 5]
+          } animate-bounce`}
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 2}s`,
+            animationDuration: `${1 + Math.random()}s`
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
 export const PurchaseModal: React.FC<PurchaseModalProps> = ({
   isOpen,
@@ -99,7 +120,7 @@ export const PurchaseModal: React.FC<PurchaseModalProps> = ({
           {isPurchased ? (
             <div className="relative p-8 text-center">
               {/* Confetti Effect */}
-              {showConfetti && <Confetti />}
+              {showConfetti && <SimpleConfetti />}
               
               {/* Success Animation */}
               <div className="relative mb-6">

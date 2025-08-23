@@ -146,18 +146,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children 
 
       const userData = await response.json();
       
-      const newState = { 
-        ...state, 
-        user: userData.user 
-      };
-      setState(newState);
-      localStorage.setItem('auth', JSON.stringify(newState));
+      setState(prevState => {
+        const newState = { 
+          ...prevState, 
+          user: userData.user 
+        };
+        localStorage.setItem('auth', JSON.stringify(newState));
+        return newState;
+      });
       
     } catch (error) {
       console.error('Failed to refresh user data:', error);
       // Don't logout on user refresh failure, just log the error
     }
-  }, [state.token, state.refreshToken]);
+  }, [state.token]);
 
   return (
     <AuthContext.Provider value={{ 
