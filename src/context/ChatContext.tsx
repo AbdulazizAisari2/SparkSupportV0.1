@@ -272,42 +272,51 @@ interface ChatProviderProps {
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(chatReducer, initialState);
-  const { user } = useAuth();
+  const { user, token, refreshAccessToken, isLoading: isAuthLoading, logout } = useAuth();
   const { addNotification } = useNotifications();
 
   // API base URL
   const API_BASE = 'http://localhost:8000/api';
 
+  // Resolve a valid token, attempting refresh if needed
+  const getValidToken = async (): Promise<string | null> => {
+    let authToken = token;
+    if (!authToken) {
+      try {
+        const refreshed = await refreshAccessToken();
+        if (refreshed) {
+          const stored = localStorage.getItem('auth');
+          if (stored) {
+            try {
+              const parsed = JSON.parse(stored);
+              authToken = parsed.token;
+            } catch {
+              // ignore parse errors here
+            }
+          }
+        }
+      } catch {
+        // ignore refresh errors, will return null below
+      }
+    }
+    return authToken || null;
+  };
+
   // Helper function to make authenticated API calls
   const apiCall = async (endpoint: string, options: RequestInit = {}) => {
     console.log(`🔗 Making API call to: ${API_BASE}${endpoint}`);
-    
-    const authData = localStorage.getItem('auth');
-    let token = null;
-    
-    if (authData) {
-      try {
-        const parsedAuth = JSON.parse(authData);
-        token = parsedAuth.token;
-        console.log('🔑 Token found, length:', token?.length);
-      } catch (error) {
-        console.error('❌ Failed to parse auth data:', error);
-        // Clear invalid auth data
-        localStorage.removeItem('auth');
-        throw new Error('Invalid authentication data');
-      }
-    }
-    
-    if (!token) {
+
+    const authToken = await getValidToken();
+    if (!authToken) {
       console.error('❌ No authentication token available');
       throw new Error('No authentication token available');
     }
-    
+
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${authToken}`,
         ...options.headers,
       },
     });
@@ -317,8 +326,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     if (!response.ok) {
       if (response.status === 401) {
         console.error('❌ Authentication failed (401)');
-        // Token is invalid or expired, clear auth data
-        localStorage.removeItem('auth');
+        // Ensure app state is cleared and user is logged out
+        logout();
         throw new Error('Authentication failed - please log in again');
       }
       
@@ -481,28 +490,15 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       const formData = new FormData();
       formData.append('file', file);
       
-      const authData = localStorage.getItem('auth');
-      let token = null;
-      
-      if (authData) {
-        try {
-          const parsedAuth = JSON.parse(authData);
-          token = parsedAuth.token;
-        } catch (error) {
-          console.error('Failed to parse auth data:', error);
-          localStorage.removeItem('auth');
-          throw new Error('Invalid authentication data');
-        }
-      }
-      
-      if (!token) {
+      const authToken = await getValidToken();
+      if (!authToken) {
         throw new Error('No authentication token available');
       }
       
       const uploadResponse = await fetch(`${API_BASE}/chat/upload`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${authToken}`,
         },
         body: formData,
       });
@@ -582,7 +578,15 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   // Initialize data when user changes
   useEffect(() => {
+    if (isAuthLoading) {
+      return;
+    }
+
     if (user && (user.role === 'staff' || user.role === 'admin')) {
+      if (!token) {
+        // Token not ready yet; wait for it
+        return;
+      }
       // Clear any previous error state
       dispatch({ type: 'SET_ERROR', payload: null });
       
@@ -608,11 +612,15 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       // Customers don't have access to team chat
       dispatch({ type: 'SET_ERROR', payload: 'Team chat is only available for staff and admin users' });
     }
-  }, [user]);
+  }, [user, token, isAuthLoading]);
 
   // Periodic refresh of conversations and unread count
   useEffect(() => {
-    if (user && (user.role === 'staff' || user.role === 'admin')) {
+    if (isAuthLoading) {
+      return;
+    }
+
+    if (user && (user.role === 'staff' || user.role === 'admin') && token) {
       let previousUnreadCount = state.unreadCount;
       
       const refreshInterval = setInterval(async () => {
@@ -637,7 +645,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       
       return () => clearInterval(refreshInterval);
     }
-  }, [user, addNotification]);
+  }, [user, token, isAuthLoading, addNotification]);
 
   const value: ChatContextType = {
     state,
