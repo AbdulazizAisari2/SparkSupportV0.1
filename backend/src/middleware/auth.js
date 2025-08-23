@@ -13,7 +13,20 @@ const authenticateToken = async (req, res, next) => {
       return res.status(401).json({ error: 'Access token required' });
     }
 
+    // Verify token with stricter validation
     const decoded = jwt.verify(token, 'sparksupport-local-dev-secret-123');
+    
+    // Check if token is expired (additional check)
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (decoded.exp <= currentTime) {
+      return res.status(401).json({ error: 'Token expired' });
+    }
+    
+    // Check token age (max 1 hour)
+    const tokenAge = currentTime - (decoded.iat || 0);
+    if (tokenAge > 3600) { // 1 hour = 3600 seconds
+      return res.status(401).json({ error: 'Token too old' });
+    }
     
     // Get fresh user data from database
     const user = await prisma.user.findUnique({

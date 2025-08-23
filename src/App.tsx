@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { MessageSquare } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { SessionProvider } from './context/SessionContext';
 import { ToastProvider } from './context/ToastContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
@@ -89,7 +90,8 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <NotificationProvider>
           <AuthProvider>
-            <ToastProvider>
+            <SessionProvider>
+              <ToastProvider>
             <Router>
               <RouteGuard>
                 <div className="min-h-screen transition-all duration-300">
@@ -317,8 +319,9 @@ function App() {
             <ToastContainer />
           </RouteGuard>
           </Router>
-        </ToastProvider>
-              </AuthProvider>
+                </ToastProvider>
+              </SessionProvider>
+            </AuthProvider>
         </NotificationProvider>
       </QueryClientProvider>
     </ThemeProvider>

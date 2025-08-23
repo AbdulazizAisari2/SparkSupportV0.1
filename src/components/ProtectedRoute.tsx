@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSession } from '../context/SessionContext';
 import { Role } from '../types';
 import { UnauthorizedPage } from './AuthGuard';
 
@@ -18,7 +19,29 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   fallbackPath
 }) => {
   const { user, isLoading } = useAuth();
+  const { isSessionExpired } = useSession();
   const location = useLocation();
+
+  // Security: Validate route path to prevent injection
+  const allowedPaths = [
+    '/my/tickets', '/my/tickets/new', '/my/tickets/', '/my/marketplace', '/my/notifications',
+    '/staff/tickets', '/staff/tickets/', '/staff/dashboard', '/staff/ai-support', 
+    '/staff/marketplace', '/staff/leaderboard', '/staff/notifications',
+    '/admin/categories', '/admin/staff', '/admin/slack', '/admin/ai-support',
+    '/admin/marketplace', '/admin/leaderboard', '/admin/notifications'
+  ];
+  
+  const currentPath = location.pathname;
+  const isValidPath = allowedPaths.some(path => 
+    currentPath === path || 
+    (path.endsWith('/') && currentPath.startsWith(path)) ||
+    currentPath.startsWith(path + '/')
+  );
+
+  // Reject potentially malicious paths
+  if (!isValidPath && requireAuth) {
+    return <Navigate to="/login" replace />;
+  }
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -32,8 +55,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  // Redirect to login if authentication required but user not logged in
-  if (requireAuth && !user) {
+  // Redirect to login if authentication required but user not logged in or session expired
+  if (requireAuth && (!user || isSessionExpired)) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
@@ -83,6 +106,7 @@ interface RouteGuardProps {
 
 export const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
   const { user, isLoading } = useAuth();
+  const { isSessionExpired } = useSession();
   const location = useLocation();
 
   // Allow access to public routes
@@ -100,8 +124,8 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
     return <Navigate to={dashboard} replace />;
   }
 
-  // If user is not authenticated and tries to access protected route, redirect to login
-  if (!user && !isPublicRoute) {
+  // If user is not authenticated, session expired, or tries to access protected route, redirect to login
+  if ((!user || isSessionExpired) && !isPublicRoute) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

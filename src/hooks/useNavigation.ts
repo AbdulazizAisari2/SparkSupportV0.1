@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { sanitizeNavigationPath } from './useSecureParams';
 import { useToast } from '../context/ToastContext';
 
 export const useSmartNavigation = () => {
@@ -12,10 +13,18 @@ export const useSmartNavigation = () => {
   const navigateTo = (path: string, options?: { replace?: boolean; showToast?: boolean; toastMessage?: string }) => {
     const { replace = false, showToast = false, toastMessage } = options || {};
     
-    console.log(`🧭 Navigation: ${location.pathname} → ${path}`);
+    // Sanitize path for security
+    const safePath = sanitizeNavigationPath(path);
+    
+    console.log(`🧭 Navigation: ${location.pathname} → ${safePath}`);
+    
+    // Warn if path was modified for security
+    if (safePath !== path) {
+      console.warn(`🔒 Path sanitized for security: ${path} → ${safePath}`);
+    }
     
     // Ensure smooth SPA navigation
-    navigate(path, { replace });
+    navigate(safePath, { replace });
     
     // Optional success toast
     if (showToast && toastMessage) {
