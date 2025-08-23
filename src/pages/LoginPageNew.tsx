@@ -58,7 +58,7 @@ export const LoginPage: React.FC = () => {
 
       const result = await response.json();
       console.log('Login successful:', result);
-      login(result.token, result.user);
+      login(result.accessToken, result.refreshToken, result.user);
       
       addToast(`Welcome back, ${result.user.name}! 🎉`, 'success');
       
