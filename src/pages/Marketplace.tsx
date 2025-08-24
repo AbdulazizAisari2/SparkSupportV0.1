@@ -1,523 +1,431 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Filter, Star, ShoppingCart, Package, Tag, Heart, Eye, Coins, TrendingUp } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Sparkles, 
+  ShoppingCart, 
+  Star, 
+  Heart,
+  Zap,
+  Crown,
+  Gift,
+  Filter,
+  Search,
+  TrendingUp
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useToast } from '../context/ToastContext';
+import { AnimatedBackground } from '../components/ui/AnimatedBackground';
+import { GlassmorphismCard } from '../components/ui/GlassmorphismCard';
+import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
 import { PurchaseModal } from '../components/ui/PurchaseModal';
 
-interface MarketplaceItem {
-  id: string;
-  name: string;
-  description: string;
-  points: number; // Changed from price to points
-  category: string;
-  rating: number;
-  reviews: number;
-  image: string;
-  vendor: string;
-  inStock: boolean;
-  featured: boolean;
-  originalPrice?: number; // Optional field to show original retail price for reference
-}
-
-// Mock marketplace data with entertainment/electronics items
-const mockItems: MarketplaceItem[] = [
+// Mock marketplace items with enhanced data
+const marketplaceItems = [
   {
     id: '1',
-    name: 'Apple AirPods Pro (2nd Gen)',
-    description: 'Active Noise Cancellation, Adaptive Transparency, Personalized Spatial Audio with dynamic head tracking.',
-    points: 2500,
-    category: 'Audio',
-    rating: 4.8,
-    reviews: 1247,
-    image: '🎧',
-    vendor: 'Apple',
-    inStock: true,
-    featured: true,
-    originalPrice: 249
+    name: 'Priority Support',
+    description: 'Get your tickets resolved with priority handling and faster response times.',
+    price: 50,
+    category: 'Support',
+    rating: 4.9,
+    reviews: 234,
+    image: '🚀',
+    popular: true,
+    features: ['24/7 Priority Support', 'Faster Response Time', 'Dedicated Agent'],
+    color: 'from-blue-600 to-cyan-600'
   },
   {
     id: '2',
-    name: 'iPhone 15 Pro',
-    description: 'The ultimate iPhone with titanium design, A17 Pro chip, and pro camera system.',
-    points: 12000,
-    category: 'Smartphones',
-    rating: 4.9,
-    reviews: 892,
-    image: '📱',
-    vendor: 'Apple',
-    inStock: true,
-    featured: true,
-    originalPrice: 999
+    name: 'Custom Avatar',
+    description: 'Personalize your profile with unique avatars and badges.',
+    price: 25,
+    category: 'Customization',
+    rating: 4.7,
+    reviews: 156,
+    image: '🎨',
+    features: ['50+ Avatar Options', 'Custom Badges', 'Profile Themes'],
+    color: 'from-purple-600 to-pink-600'
   },
   {
     id: '3',
-    name: 'Sony PlayStation 5',
-    description: 'Next-gen gaming console with ultra-high speed SSD and stunning 4K graphics.',
-    points: 5500,
-    category: 'Gaming',
-    rating: 4.7,
-    reviews: 2103,
-    image: '🎮',
-    vendor: 'Sony',
-    inStock: true,
-    featured: true,
-    originalPrice: 499
+    name: 'Advanced Analytics',
+    description: 'Detailed insights into your support interactions and performance.',
+    price: 75,
+    category: 'Analytics',
+    rating: 4.8,
+    reviews: 89,
+    image: '📊',
+    features: ['Detailed Reports', 'Performance Metrics', 'Data Export'],
+    color: 'from-green-600 to-blue-600'
   },
   {
     id: '4',
-    name: 'MacBook Air M3',
-    description: 'Supercharged by the M3 chip, up to 18 hours of battery life, and incredibly thin design.',
-    points: 15000,
-    category: 'Laptops',
-    rating: 4.8,
-    reviews: 567,
-    image: '💻',
-    vendor: 'Apple',
-    inStock: true,
-    featured: false,
-    originalPrice: 1299
+    name: 'VIP Status',
+    description: 'Unlock exclusive features and premium support experience.',
+    price: 100,
+    category: 'Premium',
+    rating: 5.0,
+    reviews: 45,
+    image: '👑',
+    premium: true,
+    features: ['All Premium Features', 'Exclusive Access', 'VIP Badge'],
+    color: 'from-yellow-600 to-orange-600'
   },
   {
     id: '5',
-    name: 'Samsung Galaxy Watch 6',
-    description: 'Advanced health monitoring, sleep tracking, and seamless smartphone integration.',
-    points: 3200,
-    category: 'Wearables',
+    name: 'Team Collaboration',
+    description: 'Enhanced team features for better collaboration and communication.',
+    price: 60,
+    category: 'Team',
     rating: 4.6,
-    reviews: 891,
-    image: '⌚',
-    vendor: 'Samsung',
-    inStock: true,
-    featured: false,
-    originalPrice: 329
+    reviews: 178,
+    image: '👥',
+    features: ['Team Channels', 'File Sharing', 'Video Calls'],
+    color: 'from-indigo-600 to-purple-600'
   },
   {
     id: '6',
-    name: 'Nintendo Switch OLED',
-    description: 'Vibrant 7-inch OLED screen, enhanced audio, and wide adjustable stand.',
-    points: 3800,
-    category: 'Gaming',
-    rating: 4.7,
-    reviews: 1534,
-    image: '🕹️',
-    vendor: 'Nintendo',
-    inStock: false,
-    featured: false,
-    originalPrice: 349
-  },
-  {
-    id: '7',
-    name: 'iPad Pro 12.9"',
-    description: 'M2 chip, Liquid Retina XDR display, and works with Apple Pencil.',
-    points: 11000,
-    category: 'Tablets',
-    rating: 4.8,
-    reviews: 423,
-    image: '📲',
-    vendor: 'Apple',
-    inStock: true,
-    featured: false,
-    originalPrice: 1099
-  },
-  {
-    id: '8',
-    name: 'Bose QuietComfort Headphones',
-    description: 'World-class noise cancellation, premium comfort, and crystal-clear calls.',
-    points: 3500,
-    category: 'Audio',
-    rating: 4.6,
-    reviews: 756,
-    image: '🎵',
-    vendor: 'Bose',
-    inStock: true,
-    featured: false,
-    originalPrice: 349
+    name: 'AI Assistant Pro',
+    description: 'Advanced AI-powered assistance for instant support and solutions.',
+    price: 80,
+    category: 'AI',
+    rating: 4.9,
+    reviews: 267,
+    image: '🤖',
+    new: true,
+    features: ['24/7 AI Support', 'Smart Suggestions', 'Auto-Resolution'],
+    color: 'from-cyan-600 to-blue-600'
   }
 ];
 
-const categories = ['All', 'Audio', 'Smartphones', 'Gaming', 'Laptops', 'Wearables', 'Tablets'];
+const categories = ['All', 'Support', 'Customization', 'Analytics', 'Premium', 'Team', 'AI'];
 
 export const Marketplace: React.FC = () => {
-  const { user, token, refreshUser } = useAuth();
-  const { addToast } = useToast();
-  const [searchTerm, setSearchTerm] = useState('');
+  const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [showFilters, setShowFilters] = useState(false);
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<MarketplaceItem | null>(null);
-  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
-  
-  // Get user points from auth context, fallback to mock data for demo
-  const userPoints = user?.points || 0;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
-  // Refresh user data when component mounts
-  useEffect(() => {
-    if (refreshUser) {
-      refreshUser();
-    }
-  }, [refreshUser]);
-
-  const filteredItems = mockItems.filter(item => {
+  const filteredItems = marketplaceItems.filter(item => {
+    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    return matchesCategory && matchesSearch;
   });
 
-  const featuredItems = filteredItems.filter(item => item.featured);
-  const regularItems = filteredItems.filter(item => !item.featured);
-
-  const toggleFavorite = (itemId: string) => {
-    setFavorites(prev => 
-      prev.includes(itemId) 
-        ? prev.filter(id => id !== itemId)
-        : [...prev, itemId]
-    );
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
   };
 
-  const canAfford = (points: number) => userPoints >= points;
-
-  const handlePurchaseClick = (item: MarketplaceItem) => {
-    if (!item.inStock) {
-      addToast('This item is currently out of stock', 'error');
-      return;
+  const itemVariants = {
+    hidden: { y: 30, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 24
+      }
     }
+  };
 
-    if (!canAfford(item.points)) {
-      addToast(`You need ${(item.points - userPoints).toLocaleString()} more points to purchase this item`, 'error');
-      return;
-    }
-
+  const handlePurchase = (item: any) => {
     setSelectedItem(item);
-    setIsPurchaseModalOpen(true);
+    setShowPurchaseModal(true);
   };
 
-  const handlePurchaseConfirm = async () => {
-    if (!selectedItem || !token) {
-      throw new Error('No item selected or user not authenticated');
-    }
+  const MarketplaceCard: React.FC<{ item: any; index: number }> = ({ item, index }) => (
+    <motion.div
+      variants={itemVariants}
+      whileHover={{ y: -8, scale: 1.02 }}
+      className="group h-full"
+    >
+      <GlassmorphismCard 
+        variant={"intense" as const} 
+        glow={item.popular || item.premium}
+        className="h-full relative overflow-hidden"
+      >
+        {/* Special badges */}
+        <div className="absolute top-4 right-4 z-10 flex flex-col space-y-2">
+          {item.popular && (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: index * 0.1 + 0.5 }}
+              className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center space-x-1"
+            >
+              <TrendingUp className="w-3 h-3" />
+              <span>Popular</span>
+            </motion.div>
+          )}
+          {item.premium && (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: index * 0.1 + 0.6 }}
+              className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center space-x-1"
+            >
+              <Crown className="w-3 h-3" />
+              <span>Premium</span>
+            </motion.div>
+          )}
+          {item.new && (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: index * 0.1 + 0.7 }}
+              className="bg-gradient-to-r from-green-500 to-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center space-x-1"
+            >
+              <Sparkles className="w-3 h-3" />
+              <span>New</span>
+            </motion.div>
+          )}
+        </div>
 
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('http://localhost:8000/api/marketplace/purchase', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          itemId: selectedItem.id,
-          itemName: selectedItem.name,
-          pointsCost: selectedItem.points,
-          category: selectedItem.category,
-          vendor: selectedItem.vendor
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Purchase failed');
-      }
-
-      const result = await response.json();
-      
-      // Update user context with new points
-      if (refreshUser) {
-        await refreshUser();
-      }
-
-      addToast(`🎉 Successfully purchased ${selectedItem.name}!`, 'success');
-      
-    } catch (error) {
-      console.error('Purchase failed:', error);
-      addToast(error instanceof Error ? error.message : 'Purchase failed. Please try again.', 'error');
-      throw error; // Re-throw so the modal can handle it
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const renderStars = (rating: number) => {
-    return (
-      <div className="flex items-center space-x-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`w-4 h-4 ${
-              star <= rating 
-                ? 'text-yellow-400 fill-current' 
-                : 'text-gray-300 dark:text-gray-600'
-            }`}
-          />
-        ))}
-      </div>
-    );
-  };
-
-  const MarketplaceCard = ({ item }: { item: MarketplaceItem }) => {
-    const affordable = canAfford(item.points);
-    
-    return (
-      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200/50 dark:border-dark-700/50 group hover:scale-105">
-        {/* Header */}
-        <div className="relative p-6 bg-gradient-to-br from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20">
-          <div className="flex items-start justify-between">
-            <div className="text-4xl mb-4">{item.image}</div>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => toggleFavorite(item.id)}
-                className={`p-2 rounded-full transition-all duration-200 ${
-                  favorites.includes(item.id)
-                    ? 'bg-red-100 dark:bg-red-900/30 text-red-500'
-                    : 'bg-white/50 dark:bg-dark-700/50 text-gray-400 hover:text-red-500'
-                }`}
-              >
-                <Heart className="w-4 h-4" />
-              </button>
-              <button className="p-2 rounded-full bg-white/50 dark:bg-dark-700/50 text-gray-400 hover:text-primary-500 transition-colors">
-                <Eye className="w-4 h-4" />
-              </button>
-            </div>
+        {/* Item image/icon */}
+        <div className={`relative h-48 bg-gradient-to-br ${item.color} rounded-t-2xl -mx-6 -mt-6 mb-6 flex items-center justify-center overflow-hidden`}>
+          <motion.div
+            className="text-6xl"
+            whileHover={{ scale: 1.2, rotate: 15 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            {item.image}
+          </motion.div>
+          
+          {/* Floating particles */}
+          <div className="absolute inset-0">
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 bg-white/30 rounded-full"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                }}
+                animate={{
+                  y: [0, -20, 0],
+                  opacity: [0.3, 1, 0.3],
+                }}
+                transition={{
+                  duration: 2 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                }}
+              />
+            ))}
           </div>
-          
-          {item.featured && (
-            <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-400 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-              Featured
-            </div>
-          )}
-          
-          {!item.inStock && (
-            <div className="absolute top-4 right-4 bg-gray-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-              Out of Stock
-            </div>
-          )}
         </div>
 
         {/* Content */}
-        <div className="p-6">
-          <div className="flex items-start justify-between mb-3">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors">
               {item.name}
             </h3>
-            <div className="flex items-center space-x-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-2 py-1 rounded-lg text-xs font-medium">
-              <Tag className="w-3 h-3" />
-              <span>{item.category}</span>
-            </div>
+            <p className="text-white/70 text-sm leading-relaxed">
+              {item.description}
+            </p>
           </div>
 
-          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
-            {item.description}
-          </p>
-
-          <div className="flex items-center space-x-4 mb-4">
-            {renderStars(item.rating)}
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              ({item.reviews} reviews)
-            </span>
+          {/* Features */}
+          <div className="space-y-2">
+            {item.features.map((feature: string, featureIndex: number) => (
+              <motion.div
+                key={feature}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 + featureIndex * 0.1 }}
+                className="flex items-center space-x-2 text-xs text-white/60"
+              >
+                <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
+                <span>{feature}</span>
+              </motion.div>
+            ))}
           </div>
 
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm text-gray-500 dark:text-gray-400">by {item.vendor}</span>
-            <div className="text-right">
-              <div className="flex items-center space-x-2">
-                <Coins className="w-5 h-5 text-yellow-500" />
-                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  {item.points.toLocaleString()}
-                </div>
+          {/* Rating */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`w-4 h-4 ${
+                      i < Math.floor(item.rating) 
+                        ? 'text-yellow-400 fill-current' 
+                        : 'text-gray-400'
+                    }`}
+                  />
+                ))}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">points</div>
-              {item.originalPrice && (
-                <div className="text-xs text-gray-400 dark:text-gray-500">
-                  (${item.originalPrice} value)
-                </div>
-              )}
+              <span className="text-white/70 text-sm">
+                {item.rating} ({item.reviews})
+              </span>
             </div>
           </div>
 
-          <button
-            onClick={() => handlePurchaseClick(item)}
-            disabled={!item.inStock || isLoading}
-            className={`w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${
-              item.inStock && !isLoading
-                ? affordable
-                  ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 shadow-lg hover:shadow-xl transform hover:scale-105'
-                  : 'bg-gradient-to-r from-orange-400 to-red-500 text-white hover:from-orange-500 hover:to-red-600 shadow-lg hover:shadow-xl transform hover:scale-105'
-                : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-            }`}
-          >
-            <ShoppingCart className="w-5 h-5" />
-            <span>
-              {!item.inStock 
-                ? 'Out of Stock' 
-                : affordable 
-                ? 'Redeem with Points'
-                : 'Buy Anyway'
-              }
-            </span>
-          </button>
+          {/* Price and Purchase */}
+          <div className="flex items-center justify-between pt-4 border-t border-white/20">
+            <div className="text-left">
+              <div className="flex items-center space-x-2">
+                <Sparkles className="w-4 h-4 text-purple-400" />
+                <span className="text-2xl font-bold text-white">
+                  {item.price}
+                </span>
+              </div>
+              <span className="text-white/60 text-xs">Support Points</span>
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handlePurchase(item)}
+              disabled={!user?.points || user.points < item.price}
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              <span>Buy Now</span>
+            </motion.button>
+          </div>
         </div>
-      </div>
-    );
-  };
+      </GlassmorphismCard>
+    </motion.div>
+  );
 
   return (
-    <div className="space-y-8">
-      {/* Header with Points Balance */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center space-x-3">
-            <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-2xl shadow-lg">
-              <Package className="w-8 h-8" />
-            </div>
-            <span>Points Marketplace</span>
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Redeem your points for amazing electronics and entertainment products
-          </p>
-        </div>
-        
-        {/* Points Balance Card */}
-        <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-6 rounded-2xl shadow-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Coins className="w-8 h-8" />
-              <div>
-                <div className="text-sm font-medium opacity-90">Your Points</div>
-                <div className="text-3xl font-bold">{userPoints.toLocaleString()}</div>
+    <AnimatedBackground variant="marketplace">
+      <div className="min-h-screen">
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative py-16 px-6 text-center"
+        >
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+              className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full mb-6"
+            >
+              <Gift className="w-10 h-10 text-white" />
+            </motion.div>
+            
+            <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent mb-6">
+              Support Marketplace
+            </h1>
+            
+            <p className="text-xl text-white/70 mb-8 max-w-2xl mx-auto">
+              Enhance your support experience with premium features, tools, and personalization options
+            </p>
+
+            <GlassmorphismCard variant={"subtle" as const} className="inline-flex items-center space-x-4 px-6 py-3">
+              <Sparkles className="w-5 h-5 text-purple-400" />
+              <span className="text-white font-semibold">Your Balance:</span>
+              <span className="text-2xl font-bold text-white">{user?.points || 0}</span>
+              <span className="text-white/60">Points</span>
+            </GlassmorphismCard>
+          </div>
+        </motion.div>
+
+        {/* Main Content */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="relative z-10 max-w-7xl mx-auto px-6 pb-16"
+        >
+          {/* Search and Filter */}
+          <motion.div variants={itemVariants} className="mb-8">
+            <GlassmorphismCard variant={"subtle" as const} className="p-6">
+              <div className="flex flex-col lg:flex-row gap-6">
+                {/* Search */}
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
+                    <input
+                      type="text"
+                      placeholder="Search marketplace..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Category Filter */}
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((category) => (
+                    <motion.button
+                      key={category}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setSelectedCategory(category)}
+                      className={`px-4 py-2 rounded-xl font-medium transition-all ${
+                        selectedCategory === category
+                          ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
+                          : 'bg-white/10 text-white/70 hover:bg-white/20'
+                      }`}
+                    >
+                      {category}
+                    </motion.button>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="text-right">
-              <div className="text-xs opacity-75 mb-2">Earn more points</div>
-              <button 
-                onClick={() => window.location.href = '/staff/leaderboard'}
-                className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+            </GlassmorphismCard>
+          </motion.div>
+
+          {/* Items Grid */}
+          <motion.div variants={itemVariants}>
+            {filteredItems.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center py-16"
               >
-                <TrendingUp className="w-4 h-4" />
-                <span>View Leaderboard</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+                <GlassmorphismCard variant={"colorful" as const} size={"lg" as const} className="max-w-md mx-auto">
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <Search className="w-16 h-16 text-purple-400 mx-auto mb-4" />
+                  </motion.div>
+                  <h3 className="text-2xl font-bold text-white mb-2">No items found</h3>
+                  <p className="text-white/70">
+                    Try adjusting your search or filter criteria
+                  </p>
+                </GlassmorphismCard>
+              </motion.div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <AnimatePresence>
+                  {filteredItems.map((item, index) => (
+                    <MarketplaceCard key={item.id} item={item} index={index} />
+                  ))}
+                </AnimatePresence>
+              </div>
+            )}
+          </motion.div>
+        </motion.div>
 
-      {/* Search and Filters */}
-      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-lg p-6 border border-gray-200/50 dark:border-dark-700/50">
-        <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-4">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search marketplace..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-dark-700 border border-gray-200 dark:border-dark-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-            />
-          </div>
-
-          {/* Category Filter */}
-          <div className="flex space-x-2 lg:flex-shrink-0">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
-                  selectedCategory === category
-                    ? 'bg-primary-500 text-white shadow-lg'
-                    : 'bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-600'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-
-          {/* Filter Toggle */}
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center space-x-2 px-4 py-3 bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-200 dark:hover:bg-dark-600 transition-colors lg:flex-shrink-0"
-          >
-            <Filter className="w-5 h-5" />
-            <span>Filters</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Results Summary */}
-      <div className="flex items-center justify-between">
-        <div className="text-gray-600 dark:text-gray-400">
-          Showing {filteredItems.length} of {mockItems.length} items
-          {searchTerm && ` for "${searchTerm}"`}
-          {selectedCategory !== 'All' && ` in ${selectedCategory}`}
-        </div>
-      </div>
-
-      {/* Featured Items */}
-      {featuredItems.length > 0 && (
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
-            <Star className="w-6 h-6 text-yellow-500" />
-            <span>Featured Items</span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredItems.map((item) => (
-              <MarketplaceCard key={item.id} item={item} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* All Items */}
-      {regularItems.length > 0 && (
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
-            All Items
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {regularItems.map((item) => (
-              <MarketplaceCard key={item.id} item={item} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {filteredItems.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">🛍️</div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            No items found
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Try adjusting your search terms or filters
-          </p>
-          <button
-            onClick={() => {
-              setSearchTerm('');
-              setSelectedCategory('All');
-            }}
-            className="px-6 py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors"
-          >
-            Clear Filters
-          </button>
-        </div>
-      )}
-
-      {/* Purchase Modal */}
-      {selectedItem && (
+        {/* Purchase Modal */}
         <PurchaseModal
-          isOpen={isPurchaseModalOpen}
-          onClose={() => {
-            setIsPurchaseModalOpen(false);
-            setSelectedItem(null);
-          }}
-          onConfirm={handlePurchaseConfirm}
+          isOpen={showPurchaseModal}
+          onClose={() => setShowPurchaseModal(false)}
           item={selectedItem}
-          userPoints={userPoints}
+          onPurchase={(item) => {
+            console.log('Purchasing:', item);
+            setShowPurchaseModal(false);
+          }}
         />
-      )}
-    </div>
+      </div>
+    </AnimatedBackground>
   );
 };
