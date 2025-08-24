@@ -17,6 +17,7 @@ import { AnimatedBackground } from '../components/ui/AnimatedBackground';
 import { GlassmorphismCard } from '../components/ui/GlassmorphismCard';
 import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
 import { PurchaseModal } from '../components/ui/PurchaseModal';
+import { useMarketplaceItems, usePurchaseItem, type MarketplaceItem } from '../hooks/useMarketplace';
 
 // Mock marketplace items with enhanced data
 const marketplaceItems = [
@@ -416,15 +417,28 @@ export const Marketplace: React.FC = () => {
         </motion.div>
 
         {/* Purchase Modal */}
-        <PurchaseModal
-          isOpen={showPurchaseModal}
-          onClose={() => setShowPurchaseModal(false)}
-          item={selectedItem}
-          onPurchase={(item) => {
-            console.log('Purchasing:', item);
-            setShowPurchaseModal(false);
-          }}
-        />
+        {selectedItem && (
+          <PurchaseModal
+            isOpen={showPurchaseModal}
+            onClose={() => setShowPurchaseModal(false)}
+            onConfirm={async () => {
+              console.log('Purchasing:', selectedItem);
+              // Here you would normally call the API to purchase the item
+              setShowPurchaseModal(false);
+            }}
+            item={{
+              id: selectedItem.id,
+              name: selectedItem.name,
+              description: selectedItem.description,
+              points: selectedItem.price,
+              category: selectedItem.category,
+              rating: selectedItem.rating,
+              image: selectedItem.image,
+              vendor: 'SparkSupport Store'
+            }}
+            userPoints={user?.points || 0}
+          />
+        )}
       </div>
     </AnimatedBackground>
   );
