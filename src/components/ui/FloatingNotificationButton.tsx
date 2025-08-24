@@ -3,18 +3,14 @@ import { Bell } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useNotifications } from '../../context/NotificationContext';
 import { useAuth } from '../../context/AuthContext';
-
 export const FloatingNotificationButton: React.FC = () => {
   const { unreadCount } = useNotifications();
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Don't show on notifications page itself
   if (location.pathname.includes('/notifications')) {
     return null;
   }
-
   const getNotificationsPath = () => {
     switch (user?.role) {
       case 'customer': return '/my/notifications';
@@ -23,11 +19,9 @@ export const FloatingNotificationButton: React.FC = () => {
       default: return '/my/notifications';
     }
   };
-
   const handleClick = () => {
     navigate(getNotificationsPath());
   };
-
   return (
     <button
       onClick={handleClick}

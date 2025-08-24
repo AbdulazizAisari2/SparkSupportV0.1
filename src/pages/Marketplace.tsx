@@ -3,12 +3,11 @@ import { Search, Filter, Star, ShoppingCart, Package, Tag, Heart, Eye, Coins, Tr
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { PurchaseModal } from '../components/ui/PurchaseModal';
-
 interface MarketplaceItem {
   id: string;
   name: string;
   description: string;
-  points: number; // Changed from price to points
+  points: number;
   category: string;
   rating: number;
   reviews: number;
@@ -16,10 +15,8 @@ interface MarketplaceItem {
   vendor: string;
   inStock: boolean;
   featured: boolean;
-  originalPrice?: number; // Optional field to show original retail price for reference
+  originalPrice?: number;
 }
-
-// Mock marketplace data with entertainment/electronics items
 const mockItems: MarketplaceItem[] = [
   {
     id: '1',
@@ -134,9 +131,7 @@ const mockItems: MarketplaceItem[] = [
     originalPrice: 349
   }
 ];
-
 const categories = ['All', 'Audio', 'Smartphones', 'Gaming', 'Laptops', 'Wearables', 'Tablets'];
-
 export const Marketplace: React.FC = () => {
   const { user, token, refreshUser } = useAuth();
   const { addToast } = useToast();
@@ -147,27 +142,20 @@ export const Marketplace: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MarketplaceItem | null>(null);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
-  
-  // Get user points from auth context, fallback to mock data for demo
   const userPoints = user?.points || 0;
-
-  // Refresh user data when component mounts
   useEffect(() => {
     if (refreshUser) {
       refreshUser();
     }
   }, [refreshUser]);
-
   const filteredItems = mockItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
-
   const featuredItems = filteredItems.filter(item => item.featured);
   const regularItems = filteredItems.filter(item => !item.featured);
-
   const toggleFavorite = (itemId: string) => {
     setFavorites(prev => 
       prev.includes(itemId) 
@@ -175,33 +163,26 @@ export const Marketplace: React.FC = () => {
         : [...prev, itemId]
     );
   };
-
   const canAfford = (points: number) => userPoints >= points;
-
   const handlePurchaseClick = (item: MarketplaceItem) => {
     if (!item.inStock) {
       addToast('This item is currently out of stock', 'error');
       return;
     }
-
     if (!canAfford(item.points)) {
       addToast(`You need ${(item.points - userPoints).toLocaleString()} more points to purchase this item`, 'error');
       return;
     }
-
     setSelectedItem(item);
     setIsPurchaseModalOpen(true);
   };
-
   const handlePurchaseConfirm = async () => {
     if (!selectedItem || !token) {
       throw new Error('No item selected or user not authenticated');
     }
-
     setIsLoading(true);
-
     try {
-      const response = await fetch('http://localhost:8000/api/marketplace/purchase', {
+      const response = await fetch('http:
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -215,30 +196,23 @@ export const Marketplace: React.FC = () => {
           vendor: selectedItem.vendor
         }),
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Purchase failed');
       }
-
       const result = await response.json();
-      
-      // Update user context with new points
       if (refreshUser) {
         await refreshUser();
       }
-
       addToast(`🎉 Successfully purchased ${selectedItem.name}!`, 'success');
-      
     } catch (error) {
       console.error('Purchase failed:', error);
       addToast(error instanceof Error ? error.message : 'Purchase failed. Please try again.', 'error');
-      throw error; // Re-throw so the modal can handle it
+      throw error;
     } finally {
       setIsLoading(false);
     }
   };
-
   const renderStars = (rating: number) => {
     return (
       <div className="flex items-center space-x-1">
@@ -255,13 +229,10 @@ export const Marketplace: React.FC = () => {
       </div>
     );
   };
-
   const MarketplaceCard = ({ item }: { item: MarketplaceItem }) => {
     const affordable = canAfford(item.points);
-    
     return (
       <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200/50 dark:border-dark-700/50 group hover:scale-105">
-        {/* Header */}
         <div className="relative p-6 bg-gradient-to-br from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20">
           <div className="flex items-start justify-between">
             <div className="text-4xl mb-4">{item.image}</div>
@@ -281,21 +252,17 @@ export const Marketplace: React.FC = () => {
               </button>
             </div>
           </div>
-          
           {item.featured && (
             <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-400 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
               Featured
             </div>
           )}
-          
           {!item.inStock && (
             <div className="absolute top-4 right-4 bg-gray-500 text-white px-3 py-1 rounded-full text-xs font-bold">
               Out of Stock
             </div>
           )}
         </div>
-
-        {/* Content */}
         <div className="p-6">
           <div className="flex items-start justify-between mb-3">
             <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
@@ -306,18 +273,15 @@ export const Marketplace: React.FC = () => {
               <span>{item.category}</span>
             </div>
           </div>
-
           <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
             {item.description}
           </p>
-
           <div className="flex items-center space-x-4 mb-4">
             {renderStars(item.rating)}
             <span className="text-sm text-gray-500 dark:text-gray-400">
               ({item.reviews} reviews)
             </span>
           </div>
-
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm text-gray-500 dark:text-gray-400">by {item.vendor}</span>
             <div className="text-right">
@@ -335,7 +299,6 @@ export const Marketplace: React.FC = () => {
               )}
             </div>
           </div>
-
           <button
             onClick={() => handlePurchaseClick(item)}
             disabled={!item.inStock || isLoading}
@@ -361,10 +324,8 @@ export const Marketplace: React.FC = () => {
       </div>
     );
   };
-
   return (
     <div className="space-y-8">
-      {/* Header with Points Balance */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center space-x-3">
@@ -377,8 +338,6 @@ export const Marketplace: React.FC = () => {
             Redeem your points for amazing electronics and entertainment products
           </p>
         </div>
-        
-        {/* Points Balance Card */}
         <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-6 rounded-2xl shadow-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -401,11 +360,8 @@ export const Marketplace: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Search and Filters */}
       <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-lg p-6 border border-gray-200/50 dark:border-dark-700/50">
         <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-4">
-          {/* Search */}
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
@@ -416,8 +372,6 @@ export const Marketplace: React.FC = () => {
               className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-dark-700 border border-gray-200 dark:border-dark-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
             />
           </div>
-
-          {/* Category Filter */}
           <div className="flex space-x-2 lg:flex-shrink-0">
             {categories.map((category) => (
               <button
@@ -433,8 +387,6 @@ export const Marketplace: React.FC = () => {
               </button>
             ))}
           </div>
-
-          {/* Filter Toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center space-x-2 px-4 py-3 bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-200 dark:hover:bg-dark-600 transition-colors lg:flex-shrink-0"
@@ -444,8 +396,6 @@ export const Marketplace: React.FC = () => {
           </button>
         </div>
       </div>
-
-      {/* Results Summary */}
       <div className="flex items-center justify-between">
         <div className="text-gray-600 dark:text-gray-400">
           Showing {filteredItems.length} of {mockItems.length} items
@@ -453,8 +403,6 @@ export const Marketplace: React.FC = () => {
           {selectedCategory !== 'All' && ` in ${selectedCategory}`}
         </div>
       </div>
-
-      {/* Featured Items */}
       {featuredItems.length > 0 && (
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center space-x-2">
@@ -468,8 +416,6 @@ export const Marketplace: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* All Items */}
       {regularItems.length > 0 && (
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
@@ -482,8 +428,6 @@ export const Marketplace: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Empty State */}
       {filteredItems.length === 0 && (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🛍️</div>
@@ -504,8 +448,6 @@ export const Marketplace: React.FC = () => {
           </button>
         </div>
       )}
-
-      {/* Purchase Modal */}
       {selectedItem && (
         <PurchaseModal
           isOpen={isPurchaseModalOpen}

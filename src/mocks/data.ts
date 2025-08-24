@@ -1,5 +1,4 @@
 import { User, Category, PriorityDef, Ticket, TicketMessage } from '../types';
-
 export const mockUsers: User[] = [
   {
     id: '1',
@@ -7,7 +6,7 @@ export const mockUsers: User[] = [
     email: 'customer@example.com',
     phone: '+1234567890',
     role: 'customer',
-    password: 'Customer123!' // Secure default password
+    password: 'Customer123!' 
   },
   {
     id: '2',
@@ -15,7 +14,7 @@ export const mockUsers: User[] = [
     email: 'staff1@example.com',
     role: 'staff',
     department: 'Technical Support',
-    password: 'Staff123!' // Secure default password
+    password: 'Staff123!' 
   },
   {
     id: '3',
@@ -23,7 +22,7 @@ export const mockUsers: User[] = [
     email: 'staff2@example.com',
     role: 'staff',
     department: 'Customer Success',
-    password: 'Staff123!' // Secure default password
+    password: 'Staff123!' 
   },
   {
     id: '4',
@@ -31,7 +30,7 @@ export const mockUsers: User[] = [
     email: 'staff3@example.com',
     role: 'staff',
     department: 'Billing Support',
-    password: 'Staff123!' // Secure default password
+    password: 'Staff123!' 
   },
   {
     id: '5',
@@ -39,10 +38,9 @@ export const mockUsers: User[] = [
     email: 'admin@example.com',
     role: 'admin',
     department: 'IT',
-    password: 'Admin123!' // Secure default password
+    password: 'Admin123!' 
   }
 ];
-
 export const mockCategories: Category[] = [
   {
     id: '1',
@@ -70,14 +68,12 @@ export const mockCategories: Category[] = [
     description: 'Suggestions for new features or improvements'
   }
 ];
-
 export const mockPriorities: PriorityDef[] = [
   { id: '1', name: 'Low', level: 1 },
   { id: '2', name: 'Medium', level: 2 },
   { id: '3', name: 'High', level: 3 },
   { id: '4', name: 'Urgent', level: 4 }
 ];
-
 export const mockTickets: Ticket[] = [
   {
     id: 'T001',
@@ -103,7 +99,6 @@ export const mockTickets: Ticket[] = [
     updatedAt: '2025-01-12T09:15:00Z'
   }
 ];
-
 export const mockMessages: TicketMessage[] = [
   {
     id: '1',

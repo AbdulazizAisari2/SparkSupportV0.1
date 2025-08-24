@@ -9,11 +9,8 @@ import {
   AlertTriangle,
   Ticket
 } from 'lucide-react';
-
 export const StaffDashboard: React.FC = () => {
   const { data: allTickets = [] } = useTickets({});
-  
-  // Calculate metrics
   const openTickets = allTickets.filter(t => t.status === 'open');
   const inProgressTickets = allTickets.filter(t => t.status === 'in_progress');
   const resolvedTickets = allTickets.filter(t => t.status === 'resolved');
@@ -22,7 +19,6 @@ export const StaffDashboard: React.FC = () => {
   const recentTickets = allTickets
     .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
     .slice(0, 5);
-
   const metrics = [
     {
       title: 'Open Tickets',
@@ -57,16 +53,12 @@ export const StaffDashboard: React.FC = () => {
       borderColor: 'border-gray-200',
     },
   ];
-
-  // Simple sparkline data (mock trend data)
   const getSparklineData = (status: string) => {
-    // In a real app, this would come from API
     const baseValue = allTickets.filter(t => t.status === status).length;
     return Array.from({ length: 7 }, () => 
       Math.max(0, baseValue + Math.floor(Math.random() * 10) - 5)
     );
   };
-
   const SparklineChart: React.FC<{ data: number[] }> = ({ data }) => {
     const max = Math.max(...data);
     const points = data.map((value, index) => {
@@ -74,7 +66,6 @@ export const StaffDashboard: React.FC = () => {
       const y = 20 - (value / max) * 15;
       return `${x},${y}`;
     }).join(' ');
-
     return (
       <svg width="60" height="20" className="text-current">
         <polyline
@@ -86,7 +77,6 @@ export const StaffDashboard: React.FC = () => {
       </svg>
     );
   };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -96,13 +86,10 @@ export const StaffDashboard: React.FC = () => {
           <span>Support Overview</span>
         </div>
       </div>
-
-      {/* Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {metrics.map((metric) => {
           const Icon = metric.icon;
           const sparklineData = getSparklineData(metric.title.toLowerCase().replace(' ', '_'));
-
           return (
             <div
               key={metric.title}
@@ -127,24 +114,19 @@ export const StaffDashboard: React.FC = () => {
           );
         })}
       </div>
-
-      {/* Charts and Lists */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Priority Distribution */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Priority Distribution</h2>
           <div className="space-y-4">
             {['urgent', 'high', 'medium', 'low'].map((priority) => {
               const count = allTickets.filter(t => t.priority === priority).length;
               const percentage = allTickets.length > 0 ? (count / allTickets.length) * 100 : 0;
-              
               const colors = {
                 urgent: { bar: 'bg-red-500', text: 'text-red-600' },
                 high: { bar: 'bg-orange-500', text: 'text-orange-600' },
                 medium: { bar: 'bg-yellow-500', text: 'text-yellow-600' },
                 low: { bar: 'bg-green-500', text: 'text-green-600' },
               };
-
               return (
                 <div key={priority}>
                   <div className="flex items-center justify-between mb-1">
@@ -169,8 +151,6 @@ export const StaffDashboard: React.FC = () => {
             })}
           </div>
         </div>
-
-        {/* Recent Activity */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Tickets</h2>
           {recentTickets.length === 0 ? (
@@ -201,8 +181,6 @@ export const StaffDashboard: React.FC = () => {
           )}
         </div>
       </div>
-
-      {/* Quick Actions */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

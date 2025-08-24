@@ -18,7 +18,6 @@ import { CSS } from '@dnd-kit/utilities';
 import { Ticket, User, Category, Status } from '../../types';
 import { PriorityBadge } from '../ui/Badge';
 import { Clock, User as UserIcon, Plus } from 'lucide-react';
-
 interface KanbanBoardProps {
   tickets: Ticket[];
   users: User[];
@@ -26,7 +25,6 @@ interface KanbanBoardProps {
   onTicketUpdate: (ticketId: string, updates: Partial<Ticket>) => void;
   linkPrefix: string;
 }
-
 interface KanbanColumnProps {
   status: Status;
   tickets: Ticket[];
@@ -35,14 +33,12 @@ interface KanbanColumnProps {
   onTicketUpdate: (ticketId: string, updates: Partial<Ticket>) => void;
   linkPrefix: string;
 }
-
 interface KanbanTicketCardProps {
   ticket: Ticket;
   users: User[];
   categories: Category[];
   linkPrefix: string;
 }
-
 const statusConfig = {
   open: {
     title: 'Open',
@@ -73,7 +69,6 @@ const statusConfig = {
     textColor: 'text-gray-700 dark:text-gray-300'
   }
 };
-
 const KanbanTicketCard: React.FC<KanbanTicketCardProps> = ({ ticket, users, categories, linkPrefix }) => {
   const {
     attributes,
@@ -83,23 +78,19 @@ const KanbanTicketCard: React.FC<KanbanTicketCardProps> = ({ ticket, users, cate
     transition,
     isDragging,
   } = useSortable({ id: ticket.id });
-
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
-
   const getUserName = (userId?: string) => {
     if (!userId) return 'Unassigned';
     const user = users.find(u => u.id === userId);
     return user?.name || 'Unknown User';
   };
-
   const getCategoryName = (categoryId: string) => {
     const category = categories.find(c => c.id === categoryId);
     return category?.name || 'Unknown Category';
   };
-
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
@@ -108,7 +99,6 @@ const KanbanTicketCard: React.FC<KanbanTicketCardProps> = ({ ticket, users, cate
       minute: '2-digit',
     });
   };
-
   return (
     <div
       ref={setNodeRef}
@@ -128,15 +118,12 @@ const KanbanTicketCard: React.FC<KanbanTicketCardProps> = ({ ticket, users, cate
           <PriorityBadge priority={ticket.priority} />
         </div>
       </div>
-
       <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
         {ticket.subject}
       </h3>
-
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
         {ticket.description}
       </p>
-
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs">
           <span className="bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-lg border border-gray-200 dark:border-dark-600">
@@ -147,7 +134,6 @@ const KanbanTicketCard: React.FC<KanbanTicketCardProps> = ({ ticket, users, cate
             <span>{formatDate(ticket.updatedAt)}</span>
           </div>
         </div>
-
         <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
           <UserIcon className="w-3 h-3" />
           <span>{getUserName(ticket.assignedStaffId)}</span>
@@ -156,11 +142,9 @@ const KanbanTicketCard: React.FC<KanbanTicketCardProps> = ({ ticket, users, cate
     </div>
   );
 };
-
 const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, tickets, users, categories, onTicketUpdate, linkPrefix }) => {
   const config = statusConfig[status];
   const columnTickets = tickets.filter(ticket => ticket.status === status);
-
   return (
     <div className="flex-1 min-w-80">
       <div className={`rounded-xl border-2 ${config.borderColor} ${config.bgColor} p-4 h-full`}>
@@ -178,7 +162,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, tickets, users, cat
             <Plus className="w-4 h-4" />
           </button>
         </div>
-
         <SortableContext items={columnTickets.map(t => t.id)} strategy={verticalListSortingStrategy}>
           <div className="space-y-3 min-h-96">
             {columnTickets.map(ticket => (
@@ -202,33 +185,25 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, tickets, users, cat
     </div>
   );
 };
-
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({ tickets, users, categories, onTicketUpdate, linkPrefix }) => {
   const [activeTicket, setActiveTicket] = useState<Ticket | null>(null);
   const sensors = useSensors(useSensor(PointerSensor));
-
   const handleDragStart = (event: DragStartEvent) => {
     const ticket = tickets.find(t => t.id === event.active.id);
     setActiveTicket(ticket || null);
   };
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveTicket(null);
-
     if (!over) return;
-
     const ticketId = active.id as string;
     const newStatus = over.id as Status;
-    
     const ticket = tickets.find(t => t.id === ticketId);
     if (ticket && ticket.status !== newStatus) {
       onTicketUpdate(ticketId, { status: newStatus });
     }
   };
-
   const statuses: Status[] = ['open', 'in_progress', 'resolved', 'closed'];
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -242,7 +217,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ tickets, users, catego
           </div>
         </div>
       </div>
-
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
@@ -269,7 +243,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ tickets, users, catego
             </SortableContext>
           ))}
         </div>
-
         <DragOverlay>
           {activeTicket ? (
             <div className="bg-white dark:bg-dark-800 rounded-xl border-2 border-primary-500 p-4 shadow-2xl rotate-3 scale-105">

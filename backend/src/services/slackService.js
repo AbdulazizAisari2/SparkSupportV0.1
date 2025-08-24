@@ -1,21 +1,16 @@
 const { WebClient } = require('@slack/web-api');
-
 class SparkSupportSlackService {
   constructor() {
     this.slack = new WebClient(process.env.SLACK_BOT_TOKEN);
     this.isEnabled = process.env.SLACK_ENABLED === 'true';
     this.defaultChannel = process.env.SLACK_DEFAULT_CHANNEL || '#sparksupport';
     this.alertsChannel = process.env.SLACK_ALERTS_CHANNEL || '#sparksupport-alerts';
-    this.frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    this.frontendUrl = process.env.FRONTEND_URL || 'http:
     this.webhookUrl = process.env.SLACK_WEBHOOK_URL;
   }
-
-  // Check if Slack is properly configured
   isConfigured() {
     return !!(process.env.SLACK_BOT_TOKEN && this.isEnabled);
   }
-
-  // Get status information
   getStatus() {
     return {
       enabled: this.isEnabled,
@@ -26,24 +21,19 @@ class SparkSupportSlackService {
       frontendUrl: this.frontendUrl
     };
   }
-
-  // Send new ticket notification to Slack
   async sendTicketCreatedNotification({ ticket, customer, category }) {
     if (!this.isConfigured()) {
       console.log('📧 Slack not configured - ticket notification skipped');
       return false;
     }
-
     try {
       console.log(`📢 Sending Slack notification for ticket ${ticket.id}`);
-
       const priorityEmojis = {
         low: '🟢',
         medium: '🟡', 
         high: '🟠',
         urgent: '🔴'
       };
-
       const categoryEmojis = {
         'Technical Support': '🔧',
         'Account Access': '🔐',
@@ -51,7 +41,6 @@ class SparkSupportSlackService {
         'Feature Request': '💡',
         'Bug Report': '🐛'
       };
-
       const blocks = [
         {
           type: 'header',
@@ -143,7 +132,6 @@ class SparkSupportSlackService {
           ]
         }
       ];
-
       const result = await this.slack.chat.postMessage({
         channel: this.defaultChannel,
         text: `🎫 New Ticket: ${ticket.subject}`,
@@ -151,34 +139,27 @@ class SparkSupportSlackService {
         unfurl_links: false,
         unfurl_media: false
       });
-
       console.log(`✅ Slack notification sent successfully!`);
       console.log(`📱 Message TS: ${result.ts}`);
-
       return true;
     } catch (error) {
       console.error('❌ Slack notification failed:', error);
       return false;
     }
   }
-
-  // Send ticket status update to Slack
   async sendTicketStatusUpdate({ ticket, oldStatus, staffMember, customer, category }) {
     if (!this.isConfigured()) {
       console.log('📧 Slack not configured - status update skipped');
       return false;
     }
-
     try {
       console.log(`📢 Sending Slack status update for ticket ${ticket.id}`);
-
       const statusEmojis = {
         open: '🔵',
         in_progress: '🟡',
         resolved: '🟢',
         closed: '⚫'
       };
-
       const blocks = [
         {
           type: 'header',
@@ -209,8 +190,6 @@ class SparkSupportSlackService {
           }
         }
       ];
-
-      // Add resolution celebration for resolved tickets
       if (ticket.status === 'resolved') {
         blocks.push({
           type: 'section',
@@ -220,7 +199,6 @@ class SparkSupportSlackService {
           }
         });
       }
-
       blocks.push({
         type: 'actions',
         elements: [
@@ -236,7 +214,6 @@ class SparkSupportSlackService {
           }
         ]
       });
-
       const result = await this.slack.chat.postMessage({
         channel: this.defaultChannel,
         text: `📊 Ticket ${ticket.id} status: ${ticket.status}`,
@@ -244,7 +221,6 @@ class SparkSupportSlackService {
         unfurl_links: false,
         unfurl_media: false
       });
-
       console.log(`✅ Slack status update sent successfully!`);
       return true;
     } catch (error) {
@@ -252,17 +228,13 @@ class SparkSupportSlackService {
       return false;
     }
   }
-
-  // Send staff achievement notification
   async sendAchievementNotification({ user, achievement, points }) {
     if (!this.isConfigured()) {
       console.log('📧 Slack not configured - achievement notification skipped');
       return false;
     }
-
     try {
       console.log(`📢 Sending achievement notification for ${user.name}`);
-
       const achievementEmojis = {
         star: '⭐',
         zap: '⚡',
@@ -273,7 +245,6 @@ class SparkSupportSlackService {
         flash: '⚡',
         heart: '❤️'
       };
-
       const blocks = [
         {
           type: 'header',
@@ -291,7 +262,7 @@ class SparkSupportSlackService {
           },
           accessory: {
             type: 'image',
-            image_url: 'https://i.imgur.com/placeholder-trophy.png',
+            image_url: 'https:
             alt_text: 'achievement badge'
           }
         },
@@ -311,7 +282,6 @@ class SparkSupportSlackService {
           ]
         }
       ];
-
       const result = await this.slack.chat.postMessage({
         channel: this.defaultChannel,
         text: `🏆 ${user.name} unlocked achievement: ${achievement.name}`,
@@ -319,7 +289,6 @@ class SparkSupportSlackService {
         unfurl_links: false,
         unfurl_media: false
       });
-
       console.log(`✅ Slack achievement notification sent!`);
       return true;
     } catch (error) {
@@ -327,17 +296,13 @@ class SparkSupportSlackService {
       return false;
     }
   }
-
-  // Send daily/weekly team summary
   async sendTeamSummary({ period, stats }) {
     if (!this.isConfigured()) {
       console.log('📧 Slack not configured - team summary skipped');
       return false;
     }
-
     try {
       console.log(`📢 Sending ${period} team summary to Slack`);
-
       const blocks = [
         {
           type: 'header',
@@ -384,13 +349,11 @@ class SparkSupportSlackService {
           ]
         }
       ];
-
       const result = await this.slack.chat.postMessage({
         channel: this.defaultChannel,
         text: `📊 ${period} team summary`,
         blocks: blocks
       });
-
       console.log(`✅ Team summary sent to Slack!`);
       return true;
     } catch (error) {
@@ -398,18 +361,14 @@ class SparkSupportSlackService {
       return false;
     }
   }
-
-  // Send test message to verify integration
   async sendTestMessage(channel = null) {
     if (!this.isConfigured()) {
       console.log('❌ Slack not configured');
       return false;
     }
-
     try {
       const testChannel = channel || this.defaultChannel;
       console.log(`📢 Sending test message to ${testChannel}`);
-
       const blocks = [
         {
           type: 'header',
@@ -449,34 +408,27 @@ class SparkSupportSlackService {
           ]
         }
       ];
-
       const result = await this.slack.chat.postMessage({
         channel: testChannel,
         text: '🧪 SparkSupport integration test',
         blocks: blocks
       });
-
       console.log(`✅ Test message sent successfully!`);
       console.log(`📱 Message TS: ${result.ts}`);
       console.log(`📍 Channel: ${testChannel}`);
-
       return true;
     } catch (error) {
       console.error('❌ Slack test message failed:', error);
       return false;
     }
   }
-
-  // Send urgent ticket alert to alerts channel
   async sendUrgentAlert({ ticket, customer, category }) {
     if (!this.isConfigured()) {
       console.log('📧 Slack not configured - urgent alert skipped');
       return false;
     }
-
     try {
       console.log(`🚨 Sending urgent alert for ticket ${ticket.id}`);
-
       const blocks = [
         {
           type: 'header',
@@ -519,13 +471,11 @@ class SparkSupportSlackService {
           ]
         }
       ];
-
       const result = await this.slack.chat.postMessage({
         channel: this.alertsChannel,
         text: `🚨 URGENT: ${ticket.subject}`,
         blocks: blocks
       });
-
       console.log(`✅ Urgent alert sent to ${this.alertsChannel}!`);
       return true;
     } catch (error) {
@@ -533,20 +483,15 @@ class SparkSupportSlackService {
       return false;
     }
   }
-
-  // Handle Slack interactive components (button clicks)
   async handleInteraction(payload) {
     if (!this.isConfigured()) {
       return false;
     }
-
     try {
       const { action_id, value, user } = payload.actions[0];
       const slackUserId = payload.user.id;
       const ticketId = value;
-
       console.log(`🔄 Handling Slack interaction: ${action_id} for ticket ${ticketId}`);
-
       switch (action_id) {
         case 'assign_ticket':
           await this.handleTicketAssignment(ticketId, slackUserId, payload.response_url);
@@ -560,45 +505,30 @@ class SparkSupportSlackService {
         default:
           console.log(`❓ Unknown action: ${action_id}`);
       }
-
       return true;
     } catch (error) {
       console.error('❌ Slack interaction failed:', error);
       return false;
     }
   }
-
-  // Handle ticket assignment from Slack
   async handleTicketAssignment(ticketId, slackUserId, responseUrl) {
     try {
-      // Note: In production, you'd need to map Slack user ID to your app user ID
-      // For now, we'll just send a confirmation message
-      
       await this.slack.chat.postMessage({
-        channel: responseUrl.split('/').pop(), // Extract channel from response URL
+        channel: responseUrl.split('/').pop(), 
         text: `✅ Ticket ${ticketId} assignment initiated! Please complete in SparkSupport dashboard.`,
-        thread_ts: responseUrl.split('/').pop() // This would need proper implementation
+        thread_ts: responseUrl.split('/').pop() 
       });
-
       console.log(`✅ Assignment initiated for ticket ${ticketId}`);
     } catch (error) {
       console.error('❌ Assignment handling failed:', error);
     }
   }
-
-  // Handle urgent escalation from Slack  
   async handleUrgentEscalation(ticketId, slackUserId, responseUrl) {
     try {
-      // Send confirmation
       console.log(`🚨 Ticket ${ticketId} marked as urgent via Slack`);
-      
-      // In production, you'd update the ticket priority in your database here
-      // await updateTicketPriority(ticketId, 'urgent');
-      
     } catch (error) {
       console.error('❌ Urgent escalation failed:', error);
     }
   }
 }
-
 module.exports = new SparkSupportSlackService();

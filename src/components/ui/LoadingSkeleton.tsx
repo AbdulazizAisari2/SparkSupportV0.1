@@ -1,13 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-
 interface LoadingSkeletonProps {
   variant?: 'card' | 'list' | 'profile' | 'table' | 'chart' | 'marketplace';
   count?: number;
   className?: string;
 }
-
-// Shimmer animation
 const shimmerVariants = {
   animate: {
     x: ['-100%', '100%'],
@@ -20,7 +17,6 @@ const shimmerVariants = {
     }
   }
 };
-
 const pulseVariants = {
   animate: {
     opacity: [0.5, 1, 0.5],
@@ -31,7 +27,6 @@ const pulseVariants = {
     }
   }
 };
-
 const SkeletonBox: React.FC<{ 
   width?: string; 
   height?: string; 
@@ -51,8 +46,6 @@ const SkeletonBox: React.FC<{
     />
   </div>
 );
-
-// Card Skeleton
 const CardSkeleton: React.FC = () => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
@@ -69,9 +62,7 @@ const CardSkeleton: React.FC = () => (
       </div>
       <SkeletonBox width="w-8" height="h-8" rounded="rounded-full" />
     </div>
-    
     <SkeletonBox width="w-full" height="h-16" />
-    
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
@@ -87,8 +78,6 @@ const CardSkeleton: React.FC = () => (
     </div>
   </motion.div>
 );
-
-// List Item Skeleton
 const ListSkeleton: React.FC = () => (
   <motion.div
     initial={{ opacity: 0, x: -20 }}
@@ -103,8 +92,6 @@ const ListSkeleton: React.FC = () => (
     <SkeletonBox width="w-16" height="h-8" rounded="rounded-lg" />
   </motion.div>
 );
-
-// Profile Skeleton
 const ProfileSkeleton: React.FC = () => (
   <motion.div
     initial={{ opacity: 0, scale: 0.9 }}
@@ -118,7 +105,6 @@ const ProfileSkeleton: React.FC = () => (
         <SkeletonBox width="w-1/2" height="h-4" />
       </div>
     </div>
-    
     <div className="grid grid-cols-2 gap-4">
       {[...Array(4)].map((_, i) => (
         <div key={i} className="space-y-2">
@@ -129,24 +115,12 @@ const ProfileSkeleton: React.FC = () => (
     </div>
   </motion.div>
 );
-
-// Table Skeleton
 const TableSkeleton: React.FC = () => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     className="bg-white dark:bg-dark-800 rounded-2xl shadow-lg border border-gray-200/50 dark:border-dark-700/50 overflow-hidden"
   >
-    {/* Header */}
-    <div className="border-b border-gray-200 dark:border-dark-600 p-4">
-      <div className="grid grid-cols-5 gap-4">
-        {[...Array(5)].map((_, i) => (
-          <SkeletonBox key={i} width="w-full" height="h-4" />
-        ))}
-      </div>
-    </div>
-    
-    {/* Rows */}
     <div className="divide-y divide-gray-200 dark:divide-dark-600">
       {[...Array(6)].map((_, i) => (
         <motion.div
@@ -168,8 +142,6 @@ const TableSkeleton: React.FC = () => (
     </div>
   </motion.div>
 );
-
-// Chart Skeleton
 const ChartSkeleton: React.FC = () => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
@@ -180,7 +152,6 @@ const ChartSkeleton: React.FC = () => (
       <SkeletonBox width="w-1/3" height="h-6" />
       <SkeletonBox width="w-24" height="h-8" rounded="rounded-lg" />
     </div>
-    
     <div className="h-64 flex items-end justify-between space-x-2">
       {[...Array(12)].map((_, i) => (
         <motion.div
@@ -192,7 +163,6 @@ const ChartSkeleton: React.FC = () => (
         />
       ))}
     </div>
-    
     <div className="flex justify-between mt-4">
       {[...Array(6)].map((_, i) => (
         <SkeletonBox key={i} width="w-8" height="h-3" />
@@ -200,38 +170,18 @@ const ChartSkeleton: React.FC = () => (
     </div>
   </motion.div>
 );
-
-// Marketplace Skeleton
 const MarketplaceSkeleton: React.FC = () => (
   <motion.div
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
     className="bg-white dark:bg-dark-800 rounded-2xl shadow-lg border border-gray-200/50 dark:border-dark-700/50 overflow-hidden"
   >
-    {/* Image area */}
-    <div className="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-dark-700 dark:to-dark-600">
-      <motion.div
-        variants={pulseVariants}
-        animate="animate"
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-      />
-      <div className="absolute top-4 right-4">
-        <SkeletonBox width="w-8" height="h-8" rounded="rounded-full" />
-      </div>
-      <div className="absolute bottom-4 left-4">
-        <SkeletonBox width="w-12" height="h-12" rounded="rounded-2xl" />
-      </div>
-    </div>
-    
-    {/* Content */}
     <div className="p-6 space-y-4">
       <div className="flex items-start justify-between">
         <SkeletonBox width="w-3/4" height="h-6" />
         <SkeletonBox width="w-12" height="h-5" rounded="rounded-full" />
       </div>
-      
       <SkeletonBox width="w-full" height="h-12" />
-      
       <div className="flex items-center space-x-4">
         <div className="flex space-x-1">
           {[...Array(5)].map((_, i) => (
@@ -240,7 +190,6 @@ const MarketplaceSkeleton: React.FC = () => (
         </div>
         <SkeletonBox width="w-20" height="h-3" />
       </div>
-      
       <div className="flex items-center justify-between">
         <SkeletonBox width="w-16" height="h-3" />
         <div className="text-right space-y-1">
@@ -251,12 +200,10 @@ const MarketplaceSkeleton: React.FC = () => (
           <SkeletonBox width="w-12" height="h-3" />
         </div>
       </div>
-      
       <SkeletonBox width="w-full" height="h-12" rounded="rounded-xl" />
     </div>
   </motion.div>
 );
-
 export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
   variant = 'card',
   count = 1,
@@ -278,11 +225,9 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
         return <CardSkeleton />;
     }
   };
-
   if (variant === 'table' || variant === 'chart' || variant === 'profile') {
     return <div className={className}>{renderSkeleton()}</div>;
   }
-
   return (
     <div className={`space-y-4 ${className}`}>
       {[...Array(count)].map((_, index) => (

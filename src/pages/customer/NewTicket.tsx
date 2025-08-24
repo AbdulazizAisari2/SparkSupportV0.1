@@ -9,17 +9,13 @@ import { useToast } from '../../context/ToastContext';
 import { useCreateTicket, useCategories } from '../../hooks/useApi';
 import { TicketTemplate } from '../../components/tickets/TicketTemplates';
 import { UploadedFile } from '../../components/ui/FileUpload';
-
 const ticketSchema = z.object({
   categoryId: z.string().min(1, 'Category is required'),
   priority: z.enum(['low', 'medium', 'high', 'urgent'] as const),
   subject: z.string().min(1, 'Subject is required').max(255, 'Subject too long'),
   description: z.string().min(1, 'Description is required'),
 });
-
 type TicketFormData = z.infer<typeof ticketSchema>;
-
-// Helper function to get category icon by name
 const getCategoryIcon = (categoryName: string) => {
   switch (categoryName.toLowerCase()) {
     case 'technical support': return Settings;
@@ -30,8 +26,6 @@ const getCategoryIcon = (categoryName: string) => {
     default: return MessageSquare;
   }
 };
-
-// Helper function to get priority styling
 const getPriorityStyles = (priority: string) => {
   switch (priority) {
     case 'low':
@@ -46,19 +40,14 @@ const getPriorityStyles = (priority: string) => {
       return 'bg-gray-50 dark:bg-gray-900/20 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600';
   }
 };
-
 export const NewTicket: React.FC = () => {
   const { user } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
   const createTicketMutation = useCreateTicket();
   const { data: categories = [] } = useCategories();
-  
-
-
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedPriority, setSelectedPriority] = useState('medium');
-
   const {
     register,
     handleSubmit,
@@ -71,11 +60,8 @@ export const NewTicket: React.FC = () => {
       priority: 'medium',
     },
   });
-
   const watchedCategory = watch('categoryId');
   const watchedPriority = watch('priority');
-
-  // Helper functions
   const getCategoryConfig = (categoryName: string) => {
     switch (categoryName.toLowerCase()) {
       case 'technical support': 
@@ -92,7 +78,6 @@ export const NewTicket: React.FC = () => {
         return { icon: MessageSquare, color: 'from-gray-500 to-slate-600', bg: 'bg-gray-50 dark:bg-gray-900/20', border: 'border-gray-200 dark:border-gray-600', text: 'text-gray-700 dark:text-gray-300' };
     }
   };
-
   const getPriorityConfig = (priority: string) => {
     switch (priority) {
       case 'low':
@@ -107,49 +92,34 @@ export const NewTicket: React.FC = () => {
         return { icon: MessageSquare, color: 'from-blue-400 to-cyan-500', label: 'Medium Priority', desc: 'Normal response time' };
     }
   };
-
   const onSubmit = async (data: TicketFormData) => {
     if (!user) return;
-
     try {
       console.log('🎫 Creating ticket with data:', data);
-      
       const result = await createTicketMutation.mutateAsync({
         categoryId: data.categoryId,
         priority: data.priority,
         subject: data.subject,
         description: data.description
       });
-
       console.log('✅ Ticket created:', result);
       addToast(`🎉 Ticket ${result.ticket?.id} created successfully! Our team will respond soon.`, 'success');
-      navigate('/my/tickets'); // Navigate to tickets list instead of detail page
+      navigate('/my/tickets'); 
     } catch (error) {
       console.error('❌ Ticket creation failed:', error);
       addToast(`Failed to create ticket: ${error instanceof Error ? error.message : 'Please try again.'}`, 'error');
     }
   };
-
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
     setValue('categoryId', categoryId);
   };
-
   const handlePrioritySelect = (priority: 'low' | 'medium' | 'high' | 'urgent') => {
     setSelectedPriority(priority);
     setValue('priority', priority);
   };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-purple-50 dark:from-dark-950 dark:via-dark-900 dark:to-purple-950">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 right-10 w-72 h-72 bg-primary-200 dark:bg-primary-900 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-xl opacity-20 animate-float"></div>
-        <div className="absolute bottom-10 left-10 w-72 h-72 bg-purple-200 dark:bg-purple-900 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
-      </div>
-
-      <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="flex items-center space-x-4 mb-8">
           <button
             onClick={() => navigate('/my/tickets')}
@@ -167,13 +137,7 @@ export const NewTicket: React.FC = () => {
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Quick & Easy</span>
           </div>
         </div>
-
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Form */}
-          <div className="lg:col-span-2">
-            <div className="bg-white/80 dark:bg-dark-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-dark-600/50 shadow-2xl p-8">
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                {/* Category Selection */}
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
                     <Tag className="w-5 h-5 text-primary-500" />
@@ -181,13 +145,11 @@ export const NewTicket: React.FC = () => {
                       What type of help do you need? *
                     </label>
                   </div>
-                  
                   <div className="grid grid-cols-1 gap-4">
                     {categories.map((category) => {
                       const config = getCategoryConfig(category.name);
                       const Icon = config.icon;
                       const isSelected = watchedCategory === category.id;
-                      
                       return (
                         <button
                           key={category.id}
@@ -236,73 +198,6 @@ export const NewTicket: React.FC = () => {
                   )}
                   <input type="hidden" {...register('categoryId')} />
                 </div>
-
-                {/* Priority Selection */}
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <AlertTriangle className="w-5 h-5 text-primary-500" />
-                    <label className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                      How urgent is this issue? *
-                    </label>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                    {(['low', 'medium', 'high', 'urgent'] as const).map((priority) => {
-                      const config = getPriorityConfig(priority);
-                      const Icon = config.icon;
-                      const isSelected = watchedPriority === priority;
-                      
-                      return (
-                        <button
-                          key={priority}
-                          type="button"
-                          onClick={() => handlePrioritySelect(priority)}
-                          className={`
-                            relative p-4 rounded-xl border-2 transition-all duration-300 group text-center
-                            ${isSelected 
-                              ? 'border-primary-300 dark:border-primary-600 bg-primary-50 dark:bg-primary-900/20 shadow-lg scale-105 ring-2 ring-primary-200 dark:ring-primary-700' 
-                              : 'bg-white dark:bg-dark-700 border-gray-200 dark:border-dark-600 hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-md hover:scale-102'
-                            }
-                          `}
-                        >
-                          <div className="flex flex-col items-center space-y-2">
-                            <div className={`
-                              p-2 rounded-lg bg-gradient-to-r ${config.color} text-white shadow-lg
-                              ${isSelected ? 'animate-pulse' : 'group-hover:scale-110'}
-                              transition-transform duration-200
-                            `}>
-                              <Icon className="w-5 h-5" />
-                            </div>
-                            <div>
-                              <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
-                                {config.label}
-                              </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                                {config.desc}
-                              </div>
-                            </div>
-                          </div>
-                          {isSelected && (
-                            <div className="absolute -top-1 -right-1">
-                              <div className="w-4 h-4 bg-primary-500 rounded-full flex items-center justify-center">
-                                <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
-                              </div>
-                            </div>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {errors.priority && (
-                    <p className="text-sm text-red-600 dark:text-red-400 flex items-center space-x-1 animate-slide-down">
-                      <AlertTriangle className="w-4 h-4" />
-                      <span>{errors.priority.message}</span>
-                    </p>
-                  )}
-                  <input type="hidden" {...register('priority')} />
-                </div>
-
-                {/* Subject */}
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
                     <MessageSquare className="w-5 h-5 text-primary-500" />
@@ -338,45 +233,6 @@ export const NewTicket: React.FC = () => {
                     </p>
                   )}
                 </div>
-
-                {/* Description */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <MessageSquare className="w-5 h-5 text-primary-500" />
-                    <label htmlFor="description" className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                      Tell us more details *
-                    </label>
-                  </div>
-                  <div className="relative">
-                    <textarea
-                      {...register('description')}
-                      id="description"
-                      rows={6}
-                      placeholder="Please provide as much detail as possible. What happened? What were you trying to do? Any error messages?"
-                      className={`
-                        w-full px-4 py-3 border-2 rounded-xl resize-none transition-all duration-300
-                        bg-white/80 dark:bg-dark-700/80 backdrop-blur-sm
-                        placeholder-gray-400 dark:placeholder-gray-500
-                        text-gray-900 dark:text-gray-100
-                        focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
-                        hover:bg-white dark:hover:bg-dark-700 hover:shadow-md
-                        ${errors.description 
-                          ? 'border-red-300 dark:border-red-600 focus:ring-red-500' 
-                          : 'border-gray-200 dark:border-dark-600'
-                        }
-                      `}
-                    />
-                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500/10 to-purple-500/10 opacity-0 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                  </div>
-                  {errors.description && (
-                    <p className="text-sm text-red-600 dark:text-red-400 flex items-center space-x-1 animate-slide-down">
-                      <AlertTriangle className="w-4 h-4" />
-                      <span>{errors.description.message}</span>
-                    </p>
-                  )}
-                </div>
-
-                {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200 dark:border-dark-600">
                   <button
                     type="button"
@@ -401,10 +257,6 @@ export const NewTicket: React.FC = () => {
               </form>
             </div>
           </div>
-
-          {/* Sidebar with Live Preview & Tips */}
-          <div className="space-y-6">
-            {/* Selected Category Preview */}
             {watchedCategory && (
               <div className="bg-white/80 dark:bg-dark-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-dark-600/50 shadow-xl p-6 animate-slide-down">
                 <div className="flex items-center space-x-3 mb-4">
@@ -423,28 +275,6 @@ export const NewTicket: React.FC = () => {
                 </p>
               </div>
             )}
-
-            {/* Selected Priority Preview */}
-            {watchedPriority && (
-              <div className="bg-white/80 dark:bg-dark-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-dark-600/50 shadow-xl p-6 animate-slide-down">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className={`p-2 rounded-lg bg-gradient-to-r ${getPriorityConfig(watchedPriority).color} text-white shadow-lg`}>
-                    {React.createElement(getPriorityConfig(watchedPriority).icon, { className: 'w-5 h-5' })}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">Priority Level</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {getPriorityConfig(watchedPriority).label}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {getPriorityConfig(watchedPriority).desc}
-                </p>
-              </div>
-            )}
-
-            {/* Tips Card */}
             <div className="bg-gradient-to-br from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20 backdrop-blur-xl rounded-2xl border border-primary-200/50 dark:border-primary-600/50 shadow-xl p-6">
               <div className="flex items-center space-x-2 mb-4">
                 <Sparkles className="w-5 h-5 text-primary-500" />

@@ -1,14 +1,12 @@
 import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { X } from 'lucide-react';
-
 interface CrudDialogProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
 }
-
 export const CrudDialog: React.FC<CrudDialogProps> = ({
   isOpen,
   onClose,
@@ -29,7 +27,6 @@ export const CrudDialog: React.FC<CrudDialogProps> = ({
         >
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </Transition.Child>
-
         <div className="fixed inset-0 z-10 overflow-y-auto">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
@@ -51,7 +48,6 @@ export const CrudDialog: React.FC<CrudDialogProps> = ({
                     <X className="h-6 w-6" />
                   </button>
                 </div>
-                
                 <div className="sm:flex sm:items-start">
                   <div className="mt-3 text-center sm:ml-0 sm:mt-0 sm:text-left w-full">
                     <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900">

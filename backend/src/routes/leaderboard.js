@@ -2,22 +2,14 @@ const express = require('express');
 const { z } = require('zod');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken, requireStaffOrAdmin } = require('../middleware/auth');
-
 const router = express.Router();
 const prisma = new PrismaClient();
-
-// Validation schemas
 const timeframeSchema = z.enum(['week', 'month', 'quarter', 'year']).optional();
 const metricSchema = z.enum(['points', 'resolved', 'satisfaction', 'growth']).optional();
-
-// GET /api/leaderboard - Get staff leaderboard with rankings
 router.get('/', authenticateToken, requireStaffOrAdmin, async (req, res, next) => {
   try {
     const { timeframe = 'month', metric = 'points', limit = 50 } = req.query;
-
     console.log(`📊 Fetching leaderboard: timeframe=${timeframe}, metric=${metric}`);
-
-    // Get all staff and admin users with their stats and achievements
     const staffUsers = await prisma.user.findMany({
       where: {
         OR: [
@@ -39,10 +31,7 @@ router.get('/', authenticateToken, requireStaffOrAdmin, async (req, res, next) =
         points: 'desc'
       }
     });
-
     console.log(`👥 Found ${staffUsers.length} staff members`);
-
-    // Transform data to match frontend interface
     const leaderboardData = staffUsers.map(user => ({
       userId: user.id,
       name: user.name,
@@ -66,8 +55,6 @@ router.get('/', authenticateToken, requireStaffOrAdmin, async (req, res, next) =
       monthlyGrowth: user.monthlyGrowth,
       specialRecognition: user.specialRecognition
     }));
-
-    // Sort based on metric
     const sortedData = [...leaderboardData].sort((a, b) => {
       switch (metric) {
         case 'points':
@@ -82,10 +69,7 @@ router.get('/', authenticateToken, requireStaffOrAdmin, async (req, res, next) =
           return b.points - a.points;
       }
     });
-
-    // Get top performer (staff of the month)
     const topPerformer = sortedData.find(user => user.specialRecognition === 'Staff of the Month');
-
     res.json({
       leaderboard: sortedData.slice(0, parseInt(limit)),
       topPerformer,
@@ -93,38 +77,28 @@ router.get('/', authenticateToken, requireStaffOrAdmin, async (req, res, next) =
       metric,
       totalStaff: staffUsers.length
     });
-
   } catch (error) {
     next(error);
   }
 });
-
-// GET /api/leaderboard/achievements - Get all available achievements
 router.get('/achievements', authenticateToken, requireStaffOrAdmin, async (req, res, next) => {
   try {
     const achievements = await prisma.achievement.findMany({
       where: { isActive: true },
       orderBy: { pointsReward: 'desc' }
     });
-
     console.log(`🏆 Retrieved ${achievements.length} active achievements`);
-
     res.json({ achievements });
   } catch (error) {
     next(error);
   }
 });
-
-// GET /api/leaderboard/user/:userId - Get specific user's leaderboard stats
 router.get('/user/:userId', authenticateToken, async (req, res, next) => {
   try {
     const { userId } = req.params;
-
-    // Users can only view their own stats unless they're staff/admin
     if (req.user.role === 'customer' && req.user.id !== userId) {
       return res.status(403).json({ error: 'Access denied' });
     }
-
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -136,21 +110,16 @@ router.get('/user/:userId', authenticateToken, async (req, res, next) => {
         }
       }
     });
-
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-
-    // Calculate rank among staff
     const staffCount = await prisma.user.count({
       where: {
         OR: [{ role: 'staff' }, { role: 'admin' }],
         points: { gt: user.points }
       }
     });
-
     const rank = staffCount + 1;
-
     const userStats = {
       userId: user.id,
       name: user.name,
@@ -177,39 +146,29 @@ router.get('/user/:userId', authenticateToken, async (req, res, next) => {
         unlockedAt: ua.unlockedAt
       }))
     };
-
     console.log(`📊 Retrieved stats for user: ${user.name} (Rank: ${rank})`);
-
     res.json({ user: userStats });
   } catch (error) {
     next(error);
   }
 });
-
-// POST /api/leaderboard/award-points - Award points to a user (admin only)
 router.post('/award-points', authenticateToken, async (req, res, next) => {
   try {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Admin access required' });
     }
-
     const { userId, points, reason } = req.body;
-
     if (!userId || !points || points <= 0) {
       return res.status(400).json({ error: 'Valid userId and positive points required' });
     }
-
     const user = await prisma.user.update({
       where: { id: userId },
       data: {
         points: { increment: points },
-        // Recalculate level (every 500 points = 1 level)
         level: { increment: Math.floor(points / 500) }
       }
     });
-
     console.log(`🎯 Awarded ${points} points to ${user.name}. Reason: ${reason || 'Manual award'}`);
-
     res.json({
       message: 'Points awarded successfully',
       user: {
@@ -221,16 +180,12 @@ router.post('/award-points', authenticateToken, async (req, res, next) => {
       awarded: points,
       reason
     });
-
   } catch (error) {
     next(error);
   }
 });
-
-// GET /api/leaderboard/challenges - Get active team challenges
 router.get('/challenges', authenticateToken, requireStaffOrAdmin, async (req, res, next) => {
   try {
-    // For now, return static challenges - in production, these would be dynamic
     const challenges = [
       {
         id: 'weekly-sprint',
@@ -269,13 +224,10 @@ router.get('/challenges', authenticateToken, requireStaffOrAdmin, async (req, re
         status: 'active'
       }
     ];
-
     console.log(`🎯 Retrieved ${challenges.length} active challenges`);
-
     res.json({ challenges });
   } catch (error) {
     next(error);
   }
 });
-
 module.exports = router;

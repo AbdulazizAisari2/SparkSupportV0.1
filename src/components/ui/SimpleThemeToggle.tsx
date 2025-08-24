@@ -1,23 +1,19 @@
 import React from 'react';
 import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
-
 interface SimpleThemeToggleProps {
   className?: string;
 }
-
 export const SimpleThemeToggle: React.FC<SimpleThemeToggleProps> = ({ 
   className = ''
 }) => {
   const { theme, toggleTheme } = useTheme();
-
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     console.log('Theme toggle clicked!', theme);
     toggleTheme();
   };
-
   return (
     <button
       onClick={handleToggle}
@@ -41,20 +37,3 @@ export const SimpleThemeToggle: React.FC<SimpleThemeToggleProps> = ({
         WebkitUserSelect: 'none'
       }}
     >
-      {/* Compact icon and text */}
-      <div className="flex items-center space-x-1">
-        <div className="relative w-3 h-3">
-          {theme === 'light' ? (
-            <Sun className="w-3 h-3 text-yellow-600 dark:text-yellow-400 group-hover:animate-spin transition-all duration-200" />
-          ) : (
-            <Moon className="w-3 h-3 text-indigo-600 dark:text-indigo-400 group-hover:animate-pulse transition-all duration-200" />
-          )}
-        </div>
-        
-        <span className="font-medium text-xs">
-          {theme === 'light' ? 'Light' : 'Dark'}
-        </span>
-      </div>
-    </button>
-  );
-};

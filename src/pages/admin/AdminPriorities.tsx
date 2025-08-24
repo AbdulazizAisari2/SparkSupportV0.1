@@ -12,24 +12,19 @@ import { useToast } from '../../context/ToastContext';
 import { CrudList } from '../../components/admin/CrudList';
 import { CrudDialog } from '../../components/admin/CrudDialog';
 import { PriorityDef } from '../../types';
-
 const prioritySchema = z.object({
   name: z.string().min(1, 'Name is required').max(50, 'Name too long'),
   level: z.coerce.number().min(1, 'Level must be at least 1').max(10, 'Level cannot exceed 10'),
 });
-
 type PriorityFormData = z.infer<typeof prioritySchema>;
-
 export const AdminPriorities: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPriority, setEditingPriority] = useState<PriorityDef | null>(null);
   const { addToast } = useToast();
-
   const { data: priorities = [], isLoading } = usePriorities();
   const createPriorityMutation = useCreatePriority();
   const updatePriorityMutation = useUpdatePriority();
   const deletePriorityMutation = useDeletePriority();
-
   const {
     register,
     handleSubmit,
@@ -38,13 +33,11 @@ export const AdminPriorities: React.FC = () => {
   } = useForm<PriorityFormData>({
     resolver: zodResolver(prioritySchema),
   });
-
   const handleCreate = () => {
     setEditingPriority(null);
     reset({ name: '', level: 1 });
     setIsDialogOpen(true);
   };
-
   const handleEdit = (priority: PriorityDef) => {
     setEditingPriority(priority);
     reset({
@@ -53,7 +46,6 @@ export const AdminPriorities: React.FC = () => {
     });
     setIsDialogOpen(true);
   };
-
   const handleDelete = async (id: string) => {
     try {
       await deletePriorityMutation.mutateAsync(id);
@@ -62,7 +54,6 @@ export const AdminPriorities: React.FC = () => {
       addToast('Failed to delete priority. Please try again.', 'error');
     }
   };
-
   const onSubmit = async (data: PriorityFormData) => {
     try {
       if (editingPriority) {
@@ -81,13 +72,11 @@ export const AdminPriorities: React.FC = () => {
       addToast('Operation failed. Please try again.', 'error');
     }
   };
-
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     setEditingPriority(null);
     reset();
   };
-
   const renderPriority = (priority: PriorityDef) => (
     <div className="flex items-center justify-between">
       <div>
@@ -105,9 +94,7 @@ export const AdminPriorities: React.FC = () => {
       </div>
     </div>
   );
-
   const isSubmitting = createPriorityMutation.isPending || updatePriorityMutation.isPending;
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -116,7 +103,6 @@ export const AdminPriorities: React.FC = () => {
           {priorities.length} priorit{priorities.length !== 1 ? 'ies' : 'y'}
         </p>
       </div>
-
       <CrudList
         title="Priority Levels"
         items={priorities.sort((a, b) => b.level - a.level)}
@@ -128,7 +114,6 @@ export const AdminPriorities: React.FC = () => {
         loading={isLoading}
         emptyMessage="No priorities found. Create your first priority level to get started."
       />
-
       <CrudDialog
         isOpen={isDialogOpen}
         onClose={handleCloseDialog}
@@ -153,7 +138,6 @@ export const AdminPriorities: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
             )}
           </div>
-
           <div>
             <label htmlFor="level" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Level * (1-10, higher = more urgent)
@@ -177,7 +161,6 @@ export const AdminPriorities: React.FC = () => {
               Level 1 = Lowest priority, Level 10 = Highest priority
             </p>
           </div>
-
           <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"

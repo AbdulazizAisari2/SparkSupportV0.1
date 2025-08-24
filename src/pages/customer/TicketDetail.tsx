@@ -10,34 +10,25 @@ import { Thread } from '../../components/tickets/Thread';
 import { ReplyBox } from '../../components/tickets/ReplyBox';
 import { Skeleton } from '../../components/ui/Loading';
 import { formatDistanceToNow } from 'date-fns';
-
 export const TicketDetail: React.FC = () => {
   const { id } = useSecureParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToast } = useToast();
-
-  // Security: Validate ticket ID using useEffect to avoid render warnings
   useEffect(() => {
     if (!id) {
       navigate('/my/tickets', { replace: true });
     }
   }, [id, navigate]);
-
-  // Early return if no ID (component will be redirected via useEffect)
   if (!id) {
     return null;
   }
-
   const { data: ticketData, isLoading, error } = useTicket(id);
   const { data: categories = [] } = useCategories();
   const { data: users = [] } = useUsers();
   const createMessageMutation = useCreateMessage();
-
   const ticket = ticketData?.ticket;
   const messages = ticket?.messages || [];
-
-  // Debug logging
   console.log('TicketDetail Debug:', {
     id,
     ticketData,
@@ -47,7 +38,6 @@ export const TicketDetail: React.FC = () => {
     error,
     user
   });
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -58,7 +48,6 @@ export const TicketDetail: React.FC = () => {
       </div>
     );
   }
-
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -75,7 +64,6 @@ export const TicketDetail: React.FC = () => {
       </div>
     );
   }
-
   if (!ticket) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -92,10 +80,8 @@ export const TicketDetail: React.FC = () => {
       </div>
     );
   }
-
   const handleReply = async (data: { message: string }) => {
     if (!user || !ticket) return;
-
     try {
       await createMessageMutation.mutateAsync({
         ticketId: ticket.id,
@@ -104,14 +90,12 @@ export const TicketDetail: React.FC = () => {
           isInternal: false,
         },
       });
-
       addToast('Reply sent successfully!', 'success');
     } catch (error) {
       console.error('❌ Reply failed:', error);
       addToast('Failed to send reply. Please try again.', 'error');
     }
   };
-
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
@@ -131,7 +115,6 @@ export const TicketDetail: React.FC = () => {
       </div>
     );
   }
-
   if (error) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
@@ -151,7 +134,6 @@ export const TicketDetail: React.FC = () => {
       </div>
     );
   }
-
   if (!isLoading && !ticket) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
@@ -171,36 +153,11 @@ export const TicketDetail: React.FC = () => {
       </div>
     );
   }
-
   const category = categories.find(c => c.id === ticket.categoryId);
   const assignedUser = users.find(u => u.id === ticket.assignedStaffId);
-
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center space-x-4">
-        <button
-          onClick={() => navigate('/my/tickets')}
-          className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ticket {ticket.id}</h1>
-          <p className="text-gray-600 dark:text-gray-400">{ticket.subject}</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Thread */}
-          <div className="bg-white dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-600 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Conversation</h2>
-            <Thread messages={messages} users={users} />
-          </div>
-
-          {/* Reply Box */}
           <div className="bg-white dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-600 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Reply</h2>
             <ReplyBox
@@ -210,46 +167,35 @@ export const TicketDetail: React.FC = () => {
             />
           </div>
         </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Ticket Info */}
           <div className="bg-white dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-600 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Ticket Details</h3>
-            
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600 dark:text-gray-400">Status</span>
                 <StatusBadge status={ticket.status} />
               </div>
-
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600 dark:text-gray-400">Priority</span>
                 <PriorityBadge priority={ticket.priority} />
               </div>
-
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600 dark:text-gray-400">Category</span>
                 <span className="text-sm font-medium text-gray-900">
                   {category?.name || 'Unknown'}
                 </span>
               </div>
-
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600 dark:text-gray-400">Assigned to</span>
                 <span className="text-sm font-medium text-gray-900">
                   {assignedUser?.name || 'Unassigned'}
                 </span>
               </div>
-
               <hr className="my-4" />
-
               <div className="space-y-3">
                 <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                   <Clock className="w-4 h-4" />
                   <span>Created {formatDistanceToNow(new Date(ticket.createdAt), { addSuffix: true })}</span>
                 </div>
-
                 <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                   <Clock className="w-4 h-4" />
                   <span>Updated {formatDistanceToNow(new Date(ticket.updatedAt), { addSuffix: true })}</span>

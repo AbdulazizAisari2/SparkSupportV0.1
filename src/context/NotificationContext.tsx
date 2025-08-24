@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react';
 import { Bell, CheckCircle, AlertCircle, Info, X } from 'lucide-react';
-
 export type NotificationType = 'success' | 'error' | 'info' | 'warning';
-
 export interface Notification {
   id: string;
   type: NotificationType;
@@ -15,7 +13,6 @@ export interface Notification {
   createdAt: Date;
   read: boolean;
 }
-
 interface NotificationContextType {
   notifications: Notification[];
   addNotification: (notification: Omit<Notification, 'id' | 'createdAt' | 'read'>) => void;
@@ -24,43 +21,32 @@ interface NotificationContextType {
   clearAll: () => void;
   unreadCount: number;
 }
-
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
-
 interface NotificationProviderProps {
   children: ReactNode;
 }
-
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-
   const addNotification = (notification: Omit<Notification, 'id' | 'createdAt' | 'read'>) => {
-    // Prevent duplicate notifications
     const isDuplicate = notifications.some(n => 
       n.title === notification.title && n.message === notification.message
     );
-    
     if (isDuplicate) {
       return;
     }
-
     const newNotification: Notification = {
       ...notification,
       id: Date.now().toString(),
       createdAt: new Date(),
       read: false,
     };
-
-    setNotifications(prev => [newNotification, ...prev.slice(0, 9)]); // Keep max 10 notifications
-
-    // Auto-remove after 8 seconds for non-action notifications
+    setNotifications(prev => [newNotification, ...prev.slice(0, 9)]); 
     if (!notification.action) {
       setTimeout(() => {
         removeNotification(newNotification.id);
       }, 8000);
     }
   };
-
   const markAsRead = (id: string) => {
     setNotifications(prev =>
       prev.map(notification =>
@@ -68,17 +54,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       )
     );
   };
-
   const removeNotification = (id: string) => {
     setNotifications(prev => prev.filter(notification => notification.id !== id));
   };
-
   const clearAll = () => {
     setNotifications([]);
   };
-
   const unreadCount = notifications.filter(n => !n.read).length;
-
   return (
     <NotificationContext.Provider value={{
       notifications,
@@ -92,7 +74,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     </NotificationContext.Provider>
   );
 };
-
 export const useNotifications = () => {
   const context = useContext(NotificationContext);
   if (context === undefined) {
@@ -100,30 +81,23 @@ export const useNotifications = () => {
   }
   return context;
 };
-
-// Notification Bell Component
 export const NotificationBell: React.FC = () => {
   const { notifications, unreadCount, markAsRead, removeNotification } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
-
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen]);
-
   const getIcon = (type: NotificationType) => {
     switch (type) {
       case 'success': return CheckCircle;
@@ -133,7 +107,6 @@ export const NotificationBell: React.FC = () => {
       default: return Info;
     }
   };
-
   const getTypeStyles = (type: NotificationType) => {
     switch (type) {
       case 'success': return 'text-green-600 dark:text-green-400';
@@ -143,7 +116,6 @@ export const NotificationBell: React.FC = () => {
       default: return 'text-gray-600 dark:text-gray-400';
     }
   };
-
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -157,7 +129,6 @@ export const NotificationBell: React.FC = () => {
           </span>
         )}
       </button>
-
       {isOpen && (
         <div className="absolute right-0 top-full mt-3 w-80 bg-white/90 dark:bg-dark-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-200/50 dark:border-dark-700/50 z-[60] animate-slide-down">
           <div className="p-4 border-b border-gray-200/50 dark:border-dark-700/50 bg-gradient-to-r from-primary-50/50 to-purple-50/50 dark:from-primary-900/20 dark:to-purple-900/20">
@@ -179,7 +150,6 @@ export const NotificationBell: React.FC = () => {
               </button>
             </div>
           </div>
-
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="p-8 text-center">

@@ -1,22 +1,15 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
-
 const prisma = new PrismaClient();
-
 async function main() {
   console.log('🌱 Starting fresh database seeding with leaderboard data...');
-
-  // Clear existing data
   await prisma.userAchievement.deleteMany();
   await prisma.achievement.deleteMany();
   await prisma.ticketMessage.deleteMany();
   await prisma.ticket.deleteMany();
   await prisma.category.deleteMany();
   await prisma.user.deleteMany();
-
   console.log('🧹 Cleared existing data');
-
-  // Create achievements
   const achievements = await Promise.all([
     prisma.achievement.create({
       data: {
@@ -99,10 +92,7 @@ async function main() {
       }
     })
   ]);
-
   console.log(`🏆 Created ${achievements.length} achievements`);
-
-  // Create categories ONLY
   const categories = await Promise.all([
     prisma.category.create({
       data: {
@@ -135,10 +125,7 @@ async function main() {
       }
     })
   ]);
-
   console.log(`📂 Created ${categories.length} categories`);
-
-  // Create sample staff users with leaderboard data
   const staffUsers = await Promise.all([
     prisma.user.create({
       data: {
@@ -222,107 +209,94 @@ async function main() {
       }
     })
   ]);
-
   console.log(`👥 Created ${staffUsers.length} staff users with leaderboard data`);
-
-  // Assign achievements to users
   const userAchievements = [];
-  
-  // Mohammed's achievements (top performer)
   userAchievements.push(
     prisma.userAchievement.create({
       data: {
         userId: staffUsers[0].id,
-        achievementId: achievements[0].id, // First Resolution
+        achievementId: achievements[0].id, 
         unlockedAt: new Date('2024-01-15')
       }
     }),
     prisma.userAchievement.create({
       data: {
         userId: staffUsers[0].id,
-        achievementId: achievements[1].id, // Speed Demon
+        achievementId: achievements[1].id, 
         unlockedAt: new Date('2024-01-20')
       }
     }),
     prisma.userAchievement.create({
       data: {
         userId: staffUsers[0].id,
-        achievementId: achievements[3].id, // Streak Master
+        achievementId: achievements[3].id, 
         unlockedAt: new Date('2024-01-25')
       }
     }),
     prisma.userAchievement.create({
       data: {
         userId: staffUsers[0].id,
-        achievementId: achievements[5].id, // Resolution Master
+        achievementId: achievements[5].id, 
         unlockedAt: new Date('2024-02-01')
       }
     })
   );
-
-  // Ahmed's achievements
   userAchievements.push(
     prisma.userAchievement.create({
       data: {
         userId: staffUsers[1].id,
-        achievementId: achievements[0].id, // First Resolution
+        achievementId: achievements[0].id, 
         unlockedAt: new Date('2024-01-10')
       }
     }),
     prisma.userAchievement.create({
       data: {
         userId: staffUsers[1].id,
-        achievementId: achievements[2].id, // Customer Hero
+        achievementId: achievements[2].id, 
         unlockedAt: new Date('2024-01-18')
       }
     }),
     prisma.userAchievement.create({
       data: {
         userId: staffUsers[1].id,
-        achievementId: achievements[7].id, // Customer Champion
+        achievementId: achievements[7].id, 
         unlockedAt: new Date('2024-02-05')
       }
     })
   );
-
-  // Sarah's achievements
   userAchievements.push(
     prisma.userAchievement.create({
       data: {
         userId: staffUsers[2].id,
-        achievementId: achievements[0].id, // First Resolution
+        achievementId: achievements[0].id, 
         unlockedAt: new Date('2024-01-08')
       }
     }),
     prisma.userAchievement.create({
       data: {
         userId: staffUsers[2].id,
-        achievementId: achievements[4].id, // Team Player
+        achievementId: achievements[4].id, 
         unlockedAt: new Date('2024-01-22')
       }
     })
   );
-
-  // Admin's achievements
   userAchievements.push(
     prisma.userAchievement.create({
       data: {
         userId: staffUsers[3].id,
-        achievementId: achievements[0].id, // First Resolution
+        achievementId: achievements[0].id, 
         unlockedAt: new Date('2024-01-12')
       }
     }),
     prisma.userAchievement.create({
       data: {
         userId: staffUsers[3].id,
-        achievementId: achievements[6].id, // Lightning Fast
+        achievementId: achievements[6].id, 
         unlockedAt: new Date('2024-01-30')
       }
     })
   );
-
   await Promise.all(userAchievements);
-
   console.log(`🏅 Assigned achievements to staff users`);
   console.log('\n🎉 Fresh database setup completed with leaderboard!');
   console.log('\n📊 Database Contents:');
@@ -340,7 +314,6 @@ async function main() {
   console.log('\n✅ Database is ready for leaderboard functionality!');
   console.log('🚀 You can now signup with any email and see real leaderboard data!');
 }
-
 main()
   .catch((e) => {
     console.error('❌ Seeding failed:', e);

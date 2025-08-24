@@ -1,12 +1,10 @@
 import React from 'react';
 import { Award, Star, Zap, Target, Crown, Shield } from 'lucide-react';
 import { Role, Status, Priority } from '../../types';
-
 interface RoleBadgeProps {
   role: Role;
   className?: string;
 }
-
 export const RoleBadge: React.FC<RoleBadgeProps> = ({ role, className = '' }) => {
   const getBadgeStyles = (role: Role) => {
     switch (role) {
@@ -20,7 +18,6 @@ export const RoleBadge: React.FC<RoleBadgeProps> = ({ role, className = '' }) =>
         return 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700';
     }
   };
-
   const getIcon = (role: Role) => {
     switch (role) {
       case 'admin': return Crown;
@@ -29,9 +26,7 @@ export const RoleBadge: React.FC<RoleBadgeProps> = ({ role, className = '' }) =>
       default: return Star;
     }
   };
-
   const Icon = getIcon(role);
-
   return (
     <span className={`
       inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border transition-colors duration-200
@@ -42,12 +37,10 @@ export const RoleBadge: React.FC<RoleBadgeProps> = ({ role, className = '' }) =>
     </span>
   );
 };
-
 interface StatusBadgeProps {
   status: Status;
   className?: string;
 }
-
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className = '' }) => {
   const getStyles = () => {
     switch (status) {
@@ -63,7 +56,6 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className = ''
         return 'bg-gray-100 dark:bg-gray-500/20 text-gray-800 dark:text-gray-200 border-2 border-gray-300 dark:border-gray-400 shadow-sm dark:shadow-gray-500/20';
     }
   };
-
   const getDisplayText = () => {
     switch (status) {
       case 'in_progress':
@@ -72,19 +64,16 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className = ''
         return status.charAt(0).toUpperCase() + status.slice(1);
     }
   };
-
   return (
     <span className={`inline-flex px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 ${getStyles()} ${className}`}>
       {getDisplayText()}
     </span>
   );
 };
-
 interface PriorityBadgeProps {
   priority: Priority;
   className?: string;
 }
-
 export const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority, className = '' }) => {
   const getStyles = () => {
     switch (priority) {
@@ -100,15 +89,12 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority, classNam
         return 'bg-gray-100 dark:bg-gray-500/25 text-gray-900 dark:text-gray-100 border-2 border-gray-400 dark:border-gray-300 shadow-md dark:shadow-gray-500/20 font-medium';
     }
   };
-
   return (
     <span className={`inline-flex px-3 py-1.5 text-xs rounded-lg transition-all duration-200 uppercase tracking-wider ${getStyles()} ${className}`}>
       {priority.charAt(0).toUpperCase() + priority.slice(1)}
     </span>
   );
 };
-
-// Achievement Badge Component for Gamification
 export interface Achievement {
   id: string;
   name: string;
@@ -117,13 +103,11 @@ export interface Achievement {
   color: 'gold' | 'silver' | 'bronze' | 'blue' | 'green' | 'purple';
   unlockedAt?: Date;
 }
-
 interface AchievementBadgeProps {
   achievement: Achievement;
   size?: 'sm' | 'md' | 'lg';
   showTooltip?: boolean;
 }
-
 export const AchievementBadge: React.FC<AchievementBadgeProps> = ({ 
   achievement, 
   size = 'md',
@@ -139,7 +123,6 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
       default: return Award;
     }
   };
-
   const getColorStyles = (color: Achievement['color']) => {
     switch (color) {
       case 'gold':
@@ -158,7 +141,6 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
         return 'bg-gradient-to-br from-gray-400 to-gray-600 text-gray-900 shadow-gray-200 dark:shadow-gray-900/20';
     }
   };
-
   const getSizeStyles = (size: 'sm' | 'md' | 'lg') => {
     switch (size) {
       case 'sm': return 'w-8 h-8 text-xs';
@@ -167,10 +149,8 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
       default: return 'w-12 h-12 text-sm';
     }
   };
-
   const Icon = getIcon(achievement.icon);
   const isUnlocked = !!achievement.unlockedAt;
-
   return (
     <div className="relative group">
       <div className={`
@@ -184,7 +164,6 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
       `}>
         <Icon className={size === 'lg' ? 'w-8 h-8' : size === 'md' ? 'w-6 h-6' : 'w-4 h-4'} />
       </div>
-
       {showTooltip && (
         <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
           <div className="font-semibold">{achievement.name}</div>

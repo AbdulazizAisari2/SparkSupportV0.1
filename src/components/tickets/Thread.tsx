@@ -3,31 +3,24 @@ import { TicketMessage, User } from '../../types';
 import { formatDistanceToNow } from 'date-fns';
 import { MessageCircle, Eye, Paperclip } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-
 interface ThreadProps {
   messages: TicketMessage[];
   users: User[];
 }
-
 export const Thread: React.FC<ThreadProps> = ({ messages, users }) => {
   const { user: currentUser } = useAuth();
-
   const getUserName = (userId: string) => {
     const user = users.find(u => u.id === userId);
     return user?.name || 'Unknown User';
   };
-
   const getUserRole = (userId: string) => {
     const user = users.find(u => u.id === userId);
     return user?.role || 'customer';
   };
-
   const canViewInternalNotes = currentUser?.role === 'staff' || currentUser?.role === 'admin';
-
   const filteredMessages = messages.filter(message => 
     !message.isInternal || canViewInternalNotes
   );
-
   if (filteredMessages.length === 0) {
     return (
       <div className="text-center py-8">
@@ -37,7 +30,6 @@ export const Thread: React.FC<ThreadProps> = ({ messages, users }) => {
       </div>
     );
   }
-
   return (
     <div className="space-y-4">
       {filteredMessages.map((message) => {
@@ -45,7 +37,6 @@ export const Thread: React.FC<ThreadProps> = ({ messages, users }) => {
         const senderRole = getUserRole(message.senderId);
         const isCurrentUser = message.senderId === currentUser?.id;
         const isInternal = message.isInternal;
-
         return (
           <div
             key={message.id}
@@ -94,15 +85,12 @@ export const Thread: React.FC<ThreadProps> = ({ messages, users }) => {
                   {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
                 </span>
               </div>
-
               <div className={`text-sm ${
                 isCurrentUser ? 'text-white' : isInternal ? 'text-gray-800' : 'text-gray-900'
               }`}>
                 {message.message}
               </div>
-
 {(() => {
-                // Parse attachmentUrls from JSON string to array
                 let attachments = [];
                 try {
                   attachments = typeof message.attachmentUrls === 'string' 
@@ -111,7 +99,6 @@ export const Thread: React.FC<ThreadProps> = ({ messages, users }) => {
                 } catch {
                   attachments = [];
                 }
-                
                 return attachments && attachments.length > 0 && (
                   <div className="mt-2">
                     <div className="flex items-center space-x-1 text-xs">

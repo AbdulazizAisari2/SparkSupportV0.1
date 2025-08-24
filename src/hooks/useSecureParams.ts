@@ -1,9 +1,7 @@
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useMemo, useEffect } from 'react';
-
-// Whitelist of allowed parameter names and their validation patterns
 const ALLOWED_PARAMS = {
-  id: /^[A-Za-z0-9_-]+$/,      // Allow alphanumeric IDs with hyphens and underscores (e.g., T001, T-001_A)
+  id: /^[A-Za-z0-9_-]+$/,      
   status: /^(open|in_progress|resolved|closed)$/,
   priority: /^(low|medium|high|urgent)$/,
   category: /^[a-zA-Z0-9_-]+$/,
@@ -13,24 +11,19 @@ const ALLOWED_PARAMS = {
   sort: /^(created_at|updated_at|priority|status)$/,
   order: /^(asc|desc)$/,
   role: /^(customer|staff|admin)$/,
-  q: /^[a-zA-Z0-9\s\-_.@]{0,100}$/, // Search query with reasonable length limit
+  q: /^[a-zA-Z0-9\s\-_.@]{0,100}$/, 
 };
-
 interface SecureParams {
   [key: string]: string | undefined;
 }
-
 interface SecureSearchParams {
   [key: string]: string | null;
 }
-
 export const useSecureParams = (): SecureParams => {
   const params = useParams();
   const navigate = useNavigate();
-  
   return useMemo(() => {
     const secureParams: SecureParams = {};
-    
     Object.entries(params).forEach(([key, value]) => {
       if (value && ALLOWED_PARAMS[key as keyof typeof ALLOWED_PARAMS]) {
         const pattern = ALLOWED_PARAMS[key as keyof typeof ALLOWED_PARAMS];
@@ -38,24 +31,18 @@ export const useSecureParams = (): SecureParams => {
           secureParams[key] = value;
         } else {
           console.warn(`Invalid parameter value for ${key}: ${value}`);
-          // For critical parameters like 'id', we might want to handle this more gracefully
-          // but we'll let the consuming component handle the redirect logic
         }
       } else if (value) {
         console.warn(`Unauthorized parameter: ${key}`);
       }
     });
-    
     return secureParams;
   }, [params]);
 };
-
 export const useSecureSearchParams = (): SecureSearchParams => {
   const [searchParams] = useSearchParams();
-  
   return useMemo(() => {
     const secureSearchParams: SecureSearchParams = {};
-    
     searchParams.forEach((value, key) => {
       if (ALLOWED_PARAMS[key as keyof typeof ALLOWED_PARAMS]) {
         const pattern = ALLOWED_PARAMS[key as keyof typeof ALLOWED_PARAMS];
@@ -68,28 +55,18 @@ export const useSecureSearchParams = (): SecureSearchParams => {
         console.warn(`Unauthorized search parameter: ${key}`);
       }
     });
-    
     return secureSearchParams;
   }, [searchParams]);
 };
-
-// Helper function to validate individual parameter values
 export const validateParamValue = (key: string, value: string): boolean => {
   const pattern = ALLOWED_PARAMS[key as keyof typeof ALLOWED_PARAMS];
   return pattern ? pattern.test(value) : false;
 };
-
-// Helper function to sanitize URLs for navigation
 export const sanitizeNavigationPath = (path: string): string => {
-  // Remove any potentially dangerous characters
   const sanitized = path.replace(/[<>'";&()]/g, '');
-  
-  // Ensure path starts with /
   if (!sanitized.startsWith('/')) {
     return '/';
   }
-  
-  // List of allowed path patterns
   const allowedPatterns = [
     /^\/login$/,
     /^\/signup$/,
@@ -111,13 +88,10 @@ export const sanitizeNavigationPath = (path: string): string => {
     /^\/admin\/leaderboard$/,
     /^\/admin\/notifications$/,
   ];
-  
   const isValidPath = allowedPatterns.some(pattern => pattern.test(sanitized));
-  
   if (!isValidPath) {
     console.warn(`Invalid navigation path: ${path}`);
     return '/login';
   }
-  
   return sanitized;
 };

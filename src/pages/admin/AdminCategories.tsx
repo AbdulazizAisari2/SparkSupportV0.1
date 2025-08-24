@@ -12,24 +12,19 @@ import { useToast } from '../../context/ToastContext';
 import { CrudList } from '../../components/admin/CrudList';
 import { CrudDialog } from '../../components/admin/CrudDialog';
 import { Category } from '../../types';
-
 const categorySchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
   description: z.string().optional(),
 });
-
 type CategoryFormData = z.infer<typeof categorySchema>;
-
 export const AdminCategories: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const { addToast } = useToast();
-
   const { data: categories = [], isLoading } = useCategories();
   const createCategoryMutation = useCreateCategory();
   const updateCategoryMutation = useUpdateCategory();
   const deleteCategoryMutation = useDeleteCategory();
-
   const {
     register,
     handleSubmit,
@@ -38,13 +33,11 @@ export const AdminCategories: React.FC = () => {
   } = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
   });
-
   const handleCreate = () => {
     setEditingCategory(null);
     reset({ name: '', description: '' });
     setIsDialogOpen(true);
   };
-
   const handleEdit = (category: Category) => {
     setEditingCategory(category);
     reset({
@@ -53,7 +46,6 @@ export const AdminCategories: React.FC = () => {
     });
     setIsDialogOpen(true);
   };
-
   const handleDelete = async (id: string) => {
     try {
       await deleteCategoryMutation.mutateAsync(id);
@@ -62,7 +54,6 @@ export const AdminCategories: React.FC = () => {
       addToast('Failed to delete category. Please try again.', 'error');
     }
   };
-
   const onSubmit = async (data: CategoryFormData) => {
     try {
       if (editingCategory) {
@@ -81,13 +72,11 @@ export const AdminCategories: React.FC = () => {
       addToast('Operation failed. Please try again.', 'error');
     }
   };
-
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     setEditingCategory(null);
     reset();
   };
-
   const renderCategory = (category: Category) => (
     <div>
       <h3 className="font-medium text-gray-900">{category.name}</h3>
@@ -96,9 +85,7 @@ export const AdminCategories: React.FC = () => {
       )}
     </div>
   );
-
   const isSubmitting = createCategoryMutation.isPending || updateCategoryMutation.isPending;
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -107,7 +94,6 @@ export const AdminCategories: React.FC = () => {
           {categories.length} categor{categories.length !== 1 ? 'ies' : 'y'}
         </p>
       </div>
-
       <CrudList
         title="Support Categories"
         items={categories}
@@ -119,7 +105,6 @@ export const AdminCategories: React.FC = () => {
         loading={isLoading}
         emptyMessage="No categories found. Create your first category to get started."
       />
-
       <CrudDialog
         isOpen={isDialogOpen}
         onClose={handleCloseDialog}
@@ -144,7 +129,6 @@ export const AdminCategories: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
             )}
           </div>
-
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Description
@@ -157,7 +141,6 @@ export const AdminCategories: React.FC = () => {
               placeholder="Optional description"
             />
           </div>
-
           <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"
