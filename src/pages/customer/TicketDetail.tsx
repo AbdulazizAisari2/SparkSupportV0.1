@@ -45,8 +45,23 @@ export const TicketDetail: React.FC = () => {
 
   // Survey trigger logic - check for status changes to resolved/closed
   useEffect(() => {
+    console.log('Survey Effect Debug:', {
+      ticket: !!ticket,
+      ticketStatus: ticket?.status,
+      previousStatus,
+      showSurveyModal
+    });
+
     if (ticket && previousStatus !== null) {
       const currentStatus = ticket.status;
+      
+      console.log('Status Change Check:', {
+        currentStatus,
+        previousStatus,
+        isResolvedOrClosed: currentStatus === 'resolved' || currentStatus === 'closed',
+        statusChanged: previousStatus !== currentStatus,
+        wasPreviouslyNotFinished: previousStatus !== 'resolved' && previousStatus !== 'closed'
+      });
       
       // Trigger survey if status changed to resolved or closed
       if ((currentStatus === 'resolved' || currentStatus === 'closed') && 
@@ -54,6 +69,7 @@ export const TicketDetail: React.FC = () => {
           previousStatus !== 'resolved' && 
           previousStatus !== 'closed') {
         
+        console.log('🎉 Triggering survey modal!');
         // Small delay to ensure status change is visually processed
         setTimeout(() => {
           setShowSurveyModal(true);
@@ -61,11 +77,24 @@ export const TicketDetail: React.FC = () => {
       }
     }
     
+    // Check if ticket is already closed/resolved and no previous status (first load)
+    if (ticket && previousStatus === null) {
+      const currentStatus = ticket.status;
+      if (currentStatus === 'resolved' || currentStatus === 'closed') {
+        console.log('🎯 Ticket already closed/resolved on load, checking if survey needed');
+        // For demo purposes, show survey for already closed tickets
+        // In production, you'd check if survey was already completed
+        setTimeout(() => {
+          setShowSurveyModal(true);
+        }, 2000);
+      }
+    }
+    
     // Update previous status
     if (ticket) {
       setPreviousStatus(ticket.status);
     }
-  }, [ticket?.status, previousStatus]);
+  }, [ticket?.status, previousStatus, showSurveyModal]);
 
   // Survey submission handler
   const handleSurveySubmit = async (surveyData: any) => {
@@ -238,17 +267,27 @@ export const TicketDetail: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center space-x-4">
-        <button
-          onClick={() => navigate('/my/tickets')}
-          className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ticket {ticket.id}</h1>
-          <p className="text-gray-600 dark:text-gray-400">{ticket.subject}</p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => navigate('/my/tickets')}
+            className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ticket {ticket.id}</h1>
+            <p className="text-gray-600 dark:text-gray-400">{ticket.subject}</p>
+          </div>
         </div>
+        
+        {/* Test Survey Button - Remove in production */}
+        <button
+          onClick={() => setShowSurveyModal(true)}
+          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+        >
+          🌟 Test Survey
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

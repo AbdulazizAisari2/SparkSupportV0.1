@@ -121,12 +121,21 @@ export const StaffTicketDetail: React.FC = () => {
     if (!ticket) return;
 
     const oldStatus = ticket.status;
+    
+    console.log('🔄 Staff changing ticket status:', {
+      ticketId: ticket.id,
+      oldStatus,
+      newStatus,
+      customerId: ticket.customerId
+    });
 
     try {
       await updateTicketMutation.mutateAsync({
         id: ticket.id,
         data: { status: newStatus },
       });
+
+      console.log('✅ Status change successful, sending notification');
 
       // Send notification to customer about status change
       const customer = users.find(u => u.id === ticket.customerId);
@@ -143,10 +152,13 @@ export const StaffTicketDetail: React.FC = () => {
             message: `Status changed from ${oldStatus.replace('_', ' ')} to ${newStatus.replace('_', ' ')}`
           }
         });
+        
+        console.log('📧 Notification sent to customer');
       }
 
       addToast(`Ticket status updated to ${newStatus.replace('_', ' ')}!`, 'success');
-    } catch {
+    } catch (error) {
+      console.error('❌ Failed to update status:', error);
       addToast('Failed to update status. Please try again.', 'error');
     }
   };

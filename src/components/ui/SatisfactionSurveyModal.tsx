@@ -172,7 +172,17 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
     return ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0;
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    console.log('🔍 SatisfactionSurveyModal: isOpen is false, not rendering');
+    return null;
+  }
+
+  console.log('🎯 SatisfactionSurveyModal: Rendering survey modal', { 
+    isOpen, 
+    ticketNumber, 
+    staffName, 
+    currentStep 
+  });
 
   return (
     <AnimatePresence>
