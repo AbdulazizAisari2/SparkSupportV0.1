@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 
 export interface MarketplaceItem {
   id: string;
@@ -29,14 +30,19 @@ export interface PurchaseRequest {
 export const usePurchaseItem = () => {
   const queryClient = useQueryClient();
   const { addToast } = useToast();
+  const { token } = useAuth();
   
   return useMutation({
     mutationFn: async (purchaseData: PurchaseRequest) => {
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
       const response = await fetch('/api/marketplace/purchase', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(purchaseData)
       });
@@ -196,12 +202,18 @@ export const useMarketplaceItems = () => {
 
 // Get user's purchase history (if we had this endpoint)
 export const usePurchaseHistory = () => {
+  const { token } = useAuth();
+  
   return useQuery({
     queryKey: ['marketplace', 'purchases'],
     queryFn: async () => {
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
       const response = await fetch('/api/marketplace/purchases', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          'Authorization': `Bearer ${token}`
         }
       });
 
