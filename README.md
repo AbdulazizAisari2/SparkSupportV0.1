@@ -78,24 +78,12 @@ The system includes live demo accounts connected to the database:
 - **Access:** Personal tickets only
 - **Points:** 0 • Level 1
 
-### Staff Accounts
+### Staff Account
 - **Email:** `staff1@example.com`
 - **Password:** `password`
 - **Name:** Mohammed
 - **Department:** Technical Support
 - **Points:** 2,860 • Level 6
-
-- **Email:** `staff2@example.com`
-- **Password:** `password`
-- **Name:** Ahmed
-- **Department:** Customer Success
-- **Points:** 2,680 • Level 7
-
-- **Email:** `staff3@example.com`
-- **Password:** `password`
-- **Name:** Sarah
-- **Department:** Billing Support
-- **Points:** 2,420 • Level 6
 
 ### Admin Account
 - **Email:** `admin@example.com`

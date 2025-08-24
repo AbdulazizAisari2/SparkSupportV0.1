@@ -316,23 +316,11 @@ export const LoginPage: React.FC = () => {
                          <div><span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">test@customer.com</span> / <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">password</span></div>
                        </div>
                        
-                       {/* Staff Accounts */}
+                       {/* Staff Account */}
                        <div className="bg-blue-50/50 dark:bg-blue-900/20 rounded-lg p-2">
-                         <div className="font-semibold text-blue-700 dark:text-blue-200 mb-1">👨‍💼 Staff (Technical Support)</div>
+                         <div className="font-semibold text-blue-700 dark:text-blue-200 mb-1">👨‍💼 Staff</div>
                          <div><span className="font-mono bg-blue-200 dark:bg-blue-900/30 px-2 py-1 rounded">staff1@example.com</span> / <span className="font-mono bg-blue-200 dark:bg-blue-900/30 px-2 py-1 rounded">password</span></div>
                          <div className="text-xs text-blue-600 dark:text-blue-300 mt-1">Mohammed • 2,860 pts • Level 6</div>
-                       </div>
-                       
-                       <div className="bg-blue-50/50 dark:bg-blue-900/20 rounded-lg p-2">
-                         <div className="font-semibold text-blue-700 dark:text-blue-200 mb-1">👩‍💼 Staff (Customer Success)</div>
-                         <div><span className="font-mono bg-blue-200 dark:bg-blue-900/30 px-2 py-1 rounded">staff2@example.com</span> / <span className="font-mono bg-blue-200 dark:bg-blue-900/30 px-2 py-1 rounded">password</span></div>
-                         <div className="text-xs text-blue-600 dark:text-blue-300 mt-1">Ahmed • 2,680 pts • Level 7</div>
-                       </div>
-                       
-                       <div className="bg-blue-50/50 dark:bg-blue-900/20 rounded-lg p-2">
-                         <div className="font-semibold text-blue-700 dark:text-blue-200 mb-1">👩‍💼 Staff (Billing Support)</div>
-                         <div><span className="font-mono bg-blue-200 dark:bg-blue-900/30 px-2 py-1 rounded">staff3@example.com</span> / <span className="font-mono bg-blue-200 dark:bg-blue-900/30 px-2 py-1 rounded">password</span></div>
-                         <div className="text-xs text-blue-600 dark:text-blue-300 mt-1">Sarah • 2,420 pts • Level 6</div>
                        </div>
                        
                        {/* Admin Account */}
