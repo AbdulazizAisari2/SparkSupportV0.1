@@ -300,7 +300,7 @@ export const Marketplace: React.FC = () => {
 
   return (
     <AnimatedBackground variant="marketplace">
-      <div className="marketplace-container min-h-screen pb-32">
+      <div className="marketplace-container emergency-scroll min-h-screen pb-32">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -411,6 +411,59 @@ export const Marketplace: React.FC = () => {
               </div>
             )}
           </motion.div>
+
+          {/* EMERGENCY SCROLL TEST BUTTON */}
+          <motion.div 
+            variants={itemVariants}
+            className="mt-16 text-center"
+          >
+            <button
+              onClick={() => {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+              }}
+              className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-xl shadow-lg"
+            >
+              🚨 FORCE SCROLL TO BOTTOM 🚨
+            </button>
+            <div className="mt-4 text-white/80">
+              Current scroll position: {Math.round(window.scrollY)}px
+            </div>
+            <div className="text-white/80">
+              Document height: {document.body.scrollHeight}px
+            </div>
+            <div className="text-white/80">
+              Window height: {window.innerHeight}px
+            </div>
+          </motion.div>
+
+          {/* FORCE CONTENT TO MAKE PAGE LONG */}
+          <div className="h-screen bg-gradient-to-b from-purple-900/20 to-blue-900/20 mt-16 rounded-lg p-8">
+            <h2 className="text-4xl font-bold text-white text-center mb-8">
+              🔥 SCROLL TEST SECTION 🔥
+            </h2>
+            <div className="space-y-8">
+              {[...Array(20)].map((_, i) => (
+                <div key={i} className="bg-white/10 p-6 rounded-lg">
+                  <h3 className="text-2xl font-bold text-white mb-4">
+                    Test Content Block #{i + 1}
+                  </h3>
+                  <p className="text-white/80">
+                    This is test content to force the page to be scrollable. 
+                    If you can see this and scroll to it, the scrolling is working!
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                    Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* BOTTOM MARKER */}
+          <div className="h-32 bg-red-500/50 mt-8 rounded-lg flex items-center justify-center">
+            <h2 className="text-4xl font-bold text-white">
+              🎯 YOU REACHED THE BOTTOM! 🎯
+            </h2>
+          </div>
         </motion.div>
 
         {/* Purchase Modal */}

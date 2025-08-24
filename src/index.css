@@ -58,6 +58,23 @@
   .page-container {
     min-height: 200vh !important;
   }
+
+  /* NUCLEAR SCROLL OPTION - FORCE EVERYTHING TO BE SCROLLABLE */
+  * {
+    overflow: visible !important;
+  }
+  
+  html, body, #root, main, div {
+    overflow-y: auto !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Emergency scroll enabler */
+  .emergency-scroll {
+    height: 300vh !important;
+    overflow-y: scroll !important;
+  }
 }
 
 @layer utilities {
