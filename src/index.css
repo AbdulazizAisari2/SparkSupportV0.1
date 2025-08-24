@@ -35,6 +35,12 @@
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
     overflow-y: auto;
+    height: 100%;
+  }
+
+  #root {
+    min-height: 100vh;
+    overflow-y: auto;
   }
 
   * {

@@ -139,7 +139,7 @@ export const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
   };
 
   return (
-    <div className={`fixed inset-0 ${getGradientClasses()} overflow-hidden`}>
+    <div className={`fixed inset-0 ${getGradientClasses()}`}>
       {/* Animated gradient overlay */}
       <motion.div
         className="absolute inset-0 opacity-30"
@@ -224,7 +224,7 @@ export const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       />
 
       {/* Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 w-full h-full overflow-y-auto">
         {children}
       </div>
     </div>

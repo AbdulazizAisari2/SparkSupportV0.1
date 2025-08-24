@@ -300,7 +300,7 @@ export const Marketplace: React.FC = () => {
 
   return (
     <AnimatedBackground variant="marketplace">
-      <div className="pb-16">
+      <div className="min-h-screen pb-16">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
