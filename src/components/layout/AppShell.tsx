@@ -100,7 +100,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         return [
           { path: '/admin', label: 'Dashboard', icon: Home },
           { path: '/admin/categories', label: 'Categories', icon: Tags },
-          // { path: '/admin/priorities', label: 'Priorities', icon: AlertTriangle }, // Temporarily disabled
+          { path: '/admin/priorities', label: 'Priorities', icon: AlertTriangle },
           { path: '/admin/staff', label: 'Staff', icon: Users },
           { path: '/admin/slack', label: 'Slack Integration', icon: MessageCircle, badge: 'NEW' },
           { path: '/admin/ai-support', label: 'AI Support', icon: Bot, badge: 'NEW' },

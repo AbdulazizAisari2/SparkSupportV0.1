@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
-import { User, Category, Ticket, TicketMessage } from '../types';
+import { User, Category, Ticket, TicketMessage, PriorityDef } from '../types';
 
 const API_BASE = 'http://localhost:8000/api';
 
@@ -264,6 +264,62 @@ class ApiClient {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.error || 'Failed to delete category');
+    }
+  }
+
+  // Priority methods
+  async getPriorities(token: string): Promise<{ priorities: PriorityDef[] }> {
+    const response = await fetch(`${API_BASE}/priorities`, {
+      headers: this.getHeaders(token),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to fetch priorities');
+    }
+
+    return response.json();
+  }
+
+  async createPriority(token: string, data: { name: string; level: 1 | 2 | 3 | 4 }): Promise<{ priority: PriorityDef }> {
+    const response = await fetch(`${API_BASE}/priorities`, {
+      method: 'POST',
+      headers: this.getHeaders(token),
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create priority');
+    }
+
+    return response.json();
+  }
+
+  async updatePriority(token: string, id: string, data: { name?: string; level?: 1 | 2 | 3 | 4 }): Promise<{ priority: PriorityDef }> {
+    const response = await fetch(`${API_BASE}/priorities/${id}`, {
+      method: 'PATCH',
+      headers: this.getHeaders(token),
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to update priority');
+    }
+
+    return response.json();
+  }
+
+  async deletePriority(token: string, id: string): Promise<void> {
+    const response = await fetch(`${API_BASE}/priorities/${id}`, {
+      method: 'DELETE',
+      headers: this.getHeaders(token),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to delete priority');
     }
   }
 
@@ -637,6 +693,52 @@ export const useDeleteCategory = () => {
     mutationFn: (id: string) => apiClient.deleteCategory(token!, id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
+    },
+  });
+};
+
+// Priority hooks
+export const usePriorities = () => {
+  const { token } = useAuth();
+  return useQuery({
+    queryKey: ['priorities'],
+    queryFn: () => apiClient.getPriorities(token!),
+    enabled: !!token,
+    select: (data) => data.priorities,
+  });
+};
+
+export const useCreatePriority = () => {
+  const queryClient = useQueryClient();
+  const { token } = useAuth();
+  return useMutation({
+    mutationFn: (data: { name: string; level: 1 | 2 | 3 | 4 }) => 
+      apiClient.createPriority(token!, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['priorities'] });
+    },
+  });
+};
+
+export const useUpdatePriority = () => {
+  const queryClient = useQueryClient();
+  const { token } = useAuth();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: { name?: string; level?: 1 | 2 | 3 | 4 } }) => 
+      apiClient.updatePriority(token!, id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['priorities'] });
+    },
+  });
+};
+
+export const useDeletePriority = () => {
+  const queryClient = useQueryClient();
+  const { token } = useAuth();
+  return useMutation({
+    mutationFn: (id: string) => apiClient.deletePriority(token!, id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['priorities'] });
     },
   });
 };
