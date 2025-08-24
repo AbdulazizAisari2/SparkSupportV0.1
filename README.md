@@ -69,36 +69,46 @@ A comprehensive customer support ticket system built with React, TypeScript, and
 
 ## Demo Accounts
 
-The system includes pre-configured demo accounts for testing:
+The system includes live demo accounts connected to the database:
 
 ### Customer Account
-- **Email:** `customer@example.com`
-- **Role:** Customer
+- **Email:** `test@customer.com`
+- **Password:** `password`
+- **Role:** Customer  
 - **Access:** Personal tickets only
+- **Points:** 0 • Level 1
 
 ### Staff Accounts
-- **Email:** `staff1@example.com` (Mohammed)
-- **Role:** Staff
+- **Email:** `staff1@example.com`
+- **Password:** `password`
+- **Name:** Mohammed
 - **Department:** Technical Support
+- **Points:** 2,860 • Level 6
 
-- **Email:** `staff2@example.com` (Ahmed)  
-- **Role:** Staff
+- **Email:** `staff2@example.com`
+- **Password:** `password`
+- **Name:** Ahmed
 - **Department:** Customer Success
+- **Points:** 2,680 • Level 7
 
-- **Email:** `staff3@example.com` (Sarah)
-- **Role:** Staff
+- **Email:** `staff3@example.com`
+- **Password:** `password`
+- **Name:** Sarah
 - **Department:** Billing Support
+- **Points:** 2,420 • Level 6
 
 ### Admin Account
 - **Email:** `admin@example.com`
-- **Role:** Admin
+- **Password:** `password`
+- **Name:** Abdulaziz
+- **Department:** IT Administration
+- **Points:** 1,780 • Level 5
 - **Access:** Full system administration
 
 ### Login Instructions
 1. Go to the login page
-2. Click on any demo account button to auto-fill credentials
-3. Select the corresponding role from the dropdown
-4. Click "Sign in"
+2. Use any of the demo accounts above with their email and password
+3. Experience the full SparkSupport platform with real data!
 
 ## Status Workflow
 

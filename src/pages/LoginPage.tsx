@@ -304,15 +304,43 @@ export const LoginPage: React.FC = () => {
                                  {/* Demo Accounts Info */}
                  <div className="mt-6 p-4 bg-gradient-to-r from-emerald-100/70 to-teal-100/70 dark:from-emerald-500/20 dark:to-teal-500/20 backdrop-blur-sm rounded-2xl border border-emerald-300 dark:border-emerald-400/30">
                    <div className="text-center">
-                     <div className="text-emerald-700 dark:text-emerald-100 text-sm font-semibold mb-2 flex items-center justify-center space-x-2">
+                     <div className="text-emerald-700 dark:text-emerald-100 text-sm font-semibold mb-3 flex items-center justify-center space-x-2">
                        <Star className="w-4 h-4" />
-                       <span>Demo Accounts Available</span>
+                       <span>Live Demo Accounts</span>
                        <Star className="w-4 h-4" />
                      </div>
-                     <div className="text-emerald-600 dark:text-emerald-200/90 text-xs space-y-1">
-                       <div>Customer: <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">john@example.com</span> / <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">Customer123!</span></div>
-                       <div>Staff: <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">sarah@company.co</span> / <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">Staff123!</span></div>
-                       <div>Admin: <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">admin@company.co</span> / <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">Admin123!</span></div>
+                     <div className="text-emerald-600 dark:text-emerald-200/90 text-xs space-y-2">
+                       {/* Customer Account */}
+                       <div className="bg-emerald-50/50 dark:bg-emerald-900/20 rounded-lg p-2">
+                         <div className="font-semibold text-emerald-700 dark:text-emerald-200 mb-1">👤 Customer</div>
+                         <div><span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">test@customer.com</span> / <span className="font-mono bg-emerald-200 dark:bg-emerald-900/30 px-2 py-1 rounded">password</span></div>
+                       </div>
+                       
+                       {/* Staff Accounts */}
+                       <div className="bg-blue-50/50 dark:bg-blue-900/20 rounded-lg p-2">
+                         <div className="font-semibold text-blue-700 dark:text-blue-200 mb-1">👨‍💼 Staff (Technical Support)</div>
+                         <div><span className="font-mono bg-blue-200 dark:bg-blue-900/30 px-2 py-1 rounded">staff1@example.com</span> / <span className="font-mono bg-blue-200 dark:bg-blue-900/30 px-2 py-1 rounded">password</span></div>
+                         <div className="text-xs text-blue-600 dark:text-blue-300 mt-1">Mohammed • 2,860 pts • Level 6</div>
+                       </div>
+                       
+                       <div className="bg-blue-50/50 dark:bg-blue-900/20 rounded-lg p-2">
+                         <div className="font-semibold text-blue-700 dark:text-blue-200 mb-1">👩‍💼 Staff (Customer Success)</div>
+                         <div><span className="font-mono bg-blue-200 dark:bg-blue-900/30 px-2 py-1 rounded">staff2@example.com</span> / <span className="font-mono bg-blue-200 dark:bg-blue-900/30 px-2 py-1 rounded">password</span></div>
+                         <div className="text-xs text-blue-600 dark:text-blue-300 mt-1">Ahmed • 2,680 pts • Level 7</div>
+                       </div>
+                       
+                       <div className="bg-blue-50/50 dark:bg-blue-900/20 rounded-lg p-2">
+                         <div className="font-semibold text-blue-700 dark:text-blue-200 mb-1">👩‍💼 Staff (Billing Support)</div>
+                         <div><span className="font-mono bg-blue-200 dark:bg-blue-900/30 px-2 py-1 rounded">staff3@example.com</span> / <span className="font-mono bg-blue-200 dark:bg-blue-900/30 px-2 py-1 rounded">password</span></div>
+                         <div className="text-xs text-blue-600 dark:text-blue-300 mt-1">Sarah • 2,420 pts • Level 6</div>
+                       </div>
+                       
+                       {/* Admin Account */}
+                       <div className="bg-purple-50/50 dark:bg-purple-900/20 rounded-lg p-2">
+                         <div className="font-semibold text-purple-700 dark:text-purple-200 mb-1">👨‍💻 Administrator</div>
+                         <div><span className="font-mono bg-purple-200 dark:bg-purple-900/30 px-2 py-1 rounded">admin@example.com</span> / <span className="font-mono bg-purple-200 dark:bg-purple-900/30 px-2 py-1 rounded">password</span></div>
+                         <div className="text-xs text-purple-600 dark:text-purple-300 mt-1">Abdulaziz • 1,780 pts • Level 5</div>
+                       </div>
                      </div>
                    </div>
                  </div>
