@@ -54,6 +54,17 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
     improvements: ''
   });
   const [isCompleted, setIsCompleted] = useState(false);
+  const [buttonValidation, setButtonValidation] = useState(false);
+
+  // Update button validation when survey data changes
+  useEffect(() => {
+    if (isRatingStep && currentStepData) {
+      const fieldValue = surveyData[currentStepData.field as keyof SurveyData] as number;
+      setButtonValidation(fieldValue > 0);
+    } else {
+      setButtonValidation(true); // Feedback step is always valid
+    }
+  }, [surveyData, currentStep, isRatingStep, currentStepData]);
 
   // Reset state when modal opens
   useEffect(() => {
@@ -122,8 +133,18 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
   const isRatingStep = currentStep < 5;
 
   const updateRating = (field: keyof SurveyData, value: number) => {
-    setSurveyData(prev => ({ ...prev, [field]: value }));
+    console.log('⭐ Rating Updated:', { field, value, currentStep });
+    setSurveyData(prev => {
+      const newData = { ...prev, [field]: value };
+      console.log('📊 New Survey Data:', newData);
+      return newData;
+    });
   };
+
+  // Debug survey data changes
+  useEffect(() => {
+    console.log('📈 Survey Data Changed:', surveyData);
+  }, [surveyData]);
 
   const updateFeedback = (field: keyof SurveyData, value: string) => {
     setSurveyData(prev => ({ ...prev, [field]: value }));
@@ -455,17 +476,18 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
                 </div>
 
                 <motion.button
+                  key={`step-${currentStep}-${JSON.stringify(surveyData)}`}
                   onClick={handleNext}
-                  disabled={!isStepValid() || isSubmitting}
+                  disabled={!buttonValidation || isSubmitting}
                   className={`
                     px-8 py-3 rounded-xl font-medium transition-all duration-200
-                    ${isStepValid() 
+                    ${buttonValidation 
                       ? `bg-gradient-to-r ${currentStepData.color} text-white shadow-lg hover:shadow-xl transform hover:scale-105` 
                       : 'bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed'
                     }
                   `}
-                  whileHover={isStepValid() ? { scale: 1.05 } : {}}
-                  whileTap={isStepValid() ? { scale: 0.95 } : {}}
+                  whileHover={buttonValidation ? { scale: 1.05 } : {}}
+                  whileTap={buttonValidation ? { scale: 0.95 } : {}}
                 >
                   {isSubmitting ? (
                     <div className="flex items-center space-x-2">
@@ -485,7 +507,8 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
                 {/* Debug Info - Remove in production */}
                 <div className="text-xs text-gray-500 mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded">
                   <div>Step: {currentStep + 1}/{steps.length}</div>
-                  <div>Valid: {isStepValid() ? '✅' : '❌'}</div>
+                  <div>Valid: {buttonValidation ? '✅' : '❌'}</div>
+                  <div>isStepValid(): {isStepValid() ? '✅' : '❌'}</div>
                   <div>Field: {currentStepData.field}</div>
                   <div>Value: {JSON.stringify(surveyData[currentStepData.field as keyof SurveyData])}</div>
                 </div>
