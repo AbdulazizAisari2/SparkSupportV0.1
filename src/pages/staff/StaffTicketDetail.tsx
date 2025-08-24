@@ -13,6 +13,7 @@ import { AssignDrawer } from '../../components/tickets/AssignDrawer';
 import { InternalNotes } from '../../components/tickets/InternalNotes';
 import { Skeleton } from '../../components/ui/Loading';
 import { SurveyResults } from '../../components/ui/SurveyResults';
+import { useSurvey } from '../../hooks/useSurvey';
 import { formatDistanceToNow } from 'date-fns';
 import { Status } from '../../types';
 import { useNotificationService } from '../../hooks/useNotificationService';
@@ -24,6 +25,7 @@ export const StaffTicketDetail: React.FC = () => {
   const { addToast } = useToast();
   const { sendNotification } = useNotificationService();
   const [isAssignDrawerOpen, setIsAssignDrawerOpen] = useState(false);
+  const { data: surveyData } = useSurvey(id);
 
   // Enhanced security validation for ticket ID
   useEffect(() => {
@@ -376,19 +378,15 @@ export const StaffTicketDetail: React.FC = () => {
 
           {/* Customer Satisfaction Survey Results */}
           <SurveyResults
-            surveyData={
-              ticket.status === 'resolved' || ticket.status === 'closed'
-                ? {
-                    overallRating: 4.5,
-                    responseTime: 4.0,
-                    helpfulness: 5.0,
-                    professionalism: 4.5,
-                    resolutionQuality: 4.0,
-                    submittedAt: new Date().toISOString(),
-                    customerName: customer?.name
-                  }
-                : undefined
-            }
+            surveyData={surveyData ? {
+              overallRating: surveyData.overallRating,
+              responseTime: surveyData.responseTime,
+              helpfulness: surveyData.helpfulness,
+              professionalism: surveyData.professionalism,
+              resolutionQuality: surveyData.resolutionQuality,
+              submittedAt: surveyData.submittedAt,
+              customerName: customer?.name
+            } : undefined}
             isVisible={true}
           />
         </div>

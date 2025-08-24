@@ -11,6 +11,7 @@ import { ReplyBox } from '../../components/tickets/ReplyBox';
 import { Skeleton } from '../../components/ui/Loading';
 import { SatisfactionSurveyModal } from '../../components/ui/SatisfactionSurveyModal';
 import { SurveySuccessToast } from '../../components/ui/SurveySuccessToast';
+import { useCreateSurvey, useSurvey } from '../../hooks/useSurvey';
 import { formatDistanceToNow } from 'date-fns';
 
 export const TicketDetail: React.FC = () => {
@@ -39,6 +40,8 @@ export const TicketDetail: React.FC = () => {
   const { data: categories = [] } = useCategories();
   const { data: users = [] } = useUsers();
   const createMessageMutation = useCreateMessage();
+  const createSurveyMutation = useCreateSurvey();
+  const { data: existingSurvey } = useSurvey(id);
 
   const ticket = ticketData?.ticket;
   const messages = ticket?.messages || [];
@@ -52,7 +55,7 @@ export const TicketDetail: React.FC = () => {
       showSurveyModal
     });
 
-    if (ticket && previousStatus !== null) {
+    if (ticket && previousStatus !== null && !existingSurvey) {
       const currentStatus = ticket.status;
       
       console.log('Status Change Check:', {
@@ -60,10 +63,11 @@ export const TicketDetail: React.FC = () => {
         previousStatus,
         isResolvedOrClosed: currentStatus === 'resolved' || currentStatus === 'closed',
         statusChanged: previousStatus !== currentStatus,
-        wasPreviouslyNotFinished: previousStatus !== 'resolved' && previousStatus !== 'closed'
+        wasPreviouslyNotFinished: previousStatus !== 'resolved' && previousStatus !== 'closed',
+        existingSurvey: !!existingSurvey
       });
       
-      // Trigger survey if status changed to resolved or closed
+      // Trigger survey if status changed to resolved or closed and no survey exists
       if ((currentStatus === 'resolved' || currentStatus === 'closed') && 
           previousStatus !== currentStatus &&
           previousStatus !== 'resolved' && 
@@ -78,12 +82,11 @@ export const TicketDetail: React.FC = () => {
     }
     
     // Check if ticket is already closed/resolved and no previous status (first load)
-    if (ticket && previousStatus === null) {
+    if (ticket && previousStatus === null && !existingSurvey) {
       const currentStatus = ticket.status;
       if (currentStatus === 'resolved' || currentStatus === 'closed') {
         console.log('🎯 Ticket already closed/resolved on load, checking if survey needed');
-        // For demo purposes, show survey for already closed tickets
-        // In production, you'd check if survey was already completed
+        // Only show survey if none exists yet
         setTimeout(() => {
           setShowSurveyModal(true);
         }, 2000);
@@ -94,10 +97,12 @@ export const TicketDetail: React.FC = () => {
     if (ticket) {
       setPreviousStatus(ticket.status);
     }
-  }, [ticket?.status, previousStatus, showSurveyModal]);
+  }, [ticket?.status, previousStatus, showSurveyModal, existingSurvey]);
 
   // Survey submission handler
   const handleSurveySubmit = async (surveyData: any) => {
+    if (!ticket) return;
+    
     try {
       // Calculate average rating
       const ratings = [
@@ -111,10 +116,21 @@ export const TicketDetail: React.FC = () => {
       const averageRating = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0;
       setSurveyRating(averageRating);
 
-      // Here you would normally send the survey data to your backend
-      // await submitSurvey(ticket.id, surveyData);
+      // Submit survey to backend
+      await createSurveyMutation.mutateAsync({
+        ticketId: ticket.id,
+        data: {
+          overallRating: surveyData.overallRating,
+          responseTime: surveyData.responseTime,
+          helpfulness: surveyData.helpfulness,
+          professionalism: surveyData.professionalism,
+          resolutionQuality: surveyData.resolutionQuality,
+          feedback: surveyData.feedback || '',
+          improvements: surveyData.improvements || ''
+        }
+      });
       
-      console.log('Survey submitted:', { ticketId: ticket?.id, surveyData, averageRating });
+      console.log('Survey submitted successfully:', { ticketId: ticket.id, surveyData, averageRating });
       
       setShowSurveyModal(false);
       setShowSuccessToast(true);
@@ -122,7 +138,7 @@ export const TicketDetail: React.FC = () => {
       addToast('Thank you for your feedback! Your response helps us improve our service.', 'success');
     } catch (error) {
       console.error('Error submitting survey:', error);
-      addToast('Failed to submit survey. Please try again.', 'error');
+      addToast(error instanceof Error ? error.message : 'Failed to submit survey. Please try again.', 'error');
     }
   };
 

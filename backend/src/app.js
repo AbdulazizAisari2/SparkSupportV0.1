@@ -20,6 +20,7 @@ const slackRoutes = require('./routes/slack');
 const marketplaceRoutes = require('./routes/marketplace');
 const chatRoutes = require('./routes/chat');
 const notificationRoutes = require('./routes/notifications');
+const surveyRoutes = require('./routes/surveys');
 
 
 // Import middleware
@@ -89,6 +90,7 @@ app.use('/api/slack', slackRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/surveys', surveyRoutes);
 
 
 // 404 handler
