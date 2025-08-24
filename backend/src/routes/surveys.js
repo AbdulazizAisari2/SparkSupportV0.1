@@ -21,6 +21,7 @@ const createSurveySchema = z.object({
 // Create a new customer satisfaction survey
 router.post('/', authenticateToken, async (req, res) => {
   try {
+    console.log('📝 Survey creation request:', { body: req.body, userId: req.user.id });
     const validatedData = createSurveySchema.parse(req.body);
     const userId = req.user.id;
 
@@ -96,7 +97,7 @@ router.post('/', authenticateToken, async (req, res) => {
       data: { customerSatisfactionRating: parseFloat(customerAvgRating.toFixed(1)) }
     });
 
-    res.status(201).json({
+    const responseData = {
       message: 'Survey submitted successfully',
       survey: {
         id: survey.id,
@@ -106,16 +107,21 @@ router.post('/', authenticateToken, async (req, res) => {
         customer: survey.customer,
         ticket: survey.ticket
       }
-    });
+    };
+    
+    console.log('✅ Survey created successfully, sending response:', responseData);
+    res.status(201).json(responseData);
 
   } catch (error) {
-    console.error('Error creating survey:', error);
+    console.error('❌ Error creating survey:', error);
     if (error instanceof z.ZodError) {
+      console.error('❌ Validation error:', error.errors);
       return res.status(400).json({ 
         error: 'Validation failed', 
         details: error.errors 
       });
     }
+    console.error('❌ Internal server error:', error.message);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

@@ -446,16 +446,7 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
                   ) : (
                     'Next'
                   )}
-                </motion.button>
-                
-                {/* Debug Info - Remove in production */}
-                <div className="text-xs text-gray-500 mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded">
-                  <div>Step: {currentStep + 1}/{steps.length}</div>
-                  <div>Valid: {buttonValidation ? '✅' : '❌'}</div>
-                  <div>isStepValid(): {isStepValid() ? '✅' : '❌'}</div>
-                  <div>Field: {currentStepData.field}</div>
-                  <div>Value: {JSON.stringify(surveyData[currentStepData.field as keyof SurveyData])}</div>
-                </div>
+                                        </motion.button>
               </motion.div>
             )}
           </div>

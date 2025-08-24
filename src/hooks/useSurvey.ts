@@ -50,11 +50,27 @@ export const useCreateSurvey = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to submit survey');
+        let errorMessage = 'Failed to submit survey';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          // If JSON parsing fails, use default error message
+        }
+        throw new Error(errorMessage);
       }
 
-      return response.json();
+      // Check if response has content before parsing JSON
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const text = await response.text();
+        if (text) {
+          return JSON.parse(text);
+        }
+        throw new Error('Empty response from server');
+      } else {
+        throw new Error('Invalid response format from server');
+      }
     },
     onSuccess: (data, variables) => {
       // Invalidate related queries
@@ -86,8 +102,18 @@ export const useSurvey = (ticketId: string) => {
         throw new Error('Failed to fetch survey');
       }
 
-      const data = await response.json();
-      return data.survey;
+      // Check if response has content before parsing JSON
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const text = await response.text();
+        if (text) {
+          const data = JSON.parse(text);
+          return data.survey;
+        }
+        return null; // Empty response
+      } else {
+        throw new Error('Invalid response format from server');
+      }
     },
     enabled: !!ticketId
   });
