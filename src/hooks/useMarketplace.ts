@@ -30,7 +30,7 @@ export interface PurchaseRequest {
 export const usePurchaseItem = () => {
   const queryClient = useQueryClient();
   const { addToast } = useToast();
-  const { token } = useAuth();
+  const { token, refreshUser } = useAuth();
   
   return useMutation({
     mutationFn: async (purchaseData: PurchaseRequest) => {
@@ -75,10 +75,18 @@ export const usePurchaseItem = () => {
         throw new Error('Invalid response format from server');
       }
     },
-    onSuccess: (data, variables) => {
+    onSuccess: async (data, variables) => {
       addToast(`Successfully purchased ${variables.itemName}!`, 'success');
-      // Invalidate user data to refresh points
-      queryClient.invalidateQueries({ queryKey: ['user'] });
+      
+      console.log('🛍️ Purchase successful, response data:', data);
+      
+      // Update user points immediately using the response data
+      if (data.user && data.user.points !== undefined) {
+        console.log(`💰 Refreshing user data - new points: ${data.user.points}`);
+        // The backend response includes updated user data, so refresh from server
+        await refreshUser();
+      }
+      
       queryClient.invalidateQueries({ queryKey: ['marketplace'] });
     },
     onError: (error: Error) => {
