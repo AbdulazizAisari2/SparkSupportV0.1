@@ -300,7 +300,7 @@ export const Marketplace: React.FC = () => {
 
   return (
     <AnimatedBackground variant="marketplace">
-      <div className="min-h-screen pb-16">
+      <div className="marketplace-container min-h-screen pb-32">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -338,7 +338,7 @@ export const Marketplace: React.FC = () => {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="relative z-10 max-w-7xl mx-auto px-6 pb-16"
+          className="relative z-10 max-w-7xl mx-auto px-6 pb-32"
         >
           {/* Search and Filter */}
           <motion.div variants={itemVariants} className="mb-8">

@@ -29,22 +29,34 @@
     --dark-950: 2 6 23;
   }
 
-  html, body {
+  html {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+
+  body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
     overflow-x: hidden;
-    overflow-y: auto;
-    height: 100%;
   }
 
   #root {
     min-height: 100vh;
-    overflow-y: auto;
   }
 
   * {
     box-sizing: border-box;
+  }
+
+  /* Force scroll on all pages */
+  .marketplace-container,
+  .page-container {
+    min-height: 200vh !important;
   }
 }
 
