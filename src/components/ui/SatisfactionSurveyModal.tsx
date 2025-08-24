@@ -130,9 +130,18 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
   };
 
   const handleNext = () => {
+    console.log('🔄 handleNext called:', {
+      currentStep,
+      isLastStep,
+      isStepValid: isStepValid(),
+      surveyData
+    });
+    
     if (isLastStep) {
+      console.log('📝 Submitting survey...');
       handleSubmit();
     } else {
+      console.log('➡️ Moving to next step...');
       setCurrentStep(prev => prev + 1);
     }
   };
@@ -155,8 +164,22 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
 
   const isStepValid = () => {
     if (isRatingStep) {
-      return surveyData[currentStepData.field as keyof SurveyData] > 0;
+      const fieldValue = surveyData[currentStepData.field as keyof SurveyData] as number;
+      const isValid = fieldValue > 0;
+      
+      console.log('🔍 Step Validation Debug:', {
+        currentStep,
+        isRatingStep,
+        field: currentStepData.field,
+        fieldValue,
+        isValid,
+        surveyData
+      });
+      
+      return isValid;
     }
+    
+    console.log('🔍 Feedback step - always valid');
     return true; // Feedback is optional
   };
 
@@ -458,6 +481,14 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
                     'Next'
                   )}
                 </motion.button>
+                
+                {/* Debug Info - Remove in production */}
+                <div className="text-xs text-gray-500 mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded">
+                  <div>Step: {currentStep + 1}/{steps.length}</div>
+                  <div>Valid: {isStepValid() ? '✅' : '❌'}</div>
+                  <div>Field: {currentStepData.field}</div>
+                  <div>Value: {JSON.stringify(surveyData[currentStepData.field as keyof SurveyData])}</div>
+                </div>
               </motion.div>
             )}
           </div>
