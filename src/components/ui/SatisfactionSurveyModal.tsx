@@ -109,10 +109,20 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
 
   // Update button validation when survey data changes
   useEffect(() => {
+    console.log('🔄 Button Validation Update:', {
+      currentStep,
+      isRatingStep,
+      currentStepData: currentStepData?.field,
+      stepTitle: currentStepData?.title
+    });
+    
     if (isRatingStep && currentStepData) {
       const fieldValue = surveyData[currentStepData.field as keyof SurveyData] as number;
-      setButtonValidation(fieldValue > 0);
+      const isValid = fieldValue > 0;
+      console.log('⭐ Rating Step Validation:', { field: currentStepData.field, fieldValue, isValid });
+      setButtonValidation(isValid);
     } else {
+      console.log('📝 Feedback Step - Setting validation to TRUE');
       setButtonValidation(true); // Feedback step is always valid
     }
   }, [surveyData, currentStep, isRatingStep, currentStepData]);
@@ -157,8 +167,14 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
       currentStep,
       isLastStep,
       isStepValid: isStepValid(),
+      buttonValidation,
       surveyData
     });
+    
+    // Force enable for feedback step (temporary fix)
+    if (currentStep === 5) {
+      console.log('📝 Feedback step - forcing submission');
+    }
     
     if (isLastStep) {
       console.log('📝 Submitting survey...');
@@ -480,16 +496,16 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
                 <motion.button
                   key={`step-${currentStep}-${JSON.stringify(surveyData)}`}
                   onClick={handleNext}
-                  disabled={!buttonValidation || isSubmitting}
+                  disabled={!(buttonValidation || currentStep === 5) || isSubmitting}
                   className={`
                     px-8 py-3 rounded-xl font-medium transition-all duration-200
-                    ${buttonValidation 
+                    ${(buttonValidation || currentStep === 5) 
                       ? `bg-gradient-to-r ${currentStepData.color} text-white shadow-lg hover:shadow-xl transform hover:scale-105` 
                       : 'bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed'
                     }
                   `}
-                  whileHover={buttonValidation ? { scale: 1.05 } : {}}
-                  whileTap={buttonValidation ? { scale: 0.95 } : {}}
+                  whileHover={(buttonValidation || currentStep === 5) ? { scale: 1.05 } : {}}
+                  whileTap={(buttonValidation || currentStep === 5) ? { scale: 0.95 } : {}}
                 >
                   {isSubmitting ? (
                     <div className="flex items-center space-x-2">
