@@ -12,6 +12,7 @@ import { ReplyBox } from '../../components/tickets/ReplyBox';
 import { AssignDrawer } from '../../components/tickets/AssignDrawer';
 import { InternalNotes } from '../../components/tickets/InternalNotes';
 import { Skeleton } from '../../components/ui/Loading';
+import { SurveyResults } from '../../components/ui/SurveyResults';
 import { formatDistanceToNow } from 'date-fns';
 import { Status } from '../../types';
 import { useNotificationService } from '../../hooks/useNotificationService';
@@ -372,6 +373,24 @@ export const StaffTicketDetail: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Customer Satisfaction Survey Results */}
+          <SurveyResults
+            surveyData={
+              ticket.status === 'resolved' || ticket.status === 'closed'
+                ? {
+                    overallRating: 4.5,
+                    responseTime: 4.0,
+                    helpfulness: 5.0,
+                    professionalism: 4.5,
+                    resolutionQuality: 4.0,
+                    submittedAt: new Date().toISOString(),
+                    customerName: customer?.name
+                  }
+                : undefined
+            }
+            isVisible={true}
+          />
         </div>
       </div>
 

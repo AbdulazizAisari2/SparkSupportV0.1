@@ -267,27 +267,17 @@ export const TicketDetail: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => navigate('/my/tickets')}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ticket {ticket.id}</h1>
-            <p className="text-gray-600 dark:text-gray-400">{ticket.subject}</p>
-          </div>
-        </div>
-        
-        {/* Test Survey Button - Remove in production */}
+      <div className="flex items-center space-x-4">
         <button
-          onClick={() => setShowSurveyModal(true)}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+          onClick={() => navigate('/my/tickets')}
+          className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors"
         >
-          🌟 Test Survey
+          <ArrowLeft className="w-5 h-5" />
         </button>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ticket {ticket.id}</h1>
+          <p className="text-gray-600 dark:text-gray-400">{ticket.subject}</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
