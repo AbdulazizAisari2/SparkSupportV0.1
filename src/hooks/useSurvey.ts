@@ -40,35 +40,53 @@ export const useCreateSurvey = () => {
   
   return useMutation({
     mutationFn: async ({ ticketId, data }: { ticketId: string; data: SurveyData }) => {
+      const payload = { ticketId, ...data };
+      const token = localStorage.getItem('accessToken');
+      
+      console.log('🚀 Sending survey request:', { payload, hasToken: !!token });
+      
       const response = await fetch('/api/surveys', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ ticketId, ...data })
+        body: JSON.stringify(payload)
+      });
+      
+      console.log('📨 Survey response:', { 
+        status: response.status, 
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
       });
 
       if (!response.ok) {
-        let errorMessage = 'Failed to submit survey';
+        let errorMessage = `Failed to submit survey (${response.status})`;
         try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorMessage;
+          const text = await response.text();
+          if (text) {
+            const errorData = JSON.parse(text);
+            errorMessage = errorData.error || errorMessage;
+          }
         } catch {
-          // If JSON parsing fails, use default error message
+          // If parsing fails, use status-based error message
+          errorMessage = response.status === 401 ? 'Authentication required' : 
+                        response.status === 403 ? 'Permission denied' :
+                        response.status === 404 ? 'Survey endpoint not found' :
+                        errorMessage;
         }
         throw new Error(errorMessage);
       }
 
-      // Check if response has content before parsing JSON
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
+      // Handle successful response
+      try {
         const text = await response.text();
-        if (text) {
-          return JSON.parse(text);
+        if (!text) {
+          throw new Error('Empty response from server');
         }
-        throw new Error('Empty response from server');
-      } else {
+        return JSON.parse(text);
+      } catch (parseError) {
+        console.error('Failed to parse survey response:', parseError);
         throw new Error('Invalid response format from server');
       }
     },
@@ -99,20 +117,20 @@ export const useSurvey = (ticketId: string) => {
       }
 
       if (!response.ok) {
-        throw new Error('Failed to fetch survey');
+        throw new Error(`Failed to fetch survey (${response.status})`);
       }
 
-      // Check if response has content before parsing JSON
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
+      // Handle successful response
+      try {
         const text = await response.text();
-        if (text) {
-          const data = JSON.parse(text);
-          return data.survey;
+        if (!text) {
+          return null; // Empty response, no survey found
         }
-        return null; // Empty response
-      } else {
-        throw new Error('Invalid response format from server');
+        const data = JSON.parse(text);
+        return data.survey;
+      } catch (parseError) {
+        console.error('Failed to parse survey response:', parseError);
+        return null; // Treat as no survey found
       }
     },
     enabled: !!ticketId

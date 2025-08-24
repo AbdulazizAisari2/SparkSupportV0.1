@@ -117,7 +117,7 @@ export const TicketDetail: React.FC = () => {
       setSurveyRating(averageRating);
 
       // Submit survey to backend
-      await createSurveyMutation.mutateAsync({
+      const surveyPayload = {
         ticketId: ticket.id,
         data: {
           overallRating: surveyData.overallRating,
@@ -128,7 +128,10 @@ export const TicketDetail: React.FC = () => {
           feedback: surveyData.feedback || '',
           improvements: surveyData.improvements || ''
         }
-      });
+      };
+      
+      console.log('📝 Submitting survey data:', surveyPayload);
+      await createSurveyMutation.mutateAsync(surveyPayload);
       
       console.log('Survey submitted successfully:', { ticketId: ticket.id, surveyData, averageRating });
       
