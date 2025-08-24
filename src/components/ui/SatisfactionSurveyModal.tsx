@@ -92,20 +92,13 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
       icon: CheckCircle,
       color: "from-orange-500 to-red-500",
       field: 'resolutionQuality' as keyof SurveyData
-    },
-    {
-      title: "Additional Feedback",
-      subtitle: "Tell us more about your experience",
-      icon: MessageSquare,
-      color: "from-teal-500 to-blue-500",
-      field: 'feedback' as keyof SurveyData
     }
   ];
 
   // Derived variables - moved up to avoid hoisting issues
   const currentStepData = steps[currentStep];
   const isLastStep = currentStep === steps.length - 1;
-  const isRatingStep = currentStep < 5;
+  const isRatingStep = true; // All steps are now rating steps
 
   // Update button validation when survey data changes
   useEffect(() => {
@@ -116,16 +109,12 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
       stepTitle: currentStepData?.title
     });
     
-    if (isRatingStep && currentStepData) {
-      const fieldValue = surveyData[currentStepData.field as keyof SurveyData] as number;
-      const isValid = fieldValue > 0;
-      console.log('⭐ Rating Step Validation:', { field: currentStepData.field, fieldValue, isValid });
-      setButtonValidation(isValid);
-    } else {
-      console.log('📝 Feedback Step - Setting validation to TRUE');
-      setButtonValidation(true); // Feedback step is always valid
-    }
-  }, [surveyData, currentStep, isRatingStep, currentStepData]);
+    // All steps are rating steps now
+    const fieldValue = surveyData[currentStepData.field as keyof SurveyData] as number;
+    const isValid = fieldValue > 0;
+    console.log('⭐ Rating Step Validation:', { field: currentStepData.field, fieldValue, isValid });
+    setButtonValidation(isValid);
+  }, [surveyData, currentStep, currentStepData]);
 
   // Reset state when modal opens
   useEffect(() => {
@@ -158,15 +147,6 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
     console.log('📈 Survey Data Changed:', surveyData);
   }, [surveyData]);
 
-  const updateFeedback = (field: keyof SurveyData, value: string) => {
-    console.log('📝 Feedback Updated:', { field, value });
-    setSurveyData(prev => {
-      const newData = { ...prev, [field]: value };
-      console.log('📊 New Survey Data (Feedback):', newData);
-      return newData;
-    });
-  };
-
   const handleSubmitClick = () => {
     console.log('🔥 SUBMIT BUTTON CLICKED!', {
       currentStep,
@@ -176,11 +156,12 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
       surveyData
     });
     
-    if (currentStep === 5 || isLastStep) {
-      console.log('✅ Conditions met, calling handleNext');
+    if (isLastStep) {
+      console.log('✅ Last step reached, calling handleNext');
       handleNext();
     } else {
-      console.log('❌ Conditions not met for submission');
+      console.log('❌ Not last step, calling handleNext for next step');
+      handleNext();
     }
   };
 
@@ -192,11 +173,6 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
       buttonValidation,
       surveyData
     });
-    
-    // Force enable for feedback step (temporary fix)
-    if (currentStep === 5) {
-      console.log('📝 Feedback step - forcing submission');
-    }
     
     if (isLastStep) {
       console.log('📝 Submitting survey...');
@@ -224,24 +200,18 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
   };
 
   const isStepValid = () => {
-    if (isRatingStep) {
-      const fieldValue = surveyData[currentStepData.field as keyof SurveyData] as number;
-      const isValid = fieldValue > 0;
-      
-      console.log('🔍 Step Validation Debug:', {
-        currentStep,
-        isRatingStep,
-        field: currentStepData.field,
-        fieldValue,
-        isValid,
-        surveyData
-      });
-      
-      return isValid;
-    }
+    const fieldValue = surveyData[currentStepData.field as keyof SurveyData] as number;
+    const isValid = fieldValue > 0;
     
-    console.log('🔍 Feedback step - always valid');
-    return true; // Feedback is optional
+    console.log('🔍 Step Validation Debug:', {
+      currentStep,
+      field: currentStepData.field,
+      fieldValue,
+      isValid,
+      surveyData
+    });
+    
+    return isValid;
   };
 
   const getAverageRating = () => {
@@ -355,106 +325,28 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
 
                   {/* Step Content */}
                   <div className="flex flex-col items-center space-y-8">
-                    {isRatingStep ? (
-                      <>
-                        <StarRating
-                          rating={surveyData[currentStepData.field as keyof SurveyData] as number}
-                          onRatingChange={(rating) => updateRating(currentStepData.field as keyof SurveyData, rating)}
-                          size="xl"
-                          showValue
-                          className="justify-center"
-                        />
-                        
-                        {/* Motivational Message */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.5 }}
-                          className="text-center"
-                        >
-                          {surveyData[currentStepData.field as keyof SurveyData] as number > 0 && (
-                            <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                              <Heart className="w-4 h-4 text-red-500" />
-                              <span>Thank you for your feedback!</span>
-                            </div>
-                          )}
-                        </motion.div>
-                      </>
-                    ) : (
-                      <div className="w-full space-y-6">
-                        {/* Feedback Textarea */}
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                            Share your thoughts about our service:
-                          </label>
-                          <motion.textarea
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="w-full p-4 border border-gray-300 dark:border-dark-600 rounded-xl bg-gray-50 dark:bg-dark-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-                            rows={4}
-                            placeholder="Tell us what you liked or what we could improve..."
-                            value={surveyData.feedback}
-                            onChange={(e) => {
-                              console.log('📝 Typing in feedback:', e.target.value);
-                              updateFeedback('feedback', e.target.value);
-                            }}
-                            onFocus={() => console.log('🎯 Feedback textarea focused')}
-                            disabled={false}
-                            readOnly={false}
-                          />
+                    <StarRating
+                      rating={surveyData[currentStepData.field as keyof SurveyData] as number}
+                      onRatingChange={(rating) => updateRating(currentStepData.field as keyof SurveyData, rating)}
+                      size="xl"
+                      showValue
+                      className="justify-center"
+                    />
+                    
+                    {/* Motivational Message */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="text-center"
+                    >
+                      {surveyData[currentStepData.field as keyof SurveyData] as number > 0 && (
+                        <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                          <Heart className="w-4 h-4 text-red-500" />
+                          <span>Thank you for your feedback!</span>
                         </div>
-
-                        {/* Improvements Textarea */}
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                            How can we improve? (Optional)
-                          </label>
-                          <motion.textarea
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                            className="w-full p-4 border border-gray-300 dark:border-dark-600 rounded-xl bg-gray-50 dark:bg-dark-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-                            rows={3}
-                            placeholder="Suggestions for improvement..."
-                            value={surveyData.improvements}
-                            onChange={(e) => {
-                              console.log('📝 Typing in improvements:', e.target.value);
-                              updateFeedback('improvements', e.target.value);
-                            }}
-                            onFocus={() => console.log('🎯 Improvements textarea focused')}
-                            disabled={false}
-                            readOnly={false}
-                          />
-                        </div>
-
-                        {/* Summary Card */}
-                        {getAverageRating() > 0 && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                            className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-700"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <h4 className="font-semibold text-gray-900 dark:text-gray-100">
-                                  Your Overall Rating
-                                </h4>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                  Based on your responses
-                                </p>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                                  {getAverageRating().toFixed(1)}
-                                </span>
-                                <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
-                              </div>
-                            </div>
-                          </motion.div>
-                        )}
-                      </div>
-                    )}
+                      )}
+                    </motion.div>
                   </div>
                 </motion.div>
               ) : (
@@ -530,16 +422,16 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
                 <motion.button
                   key={`step-${currentStep}-${JSON.stringify(surveyData)}`}
                   onClick={handleSubmitClick}
-                  disabled={!(buttonValidation || currentStep === 5) || isSubmitting}
+                  disabled={!buttonValidation || isSubmitting}
                   className={`
                     px-8 py-3 rounded-xl font-medium transition-all duration-200
-                    ${(buttonValidation || currentStep === 5) 
+                    ${buttonValidation 
                       ? `bg-gradient-to-r ${currentStepData.color} text-white shadow-lg hover:shadow-xl transform hover:scale-105` 
                       : 'bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed'
                     }
                   `}
-                  whileHover={(buttonValidation || currentStep === 5) ? { scale: 1.05 } : {}}
-                  whileTap={(buttonValidation || currentStep === 5) ? { scale: 0.95 } : {}}
+                  whileHover={buttonValidation ? { scale: 1.05 } : {}}
+                  whileTap={buttonValidation ? { scale: 0.95 } : {}}
                 >
                   {isSubmitting ? (
                     <div className="flex items-center space-x-2">
