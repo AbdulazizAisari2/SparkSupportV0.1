@@ -1,13 +1,13 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
-const auth = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 const emailService = require('../services/emailService');
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 // Send notification (handles both email and in-app based on user preferences)
-router.post('/send', auth, async (req, res) => {
+router.post('/send', authenticateToken, async (req, res) => {
   try {
     const {
       type,
@@ -159,7 +159,7 @@ router.post('/send', auth, async (req, res) => {
 });
 
 // Get notification history for current user
-router.get('/history', auth, async (req, res) => {
+router.get('/history', authenticateToken, async (req, res) => {
   try {
     // For now, return empty array - we could implement a notification log table later
     res.json({
