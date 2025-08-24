@@ -1,8 +1,10 @@
 import React from 'react';
 import { X, CheckCircle, XCircle, AlertCircle, Info, Sparkles } from 'lucide-react';
 import { useToast, Toast as ToastType } from '../../context/ToastContext';
+
 const Toast: React.FC<{ toast: ToastType }> = ({ toast }) => {
   const { removeToast } = useToast();
+
   const getIcon = () => {
     switch (toast.type) {
       case 'success':
@@ -15,6 +17,7 @@ const Toast: React.FC<{ toast: ToastType }> = ({ toast }) => {
         return <Info className="w-5 h-5 text-blue-500 dark:text-blue-400" />;
     }
   };
+
   const getStyles = () => {
     switch (toast.type) {
       case 'success':
@@ -27,6 +30,7 @@ const Toast: React.FC<{ toast: ToastType }> = ({ toast }) => {
         return 'bg-blue-50/90 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700/50 text-blue-800 dark:text-blue-200';
     }
   };
+
   return (
     <div
       className={`
@@ -53,8 +57,10 @@ const Toast: React.FC<{ toast: ToastType }> = ({ toast }) => {
     </div>
   );
 };
+
 export const ToastContainer: React.FC = () => {
   const { toasts } = useToast();
+
   return (
     <div className="fixed top-6 right-6 z-50 space-y-2">
       {toasts.map(toast => (

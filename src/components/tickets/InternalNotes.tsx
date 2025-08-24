@@ -5,16 +5,20 @@ import { z } from 'zod';
 import { Eye, Plus } from 'lucide-react';
 import { TicketMessage, User } from '../../types';
 import { formatDistanceToNow } from 'date-fns';
+
 const noteSchema = z.object({
   message: z.string().min(1, 'Note content is required'),
 });
+
 type NoteFormData = z.infer<typeof noteSchema>;
+
 interface InternalNotesProps {
   messages: TicketMessage[];
   users: User[];
   onAddNote: (data: NoteFormData) => void;
   isSubmitting: boolean;
 }
+
 export const InternalNotes: React.FC<InternalNotesProps> = ({
   messages,
   users,
@@ -22,6 +26,7 @@ export const InternalNotes: React.FC<InternalNotesProps> = ({
   isSubmitting,
 }) => {
   const [showForm, setShowForm] = React.useState(false);
+  
   const {
     register,
     handleSubmit,
@@ -30,16 +35,20 @@ export const InternalNotes: React.FC<InternalNotesProps> = ({
   } = useForm<NoteFormData>({
     resolver: zodResolver(noteSchema),
   });
+
   const internalNotes = messages.filter(m => m.isInternal);
+
   const getUserName = (userId: string) => {
     const user = users.find(u => u.id === userId);
     return user?.name || 'Unknown User';
   };
+
   const handleFormSubmit = (data: NoteFormData) => {
     onAddNote(data);
     reset();
     setShowForm(false);
   };
+
   return (
     <div className="bg-yellow-50 rounded-lg border border-yellow-200 p-4">
       <div className="flex items-center justify-between mb-4">
@@ -55,6 +64,7 @@ export const InternalNotes: React.FC<InternalNotesProps> = ({
           <span>Add Note</span>
         </button>
       </div>
+
       {showForm && (
         <form onSubmit={handleSubmit(handleFormSubmit)} className="mb-4">
           <div className="mb-3">
@@ -92,6 +102,7 @@ export const InternalNotes: React.FC<InternalNotesProps> = ({
           </div>
         </form>
       )}
+
       {internalNotes.length === 0 ? (
         <p className="text-sm text-yellow-700">No internal notes yet.</p>
       ) : (

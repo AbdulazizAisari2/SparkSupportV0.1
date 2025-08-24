@@ -3,8 +3,11 @@ const bcrypt = require('bcryptjs');
 const { z } = require('zod');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken, requireAdmin, requireStaffOrAdmin } = require('../middleware/auth');
+
 const router = express.Router();
 const prisma = new PrismaClient();
+
+// Validation schemas
 const createUserSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email format'),
@@ -13,6 +16,7 @@ const createUserSchema = z.object({
   role: z.enum(['customer', 'staff', 'admin']),
   department: z.string().optional()
 });
+
 const updateUserSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').optional(),
   email: z.string().email('Invalid email format').optional(),
@@ -20,19 +24,25 @@ const updateUserSchema = z.object({
   role: z.enum(['customer', 'staff', 'admin']).optional(),
   department: z.string().nullable().optional()
 });
+
+// GET /api/users - Get all users (staff/admin only)
 router.get('/', authenticateToken, requireStaffOrAdmin, async (req, res, next) => {
   try {
     const { role, search } = req.query;
+    
     let whereClause = {};
+    
     if (role) {
       whereClause.role = role;
     }
+    
     if (search) {
       whereClause.OR = [
         { name: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } }
       ];
     }
+
     const users = await prisma.user.findMany({
       where: whereClause,
       select: {
@@ -52,15 +62,20 @@ router.get('/', authenticateToken, requireStaffOrAdmin, async (req, res, next) =
       },
       orderBy: { createdAt: 'desc' }
     });
+
     console.log(`👥 Retrieved ${users.length} users for ${req.user.email}`);
     res.json({ users });
+
   } catch (error) {
     next(error);
   }
 });
+
+// GET /api/users/:id - Get specific user (staff/admin only)
 router.get('/:id', authenticateToken, requireStaffOrAdmin, async (req, res, next) => {
   try {
     const { id } = req.params;
+
     const user = await prisma.user.findUnique({
       where: { id },
       select: {
@@ -81,24 +96,36 @@ router.get('/:id', authenticateToken, requireStaffOrAdmin, async (req, res, next
         }
       }
     });
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+
     res.json({ user });
+
   } catch (error) {
     next(error);
   }
 });
+
+// POST /api/users - Create new user (admin only)
 router.post('/', authenticateToken, requireAdmin, async (req, res, next) => {
   try {
     const validatedData = createUserSchema.parse(req.body);
+
+    // Check if email already exists
     const existingUser = await prisma.user.findUnique({
       where: { email: validatedData.email.toLowerCase() }
     });
+
     if (existingUser) {
       return res.status(400).json({ error: 'Email already registered' });
     }
+
+    // Hash password
     const passwordHash = await bcrypt.hash(validatedData.password, parseInt(process.env.BCRYPT_ROUNDS));
+
+    // Create user
     const user = await prisma.user.create({
       data: {
         name: validatedData.name,
@@ -118,16 +145,22 @@ router.post('/', authenticateToken, requireAdmin, async (req, res, next) => {
         createdAt: true
       }
     });
+
     console.log(`👤 New user created: ${user.email} (${user.role}) by ${req.user.email}`);
     res.status(201).json({ user });
+
   } catch (error) {
     next(error);
   }
 });
+
+// PATCH /api/users/:id - Update user (admin only)
 router.patch('/:id', authenticateToken, requireAdmin, async (req, res, next) => {
   try {
     const { id } = req.params;
     const validatedData = updateUserSchema.parse(req.body);
+
+    // If email is being updated, check for duplicates
     if (validatedData.email) {
       const existingUser = await prisma.user.findFirst({
         where: {
@@ -135,11 +168,14 @@ router.patch('/:id', authenticateToken, requireAdmin, async (req, res, next) => 
           id: { not: id }
         }
       });
+
       if (existingUser) {
         return res.status(400).json({ error: 'Email already in use' });
       }
+
       validatedData.email = validatedData.email.toLowerCase();
     }
+
     const user = await prisma.user.update({
       where: { id },
       data: validatedData,
@@ -153,18 +189,26 @@ router.patch('/:id', authenticateToken, requireAdmin, async (req, res, next) => 
         updatedAt: true
       }
     });
+
     console.log(`📝 User ${id} updated by ${req.user.email}`);
     res.json({ user });
+
   } catch (error) {
     next(error);
   }
 });
+
+// DELETE /api/users/:id - Delete user (admin only)
 router.delete('/:id', authenticateToken, requireAdmin, async (req, res, next) => {
   try {
     const { id } = req.params;
+
+    // Prevent admin from deleting themselves
     if (id === req.user.id) {
       return res.status(400).json({ error: 'Cannot delete your own account' });
     }
+
+    // Check if user has tickets
     const ticketCount = await prisma.ticket.count({
       where: {
         OR: [
@@ -173,20 +217,26 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req, res, next) =>
         ]
       }
     });
+
     if (ticketCount > 0) {
       return res.status(400).json({ 
         error: `Cannot delete user with ${ticketCount} associated tickets` 
       });
     }
+
     await prisma.user.delete({
       where: { id }
     });
+
     console.log(`🗑️ User ${id} deleted by ${req.user.email}`);
     res.json({ message: 'User deleted successfully' });
+
   } catch (error) {
     next(error);
   }
 });
+
+// GET /api/users/staff/available - Get available staff for assignment
 router.get('/staff/available', authenticateToken, async (req, res, next) => {
   try {
     const staff = await prisma.user.findMany({
@@ -204,9 +254,12 @@ router.get('/staff/available', authenticateToken, async (req, res, next) => {
       },
       orderBy: { name: 'asc' }
     });
+
     res.json({ staff });
+
   } catch (error) {
     next(error);
   }
 });
+
 module.exports = router;

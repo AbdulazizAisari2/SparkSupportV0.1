@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SimpleThemeToggle } from '../components/ui/SimpleThemeToggle';
 import { PasswordField } from '../components/auth/PasswordField';
+
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -15,13 +16,16 @@ const loginSchema = z.object({
     required_error: 'Please select a role',
   }),
 });
+
 type LoginFormData = z.infer<typeof loginSchema>;
+
 export const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState('');
   const { login } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -30,19 +34,25 @@ export const LoginPage: React.FC = () => {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
+
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     console.log('Form submission data:', data);
+    
     try {
-      const response = await fetch('http:
+      const response = await fetch('http://localhost:8000/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
+
       console.log('Login response status:', response.status);
+      
+      // Read the response body only once
       const responseText = await response.text();
+      
       if (!response.ok) {
         let errorMessage = `Login failed with status ${response.status}`;
         if (responseText) {
@@ -56,21 +66,28 @@ export const LoginPage: React.FC = () => {
         }
         throw new Error(errorMessage);
       }
+
       if (!responseText) {
         throw new Error('Empty response from server');
       }
+
       let result;
       try {
         result = JSON.parse(responseText);
       } catch {
         throw new Error('Invalid response format from server');
       }
+
       if (!result.accessToken || !result.user) {
         throw new Error('Invalid login response: missing required data');
       }
+
       console.log('Login successful:', result);
       login(result.accessToken, result.refreshToken, result.user);
+      
       addToast(`Welcome back, ${result.user.name}! 🎉`, 'success');
+      
+      // Redirect based on role
       switch (result.user.role) {
         case 'customer':
           navigate('/my/tickets');
@@ -91,16 +108,36 @@ export const LoginPage: React.FC = () => {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="min-h-screen relative overflow-hidden">
+      {/* Stunning gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-gray-950 dark:via-indigo-950 dark:to-purple-950"></div>
+      
+      {/* Animated gradient orbs */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-30 animate-float"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-30 animate-float" style={{ animationDelay: '2s' }}></div>
         <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-bl from-purple-400 to-pink-600 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-20 animate-pulse"></div>
       </div>
+
+      {/* Floating particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-20 w-2 h-2 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full animate-ping opacity-60"></div>
+        <div className="absolute top-32 right-24 w-1 h-1 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full animate-ping opacity-40" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-40 left-16 w-1.5 h-1.5 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full animate-ping opacity-50" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-20 right-20 w-1 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-ping opacity-60" style={{ animationDelay: '3s' }}></div>
+      </div>
+
+      {/* Theme toggle */}
       <div className="absolute top-6 right-6 z-20">
         <SimpleThemeToggle />
       </div>
+
+      {/* Main content */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full">
+          {/* Stunning header */}
           <div className="text-center mb-12 animate-fade-in">
             <div className="flex justify-center mb-8">
               <div className="relative group">
@@ -111,6 +148,7 @@ export const LoginPage: React.FC = () => {
                 </div>
               </div>
             </div>
+            
             <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent mb-4 tracking-tight">
               SparkSupport
             </h1>
@@ -126,6 +164,11 @@ export const LoginPage: React.FC = () => {
               <Zap className="w-4 h-4 text-indigo-400 animate-pulse" style={{ animationDelay: '0.5s' }} />
             </div>
           </div>
+
+          {/* Beautiful form container */}
+          <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 dark:border-gray-700/50 p-8 animate-slide-up">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {/* Email Field */}
               <div className="space-y-2">
                 <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Email Address
@@ -160,6 +203,24 @@ export const LoginPage: React.FC = () => {
                   </p>
                 )}
               </div>
+
+              {/* Password Field */}
+              <div className="space-y-2">
+                <PasswordField
+                  value={password}
+                  onChange={(value) => {
+                    setPassword(value);
+                    setValue('password', value);
+                  }}
+                  placeholder="Enter your password"
+                  label="Password"
+                  required
+                  error={errors.password?.message}
+                />
+                <input type="hidden" {...register('password')} />
+              </div>
+
+              {/* Role Field */}
               <div className="space-y-2">
                 <label htmlFor="role" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Account Type
@@ -196,6 +257,37 @@ export const LoginPage: React.FC = () => {
                   </p>
                 )}
               </div>
+
+              {/* Enhanced Submit Button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="group relative w-full flex justify-center items-center py-4 px-6 border border-transparent text-lg font-bold rounded-2xl text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 hover:from-indigo-700 hover:via-purple-700 hover:to-cyan-700 focus:outline-none focus:ring-4 focus:ring-indigo-200/50 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-300 hover:scale-105 hover:shadow-2xl disabled:hover:scale-100 overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <span className="absolute left-0 inset-y-0 flex items-center pl-4">
+                  <LogIn className="h-6 w-6 text-white/80 group-hover:text-white group-hover:animate-pulse transition-all duration-300" />
+                </span>
+                <div className="flex items-center space-x-3">
+                  {isLoading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>Signing you in...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Sign In</span>
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    </>
+                  )}
+                </div>
+                {isLoading && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-400/50 to-purple-500/50 animate-pulse"></div>
+                )}
+              </button>
+            </form>
+
+            {/* Sign up link */}
             <div className="mt-8 text-center">
               <p className="text-gray-600 dark:text-gray-400">
                 Don't have an account?{' '}
@@ -209,3 +301,15 @@ export const LoginPage: React.FC = () => {
               </p>
             </div>
           </div>
+
+          {/* Footer */}
+          <div className="mt-8 text-center animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Professional customer support platform
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

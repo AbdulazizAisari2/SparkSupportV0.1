@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { Sun, Moon, Palette } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+
 interface ThemeToggleProps {
   className?: string;
   showLabel?: boolean;
   variant?: 'default' | 'floating' | 'minimal';
 }
+
 export const ThemeToggle: React.FC<ThemeToggleProps> = ({ 
   className = '', 
   showLabel = false,
   variant = 'default'
 }) => {
   const { theme, toggleTheme } = useTheme();
+
   const getVariantStyles = () => {
     switch (variant) {
       case 'floating':
@@ -38,6 +41,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         `;
     }
   };
+
   return (
     <button
       onClick={toggleTheme}
@@ -50,6 +54,11 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
       `}
       title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
     >
+      {/* Background glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-primary-400/20 to-purple-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
+      
+      <div className="relative flex items-center space-x-2">
+        {/* Icon container with smooth rotation */}
         <div className="relative w-5 h-5 overflow-hidden">
           <Sun 
             className={`
@@ -70,22 +79,37 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
             `}
           />
         </div>
+
+        {/* Label with slide animation */}
+        {showLabel && (
+          <span className="text-sm font-medium transition-all duration-200">
+            {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+          </span>
+        )}
+      </div>
+
+      {/* Ripple effect on click */}
       <div className="absolute inset-0 rounded-xl overflow-hidden">
         <div className="absolute inset-0 bg-primary-400/20 scale-0 group-active:scale-100 transition-transform duration-200 rounded-xl"></div>
       </div>
     </button>
   );
 };
+
+// Enhanced Theme Toggle with multiple theme options
 interface AdvancedThemeToggleProps {
   className?: string;
 }
+
 export const AdvancedThemeToggle: React.FC<AdvancedThemeToggleProps> = ({ className = '' }) => {
   const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+
   const themes = [
     { id: 'light', name: 'Light', icon: Sun, color: 'from-yellow-400 to-orange-500' },
     { id: 'dark', name: 'Dark', icon: Moon, color: 'from-indigo-500 to-purple-600' },
   ];
+
   return (
     <div className="relative">
       <button
@@ -103,12 +127,14 @@ export const AdvancedThemeToggle: React.FC<AdvancedThemeToggleProps> = ({ classN
         <Palette className="w-5 h-5 mr-2" />
         <span className="text-sm font-medium">Theme</span>
       </button>
+
       {isOpen && (
         <div className="absolute top-full right-0 mt-2 p-2 bg-white/90 dark:bg-dark-800/90 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-200/50 dark:border-dark-600/50 z-50 animate-slide-down">
           <div className="space-y-1">
             {themes.map((themeOption) => {
               const Icon = themeOption.icon;
               const isActive = theme === themeOption.id;
+              
               return (
                 <button
                   key={themeOption.id}

@@ -13,6 +13,7 @@ import { CrudList } from '../../components/admin/CrudList';
 import { CrudDialog } from '../../components/admin/CrudDialog';
 import { RoleBadge } from '../../components/ui/Badge';
 import { User } from '../../types';
+
 const createUserSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
   email: z.string().email('Invalid email address'),
@@ -21,6 +22,7 @@ const createUserSchema = z.object({
   role: z.enum(['staff', 'admin'] as const),
   department: z.string().optional(),
 });
+
 const updateUserSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
   email: z.string().email('Invalid email address'),
@@ -28,26 +30,34 @@ const updateUserSchema = z.object({
   role: z.enum(['staff', 'admin'] as const),
   department: z.string().optional(),
 });
+
 type CreateUserFormData = z.infer<typeof createUserSchema>;
 type UpdateUserFormData = z.infer<typeof updateUserSchema>;
 type UserFormData = CreateUserFormData | UpdateUserFormData;
+
 export const AdminStaff: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const { addToast } = useToast();
+
   const { data: allUsers = [], isLoading } = useUsers();
   const staffUsers = allUsers.filter(u => u.role === 'staff' || u.role === 'admin');
+  
   const createUserMutation = useCreateUser();
   const updateUserMutation = useUpdateUser();
   const deleteUserMutation = useDeleteUser();
+
   const createForm = useForm<CreateUserFormData>({
     resolver: zodResolver(createUserSchema),
   });
+
   const updateForm = useForm<UpdateUserFormData>({
     resolver: zodResolver(updateUserSchema),
   });
+
   const currentForm = editingUser ? updateForm : createForm;
   const { register, handleSubmit, reset, formState: { errors } } = currentForm;
+
   const handleCreate = () => {
     setEditingUser(null);
     createForm.reset({ 
@@ -60,6 +70,7 @@ export const AdminStaff: React.FC = () => {
     });
     setIsDialogOpen(true);
   };
+
   const handleEdit = (user: User) => {
     setEditingUser(user);
     updateForm.reset({
@@ -71,6 +82,7 @@ export const AdminStaff: React.FC = () => {
     });
     setIsDialogOpen(true);
   };
+
   const handleDelete = async (id: string) => {
     try {
       await deleteUserMutation.mutateAsync(id);
@@ -79,6 +91,7 @@ export const AdminStaff: React.FC = () => {
       addToast('Failed to delete user. Please try again.', 'error');
     }
   };
+
   const onSubmit = async (data: UserFormData) => {
     try {
       if (editingUser) {
@@ -97,11 +110,13 @@ export const AdminStaff: React.FC = () => {
       addToast('Operation failed. Please try again.', 'error');
     }
   };
+
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     setEditingUser(null);
     currentForm.reset();
   };
+
   const renderUser = (user: User) => (
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-4">
@@ -123,7 +138,9 @@ export const AdminStaff: React.FC = () => {
       </div>
     </div>
   );
+
   const isSubmitting = createUserMutation.isPending || updateUserMutation.isPending;
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -132,6 +149,7 @@ export const AdminStaff: React.FC = () => {
           {staffUsers.length} staff member{staffUsers.length !== 1 ? 's' : ''}
         </p>
       </div>
+
       <CrudList
         title="Staff & Administrators"
         items={staffUsers}
@@ -143,6 +161,7 @@ export const AdminStaff: React.FC = () => {
         loading={isLoading}
         emptyMessage="No staff members found. Add your first team member to get started."
       />
+
       <CrudDialog
         isOpen={isDialogOpen}
         onClose={handleCloseDialog}
@@ -167,6 +186,7 @@ export const AdminStaff: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
             )}
           </div>
+
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Email Address *
@@ -185,6 +205,7 @@ export const AdminStaff: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
             )}
           </div>
+
           {!editingUser && (
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -205,6 +226,7 @@ export const AdminStaff: React.FC = () => {
               )}
             </div>
           )}
+
           <div>
             <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Phone Number
@@ -217,6 +239,7 @@ export const AdminStaff: React.FC = () => {
               placeholder="Enter phone number"
             />
           </div>
+
           <div>
             <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Role *
@@ -236,6 +259,7 @@ export const AdminStaff: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>
             )}
           </div>
+
           <div>
             <label htmlFor="department" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Department
@@ -248,6 +272,7 @@ export const AdminStaff: React.FC = () => {
               placeholder="Enter department"
             />
           </div>
+
           <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"

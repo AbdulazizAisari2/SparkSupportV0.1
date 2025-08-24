@@ -1,6 +1,7 @@
 export type Role = 'customer' | 'staff' | 'admin';
 export type Status = 'open' | 'in_progress' | 'resolved' | 'closed';
 export type Priority = 'low' | 'medium' | 'high' | 'urgent';
+
 export interface User {
   id: string;
   name: string;
@@ -8,21 +9,24 @@ export interface User {
   phone?: string;
   role: Role;
   department?: string;
-  password?: string; 
-  points?: number; 
-  isOnline?: boolean; 
-  lastSeen?: string; 
+  password?: string; // Optional for security - not included in API responses
+  points?: number; // User points for marketplace redemption
+  isOnline?: boolean; // Online status for team chat
+  lastSeen?: string; // Last seen timestamp
 }
+
 export interface Category {
   id: string;
   name: string;
   description?: string;
 }
+
 export interface PriorityDef {
   id: string;
   name: string;
   level: 1 | 2 | 3 | 4;
 }
+
 export interface Ticket {
   id: string;
   customerId: string;
@@ -35,6 +39,7 @@ export interface Ticket {
   createdAt: string;
   updatedAt: string;
 }
+
 export interface TicketMessage {
   id: string;
   ticketId: string;
@@ -44,10 +49,12 @@ export interface TicketMessage {
   isInternal?: boolean;
   createdAt: string;
 }
+
 export interface AuthState {
   token: string | null;
   user: User | null;
 }
+
 export interface Achievement {
   id: string;
   name: string;
@@ -57,22 +64,24 @@ export interface Achievement {
   pointsReward?: number;
   unlockedAt?: Date;
 }
+
 export interface StaffStats {
   userId: string;
   name: string;
   department: string;
   ticketsResolved: number;
-  averageResolutionTime: number; 
-  customerSatisfaction: number; 
+  averageResolutionTime: number; // in hours
+  customerSatisfaction: number; // 1-5 rating
   points: number;
   achievements: Achievement[];
-  streak: number; 
+  streak: number; // consecutive days with resolved tickets
   level: number;
   totalTicketsHandled: number;
-  responseTime: number; 
-  monthlyGrowth: number; 
+  responseTime: number; // average first response time in minutes
+  monthlyGrowth: number; // percentage growth from last month
   specialRecognition?: string;
 }
+
 export interface EmailConfig {
   smtpHost: string;
   smtpPort: number;
@@ -81,17 +90,22 @@ export interface EmailConfig {
   fromEmail: string;
   fromName: string;
 }
+
 export interface SlackConfig {
   botToken?: string;
   signingSecret?: string;
   channelId?: string;
   enabled: boolean;
 }
+
 export interface AppConfig {
   email?: EmailConfig;
   slack?: SlackConfig;
 }
+
+// Notification types
 export type NotificationType = 'info' | 'success' | 'warning' | 'error';
+
 export interface Notification {
   id: string;
   type: NotificationType;
@@ -101,6 +115,8 @@ export interface Notification {
   read?: boolean;
   userId?: string;
 }
+
+// Team Chat types
 export interface ChatMessage {
   id: string;
   senderId: string;
@@ -110,6 +126,7 @@ export interface ChatMessage {
   timestamp: string;
   isEdited?: boolean;
 }
+
 export interface ChatUser {
   id: string;
   name: string;

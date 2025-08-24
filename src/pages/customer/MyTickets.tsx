@@ -6,12 +6,14 @@ import { useAuth } from '../../context/AuthContext';
 import { FiltersBar } from '../../components/tickets/FiltersBar';
 import { TicketTable } from '../../components/tickets/TicketTable';
 import { LoadingSkeleton } from '../../components/ui/LoadingSkeleton';
+
 export const MyTickets: React.FC = () => {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [status, setStatus] = useState('');
   const [category, setCategory] = useState('');
   const [priority, setPriority] = useState('');
+
   const { 
     data: tickets = [], 
     isLoading: ticketsLoading 
@@ -19,7 +21,9 @@ export const MyTickets: React.FC = () => {
     status: status || undefined,
     priority: priority || undefined,
   });
+
   const { data: categories = [] } = useCategories();
+
   if (ticketsLoading) {
     return (
       <div className="space-y-6">
@@ -32,6 +36,7 @@ export const MyTickets: React.FC = () => {
       </div>
     );
   }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -44,6 +49,7 @@ export const MyTickets: React.FC = () => {
           <span>New Ticket</span>
         </Link>
       </div>
+
       <FiltersBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -55,6 +61,7 @@ export const MyTickets: React.FC = () => {
         onPriorityChange={setPriority}
         categories={categories}
       />
+
       <TicketTable
         tickets={tickets}
         users={user ? [user] : []}

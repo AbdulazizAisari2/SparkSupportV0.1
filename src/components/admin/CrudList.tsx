@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Edit, Trash2, Plus } from 'lucide-react';
+
 interface CrudListProps<T> {
   title: string;
   items: T[];
@@ -11,6 +12,7 @@ interface CrudListProps<T> {
   loading?: boolean;
   emptyMessage?: string;
 }
+
 export function CrudList<T>({
   title,
   items,
@@ -23,6 +25,7 @@ export function CrudList<T>({
   emptyMessage = 'No items found.',
 }: CrudListProps<T>) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
   const handleDelete = async (item: T) => {
     const id = getItemId(item);
     if (confirm('Are you sure you want to delete this item?')) {
@@ -34,6 +37,7 @@ export function CrudList<T>({
       }
     }
   };
+
   if (loading) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -46,6 +50,7 @@ export function CrudList<T>({
       </div>
     );
   }
+
   return (
     <div className="bg-white rounded-lg border border-gray-200">
       <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
@@ -58,6 +63,7 @@ export function CrudList<T>({
           <span>Add New</span>
         </button>
       </div>
+
       {items.length === 0 ? (
         <div className="px-6 py-8 text-center">
           <p className="text-gray-500">{emptyMessage}</p>
@@ -67,6 +73,7 @@ export function CrudList<T>({
           {items.map((item) => {
             const id = getItemId(item);
             const isDeleting = deletingId === id;
+
             return (
               <div key={id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
                 <div className="flex items-center justify-between">

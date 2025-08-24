@@ -3,17 +3,21 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Send, Paperclip } from 'lucide-react';
+
 const replySchema = z.object({
   message: z.string().min(1, 'Message is required'),
   attachments: z.array(z.string()).optional(),
 });
+
 type ReplyFormData = z.infer<typeof replySchema>;
+
 interface ReplyBoxProps {
   onSubmit: (data: ReplyFormData) => void;
   isSubmitting: boolean;
   disabled?: boolean;
   placeholder?: string;
 }
+
 export const ReplyBox: React.FC<ReplyBoxProps> = ({
   onSubmit,
   isSubmitting,
@@ -28,10 +32,12 @@ export const ReplyBox: React.FC<ReplyBoxProps> = ({
   } = useForm<ReplyFormData>({
     resolver: zodResolver(replySchema),
   });
+
   const handleFormSubmit = (data: ReplyFormData) => {
     onSubmit(data);
     reset();
   };
+
   if (disabled) {
     return (
       <div className="bg-gray-50 rounded-lg p-4 text-center">
@@ -41,6 +47,7 @@ export const ReplyBox: React.FC<ReplyBoxProps> = ({
       </div>
     );
   }
+
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       <div>
@@ -57,6 +64,7 @@ export const ReplyBox: React.FC<ReplyBoxProps> = ({
           <p className="mt-1 text-sm text-red-600">{errors.message.message}</p>
         )}
       </div>
+
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -65,6 +73,7 @@ export const ReplyBox: React.FC<ReplyBoxProps> = ({
           <Paperclip className="w-4 h-4" />
           <span>Attach files</span>
         </button>
+
         <button
           type="submit"
           disabled={isSubmitting}

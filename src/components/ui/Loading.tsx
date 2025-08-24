@@ -1,9 +1,11 @@
 import React from 'react';
+
 export const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
     <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
   );
 };
+
 export const TicketSkeleton: React.FC = () => {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
@@ -20,6 +22,7 @@ export const TicketSkeleton: React.FC = () => {
     </div>
   );
 };
+
 export const TableSkeleton: React.FC = () => {
   return (
     <div className="bg-white rounded-lg border border-gray-200">

@@ -4,6 +4,7 @@ import { ArrowUpDown } from 'lucide-react';
 import { Ticket, User, Category } from '../../types';
 import { StatusBadge, PriorityBadge } from '../ui/Badge';
 import { TableSkeleton } from '../ui/Loading';
+
 interface TicketTableProps {
   tickets: Ticket[];
   users: User[];
@@ -11,8 +12,10 @@ interface TicketTableProps {
   loading?: boolean;
   linkPrefix: string;
 }
+
 type SortField = 'id' | 'subject' | 'status' | 'priority' | 'createdAt' | 'updatedAt';
 type SortDirection = 'asc' | 'desc';
+
 export const TicketTable: React.FC<TicketTableProps> = ({
   tickets,
   users,
@@ -24,6 +27,7 @@ export const TicketTable: React.FC<TicketTableProps> = ({
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -32,31 +36,38 @@ export const TicketTable: React.FC<TicketTableProps> = ({
       setSortDirection('asc');
     }
   };
+
   const sortedTickets = [...tickets].sort((a, b) => {
     let aValue: string | number = a[sortField];
     let bValue: string | number = b[sortField];
+
     if (sortField === 'createdAt' || sortField === 'updatedAt') {
       aValue = new Date(aValue).getTime();
       bValue = new Date(bValue).getTime();
     }
+
     if (sortDirection === 'asc') {
       return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
     } else {
       return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
     }
   });
+
   const totalPages = Math.ceil(sortedTickets.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedTickets = sortedTickets.slice(startIndex, startIndex + itemsPerPage);
+
   const getUserName = (userId?: string) => {
     if (!userId) return 'Unassigned';
     const user = users.find(u => u.id === userId);
     return user?.name || 'Unknown User';
   };
+
   const getCategoryName = (categoryId: string) => {
     const category = categories.find(c => c.id === categoryId);
     return category?.name || 'Unknown Category';
   };
+
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
@@ -66,9 +77,11 @@ export const TicketTable: React.FC<TicketTableProps> = ({
       minute: '2-digit',
     });
   };
+
   if (loading) {
     return <TableSkeleton />;
   }
+
   if (tickets.length === 0) {
     return (
       <div className="bg-white dark:bg-dark-800 dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-600 p-8 text-center">
@@ -94,6 +107,7 @@ export const TicketTable: React.FC<TicketTableProps> = ({
       </div>
     );
   }
+
   const SortableHeader: React.FC<{ field: SortField; children: React.ReactNode }> = ({ 
     field, 
     children 
@@ -108,6 +122,7 @@ export const TicketTable: React.FC<TicketTableProps> = ({
       </button>
     </th>
   );
+
   return (
     <div className="bg-white dark:bg-dark-800 dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-600 overflow-hidden shadow-lg">
       <div className="overflow-x-auto">
@@ -166,3 +181,73 @@ export const TicketTable: React.FC<TicketTableProps> = ({
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="bg-white dark:bg-dark-800 dark:bg-dark-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-dark-600">
+          <div className="flex-1 flex justify-between sm:hidden">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-dark-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-800 hover:bg-gray-50 dark:bg-dark-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-dark-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-800 hover:bg-gray-50 dark:bg-dark-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                Showing{' '}
+                <span className="font-medium">{startIndex + 1}</span> to{' '}
+                <span className="font-medium">
+                  {Math.min(startIndex + itemsPerPage, sortedTickets.length)}
+                </span>{' '}
+                of <span className="font-medium">{sortedTickets.length}</span> results
+              </p>
+            </div>
+            <div>
+              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-dark-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                      currentPage === page
+                        ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                        : 'bg-white dark:bg-dark-800 dark:bg-dark-700 border-gray-300 dark:border-dark-600 dark:border-dark-600 text-gray-500 dark:text-gray-400 dark:text-gray-400 hover:bg-gray-50 dark:bg-dark-700 dark:hover:bg-dark-600'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-dark-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

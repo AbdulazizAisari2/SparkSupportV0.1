@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FileText, Zap, Bug, HelpCircle, Settings, CreditCard, Smartphone } from 'lucide-react';
+
 export interface TicketTemplate {
   id: string;
   name: string;
@@ -11,11 +12,12 @@ export interface TicketTemplate {
   color: string;
   tags: string[];
 }
+
 const ticketTemplates: TicketTemplate[] = [
   {
     id: 'login-issue',
     name: 'Login Problem',
-    category: '1', 
+    category: '1', // Technical Issue
     priority: 'high',
     subject: 'Unable to access my account',
     description: 'I am experiencing difficulties logging into my account. Please help me resolve this issue.\n\nSteps I\'ve tried:\n- Clearing browser cache\n- Trying different browsers\n- Checking my internet connection\n\nError message (if any): [Please describe any error messages you see]',
@@ -26,7 +28,7 @@ const ticketTemplates: TicketTemplate[] = [
   {
     id: 'billing-inquiry',
     name: 'Billing Question',
-    category: '2', 
+    category: '2', // Billing
     priority: 'medium',
     subject: 'Question about my billing',
     description: 'I have a question regarding my recent invoice or billing statement.\n\nSpecific concern:\n[Please describe your billing question]\n\nInvoice number (if applicable): \nBilling period: \n\nPlease provide clarification on the charges or help resolve any discrepancies.',
@@ -37,7 +39,7 @@ const ticketTemplates: TicketTemplate[] = [
   {
     id: 'feature-request',
     name: 'Feature Request',
-    category: '3', 
+    category: '3', // General Inquiry
     priority: 'low',
     subject: 'Feature suggestion for improvement',
     description: 'I would like to suggest a new feature or improvement to the system.\n\nFeature description:\n[Please describe the feature you\'d like to see]\n\nBusiness justification:\n[Explain how this would benefit users]\n\nExpected behavior:\n[Describe how the feature should work]',
@@ -48,7 +50,7 @@ const ticketTemplates: TicketTemplate[] = [
   {
     id: 'technical-support',
     name: 'Technical Support',
-    category: '1', 
+    category: '1', // Technical Issue
     priority: 'high',
     subject: 'Technical issue requiring assistance',
     description: 'I need technical assistance with a system issue.\n\nProblem description:\n[Describe the technical issue you\'re experiencing]\n\nSteps to reproduce:\n1. [First step]\n2. [Second step]\n3. [Third step]\n\nExpected result: [What should happen]\nActual result: [What actually happens]\n\nBrowser/Device information:\n- Browser: \n- Operating System: \n- Device: ',
@@ -59,7 +61,7 @@ const ticketTemplates: TicketTemplate[] = [
   {
     id: 'mobile-app',
     name: 'Mobile App Issue',
-    category: '1', 
+    category: '1', // Technical Issue
     priority: 'medium',
     subject: 'Mobile application problem',
     description: 'I\'m experiencing an issue with the mobile application.\n\nDevice information:\n- Device model: \n- Operating system version: \n- App version: \n\nProblem description:\n[Describe the issue you\'re experiencing]\n\nScreenshots (if applicable): [Please attach screenshots if helpful]',
@@ -70,7 +72,7 @@ const ticketTemplates: TicketTemplate[] = [
   {
     id: 'general-help',
     name: 'General Help',
-    category: '3', 
+    category: '3', // General Inquiry
     priority: 'low',
     subject: 'General question or help request',
     description: 'I need general assistance or have a question about the service.\n\nQuestion/Request:\n[Please describe what you need help with]\n\nAdditional context:\n[Any additional information that might be helpful]',
@@ -79,16 +81,20 @@ const ticketTemplates: TicketTemplate[] = [
     tags: ['help', 'question', 'general']
   }
 ];
+
 interface TicketTemplatesProps {
   onSelectTemplate: (template: TicketTemplate) => void;
   className?: string;
 }
+
 export const TicketTemplates: React.FC<TicketTemplatesProps> = ({ onSelectTemplate, className = '' }) => {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+
   const handleTemplateSelect = (template: TicketTemplate) => {
     setSelectedTemplate(template.id);
     onSelectTemplate(template);
   };
+
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="text-center mb-6">
@@ -99,10 +105,12 @@ export const TicketTemplates: React.FC<TicketTemplatesProps> = ({ onSelectTempla
           Select a template to get started quickly with pre-filled content
         </p>
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {ticketTemplates.map((template) => {
           const Icon = template.icon;
           const isSelected = selectedTemplate === template.id;
+          
           return (
             <button
               key={template.id}
@@ -138,6 +146,7 @@ export const TicketTemplates: React.FC<TicketTemplatesProps> = ({ onSelectTempla
                   </div>
                 </div>
               </div>
+              
               {isSelected && (
                 <div className="absolute top-2 right-2 w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center animate-scale-in">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -149,6 +158,7 @@ export const TicketTemplates: React.FC<TicketTemplatesProps> = ({ onSelectTempla
           );
         })}
       </div>
+
       <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
         <div className="flex items-start space-x-3">
           <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
@@ -163,4 +173,5 @@ export const TicketTemplates: React.FC<TicketTemplatesProps> = ({ onSelectTempla
     </div>
   );
 };
+
 export { ticketTemplates };
