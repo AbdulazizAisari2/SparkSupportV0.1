@@ -56,33 +56,7 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
   const [isCompleted, setIsCompleted] = useState(false);
   const [buttonValidation, setButtonValidation] = useState(false);
 
-  // Update button validation when survey data changes
-  useEffect(() => {
-    if (isRatingStep && currentStepData) {
-      const fieldValue = surveyData[currentStepData.field as keyof SurveyData] as number;
-      setButtonValidation(fieldValue > 0);
-    } else {
-      setButtonValidation(true); // Feedback step is always valid
-    }
-  }, [surveyData, currentStep, isRatingStep, currentStepData]);
-
-  // Reset state when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setCurrentStep(0);
-      setIsCompleted(false);
-      setSurveyData({
-        overallRating: 0,
-        responseTime: 0,
-        helpfulness: 0,
-        professionalism: 0,
-        resolutionQuality: 0,
-        feedback: '',
-        improvements: ''
-      });
-    }
-  }, [isOpen]);
-
+  // Steps configuration - moved up to avoid hoisting issues
   const steps = [
     {
       title: "Overall Experience",
@@ -128,9 +102,37 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
     }
   ];
 
+  // Derived variables - moved up to avoid hoisting issues
   const currentStepData = steps[currentStep];
   const isLastStep = currentStep === steps.length - 1;
   const isRatingStep = currentStep < 5;
+
+  // Update button validation when survey data changes
+  useEffect(() => {
+    if (isRatingStep && currentStepData) {
+      const fieldValue = surveyData[currentStepData.field as keyof SurveyData] as number;
+      setButtonValidation(fieldValue > 0);
+    } else {
+      setButtonValidation(true); // Feedback step is always valid
+    }
+  }, [surveyData, currentStep, isRatingStep, currentStepData]);
+
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentStep(0);
+      setIsCompleted(false);
+      setSurveyData({
+        overallRating: 0,
+        responseTime: 0,
+        helpfulness: 0,
+        professionalism: 0,
+        resolutionQuality: 0,
+        feedback: '',
+        improvements: ''
+      });
+    }
+  }, [isOpen]);
 
   const updateRating = (field: keyof SurveyData, value: number) => {
     console.log('⭐ Rating Updated:', { field, value, currentStep });
