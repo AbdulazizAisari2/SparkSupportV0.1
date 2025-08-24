@@ -387,7 +387,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
       {/* Main Content */}
       <div className="ml-64">
-        <main className="p-8 min-h-screen transition-all duration-300">
+        <main className="p-8 transition-all duration-300">
           <div className="animate-fade-in">
             <div className="max-w-7xl mx-auto">
               {children}

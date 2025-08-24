@@ -257,7 +257,7 @@ export const Marketplace: React.FC = () => {
   if (isLoading) {
     return (
       <AnimatedBackground variant="marketplace">
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="h-96 flex items-center justify-center">
           <div className="text-center">
             <motion.div
               animate={{ rotate: 360 }}
@@ -278,7 +278,7 @@ export const Marketplace: React.FC = () => {
   if (error) {
     return (
       <AnimatedBackground variant="marketplace">
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="h-96 flex items-center justify-center">
           <GlassmorphismCard variant="intense" className="max-w-md mx-auto text-center">
             <h2 className="text-xl font-bold text-white mb-4">Unable to Load Marketplace</h2>
             <p className="text-white/70 mb-4">
@@ -300,7 +300,7 @@ export const Marketplace: React.FC = () => {
 
   return (
     <AnimatedBackground variant="marketplace">
-      <div className="min-h-screen">
+      <div className="pb-16">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

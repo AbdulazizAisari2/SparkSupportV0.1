@@ -58,7 +58,7 @@ export const MyTickets: React.FC = () => {
   if (error) {
     return (
       <AnimatedBackground variant="minimal">
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="h-96 flex items-center justify-center">
           <GlassmorphismCard variant="intense" className="text-center">
             <div className="text-red-400 text-xl font-semibold mb-2">Error loading tickets</div>
             <p className="text-white/70">{error instanceof Error ? error.message : 'Unknown error'}</p>
@@ -70,7 +70,7 @@ export const MyTickets: React.FC = () => {
 
   return (
     <AnimatedBackground variant="dashboard">
-      <div className="min-h-screen">
+      <div className="pb-16">
         {/* Hero Section */}
         <HeroSection 
           userRole="customer" 

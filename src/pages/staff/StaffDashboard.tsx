@@ -101,7 +101,7 @@ export const StaffDashboard: React.FC = () => {
   if (ticketsLoading || usersLoading) {
     return (
       <AnimatedBackground variant="tickets">
-        <div className="min-h-screen">
+        <div className="pb-16">
           <div className="max-w-7xl mx-auto px-6 py-16">
             <LoadingSkeleton variant="profile" />
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -115,7 +115,7 @@ export const StaffDashboard: React.FC = () => {
 
   return (
     <AnimatedBackground variant="tickets">
-      <div className="min-h-screen">
+      <div className="pb-16">
         {/* Hero Section */}
         <HeroSection 
           userRole="staff" 
