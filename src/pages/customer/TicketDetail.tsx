@@ -24,6 +24,14 @@ export const TicketDetail: React.FC = () => {
   const [surveyRating, setSurveyRating] = useState(0);
   const [previousStatus, setPreviousStatus] = useState<string | null>(null);
 
+  // All hooks must be called before any conditional returns
+  const { data: ticketData, isLoading, error } = useTicket(id || '');
+  const { data: categories = [] } = useCategories();
+  const { data: users = [] } = useUsers();
+  const createMessageMutation = useCreateMessage();
+  const createSurveyMutation = useCreateSurvey();
+  const { data: existingSurvey } = useSurvey(id || '');
+
   // Security: Validate ticket ID using useEffect to avoid render warnings
   useEffect(() => {
     if (!id) {
@@ -35,13 +43,6 @@ export const TicketDetail: React.FC = () => {
   if (!id) {
     return null;
   }
-
-  const { data: ticketData, isLoading, error } = useTicket(id);
-  const { data: categories = [] } = useCategories();
-  const { data: users = [] } = useUsers();
-  const createMessageMutation = useCreateMessage();
-  const createSurveyMutation = useCreateSurvey();
-  const { data: existingSurvey } = useSurvey(id);
 
   const ticket = ticketData?.ticket;
   const messages = ticket?.messages || [];
