@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSecureParams } from '../../hooks/useSecureParams';
 import { ArrowLeft, Clock } from 'lucide-react';
@@ -9,6 +9,8 @@ import { StatusBadge, PriorityBadge } from '../../components/ui/Badge';
 import { Thread } from '../../components/tickets/Thread';
 import { ReplyBox } from '../../components/tickets/ReplyBox';
 import { Skeleton } from '../../components/ui/Loading';
+import { SatisfactionSurveyModal } from '../../components/ui/SatisfactionSurveyModal';
+import { SurveySuccessToast } from '../../components/ui/SurveySuccessToast';
 import { formatDistanceToNow } from 'date-fns';
 
 export const TicketDetail: React.FC = () => {
@@ -16,6 +18,10 @@ export const TicketDetail: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToast } = useToast();
+  const [showSurveyModal, setShowSurveyModal] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [surveyRating, setSurveyRating] = useState(0);
+  const [previousStatus, setPreviousStatus] = useState<string | null>(null);
 
   // Security: Validate ticket ID using useEffect to avoid render warnings
   useEffect(() => {
@@ -36,6 +42,60 @@ export const TicketDetail: React.FC = () => {
 
   const ticket = ticketData?.ticket;
   const messages = ticket?.messages || [];
+
+  // Survey trigger logic - check for status changes to resolved/closed
+  useEffect(() => {
+    if (ticket && previousStatus !== null) {
+      const currentStatus = ticket.status;
+      
+      // Trigger survey if status changed to resolved or closed
+      if ((currentStatus === 'resolved' || currentStatus === 'closed') && 
+          previousStatus !== currentStatus &&
+          previousStatus !== 'resolved' && 
+          previousStatus !== 'closed') {
+        
+        // Small delay to ensure status change is visually processed
+        setTimeout(() => {
+          setShowSurveyModal(true);
+        }, 1000);
+      }
+    }
+    
+    // Update previous status
+    if (ticket) {
+      setPreviousStatus(ticket.status);
+    }
+  }, [ticket?.status, previousStatus]);
+
+  // Survey submission handler
+  const handleSurveySubmit = async (surveyData: any) => {
+    try {
+      // Calculate average rating
+      const ratings = [
+        surveyData.overallRating,
+        surveyData.responseTime,
+        surveyData.helpfulness,
+        surveyData.professionalism,
+        surveyData.resolutionQuality
+      ].filter(rating => rating > 0);
+      
+      const averageRating = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0;
+      setSurveyRating(averageRating);
+
+      // Here you would normally send the survey data to your backend
+      // await submitSurvey(ticket.id, surveyData);
+      
+      console.log('Survey submitted:', { ticketId: ticket?.id, surveyData, averageRating });
+      
+      setShowSurveyModal(false);
+      setShowSuccessToast(true);
+      
+      addToast('Thank you for your feedback! Your response helps us improve our service.', 'success');
+    } catch (error) {
+      console.error('Error submitting survey:', error);
+      addToast('Failed to submit survey. Please try again.', 'error');
+    }
+  };
 
   // Debug logging
   console.log('TicketDetail Debug:', {
@@ -259,6 +319,22 @@ export const TicketDetail: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Customer Satisfaction Survey Modal */}
+      <SatisfactionSurveyModal
+        isOpen={showSurveyModal}
+        onClose={() => setShowSurveyModal(false)}
+        onSubmit={handleSurveySubmit}
+        ticketNumber={ticket?.id}
+        staffName={users.find(u => u.id === ticket?.assignedToId)?.name}
+      />
+
+      {/* Survey Success Toast */}
+      <SurveySuccessToast
+        isVisible={showSuccessToast}
+        averageRating={surveyRating}
+        onClose={() => setShowSuccessToast(false)}
+      />
     </div>
   );
 };
