@@ -19,7 +19,7 @@ import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
 import { PurchaseModal } from '../components/ui/PurchaseModal';
 import { useMarketplaceItems, usePurchaseItem, type MarketplaceItem } from '../hooks/useMarketplace';
 
-const categories = ['All', 'Support', 'Customization', 'Analytics', 'Premium', 'Team', 'AI'];
+const categories = ['All', 'Audio', 'Smartphones', 'Gaming', 'Laptops', 'Wearables', 'Tablets'];
 
 export const Marketplace: React.FC = () => {
   const { user } = useAuth();
@@ -225,7 +225,7 @@ export const Marketplace: React.FC = () => {
                   {item.price}
                 </span>
               </div>
-              <span className="text-white/60 text-xs">Support Points</span>
+              <span className="text-white/60 text-xs">Points</span>
             </div>
 
             <motion.button
@@ -317,11 +317,11 @@ export const Marketplace: React.FC = () => {
             </motion.div>
             
             <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent mb-6">
-              Support Marketplace
+              Rewards Marketplace
             </h1>
             
             <p className="text-xl text-white/70 mb-8 max-w-2xl mx-auto">
-              Enhance your support experience with premium features, tools, and personalization options
+              Redeem your earned support points for amazing tech products and gadgets
             </p>
 
             <GlassmorphismCard variant={"subtle" as const} className="inline-flex items-center space-x-4 px-6 py-3">

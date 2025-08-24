@@ -83,7 +83,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         return [
           { path: '/my/tickets', label: 'My Tickets', icon: Ticket },
           { path: '/my/tickets/new', label: 'New Ticket', icon: Plus },
-          { path: '/my/marketplace', label: 'Marketplace', icon: ShoppingBag },
           { path: '/my/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
         ];
       case 'staff':

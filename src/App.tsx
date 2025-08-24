@@ -156,18 +156,7 @@ function App() {
                               </ProtectedRoute>
                             } 
                           />
-                          <Route 
-                            path="/my/marketplace" 
-                            element={
-                              <ProtectedRoute allowedRoles={['customer']}>
-                                <AppShell>
-                                  <PageTransition>
-                                    <Marketplace />
-                                  </PageTransition>
-                                </AppShell>
-                              </ProtectedRoute>
-                            } 
-                          />
+
                           <Route 
                             path="/my/notifications" 
                             element={
