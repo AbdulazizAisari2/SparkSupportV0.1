@@ -53,27 +53,16 @@
     box-sizing: border-box;
   }
 
-  /* Force scroll on all pages */
+  /* Scroll fixes for specific pages */
   .marketplace-container,
-  .page-container {
-    min-height: 200vh !important;
+  .dashboard-container {
+    min-height: 150vh;
+    overflow-y: auto;
   }
 
-  /* NUCLEAR SCROLL OPTION - FORCE EVERYTHING TO BE SCROLLABLE */
-  * {
-    overflow: visible !important;
-  }
-  
-  html, body, #root, main, div {
-    overflow-y: auto !important;
-    height: auto !important;
-    max-height: none !important;
-  }
-
-  /* Emergency scroll enabler */
-  .emergency-scroll {
-    height: 300vh !important;
-    overflow-y: scroll !important;
+  .marketplace-container *,
+  .dashboard-container * {
+    overflow: visible;
   }
 }
 

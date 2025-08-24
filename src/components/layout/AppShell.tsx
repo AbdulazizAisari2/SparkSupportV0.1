@@ -117,10 +117,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
 
   return (
-    <div 
-      className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-800 transition-all duration-300"
-      style={{ overflow: 'visible', height: 'auto' }}
-    >
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-800 transition-all duration-300">
       {/* Sidebar */}
       <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white/80 dark:bg-dark-800/80 backdrop-blur-xl shadow-2xl border-r border-gray-200/50 dark:border-dark-700/50 transition-all duration-300">
         <div className="flex flex-col h-full">
