@@ -32,20 +32,15 @@ export const TicketDetail: React.FC = () => {
   const createSurveyMutation = useCreateSurvey();
   const { data: existingSurvey } = useSurvey(id || '');
 
+  const ticket = ticketData?.ticket;
+  const messages = ticket?.messages || [];
+
   // Security: Validate ticket ID using useEffect to avoid render warnings
   useEffect(() => {
     if (!id) {
       navigate('/my/tickets', { replace: true });
     }
   }, [id, navigate]);
-
-  // Early return if no ID (component will be redirected via useEffect)
-  if (!id) {
-    return null;
-  }
-
-  const ticket = ticketData?.ticket;
-  const messages = ticket?.messages || [];
 
   // Survey trigger logic - check for status changes to resolved/closed
   useEffect(() => {
@@ -156,6 +151,11 @@ export const TicketDetail: React.FC = () => {
     error,
     user
   });
+
+  // Early return if no ID (component will be redirected via useEffect)
+  if (!id) {
+    return null;
+  }
 
   if (isLoading) {
     return (
