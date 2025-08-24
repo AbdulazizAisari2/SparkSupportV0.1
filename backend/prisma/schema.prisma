@@ -138,9 +138,47 @@ model ChatMessage {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   
-  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  sender    User     @relation(fields: [senderId], references: [id])
 
   @@map("chat_messages")
+}
+
+model CustomerSatisfactionSurvey {
+  id                    String   @id @default(cuid())
+  ticketId              String   @unique @map("ticket_id")
+  customerId            String   @map("customer_id")
+  
+  // Survey Questions
+  overallRating         Int?     @map("overall_rating")         // 1-5 stars
+  responseTime          Int?     @map("response_time")          // 1-5 stars  
+  helpfulness           Int?     @map("helpfulness")            // 1-5 stars
+  professionalism       Int?     @map("professionalism")        // 1-5 stars
+  resolutionQuality     Int?     @map("resolution_quality")     // 1-5 stars
+  
+  // Text Feedback
+  feedback              String?  @map("feedback")               // Optional written feedback
+  improvements          String?  @map("improvements")           // What could be improved
+  
+  // Survey Status
+  isCompleted           Boolean  @default(false) @map("is_completed")
+  completedAt           DateTime? @map("completed_at")
+  emailSent             Boolean  @default(false) @map("email_sent")
+  remindersSent         Int      @default(0) @map("reminders_sent")
+  
+  // Metadata
+  surveyVersion         String   @default("1.0") @map("survey_version")
+  ipAddress             String?  @map("ip_address")
+  userAgent             String?  @map("user_agent")
+  timeSpentSeconds      Int?     @map("time_spent_seconds")
+  
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  ticket                Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  customer              User     @relation(fields: [customerId], references: [id])
+
+  @@map("customer_satisfaction_surveys")
 }
 
 
