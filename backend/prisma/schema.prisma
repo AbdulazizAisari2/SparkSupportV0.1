@@ -32,6 +32,13 @@ model User {
   specialRecognition        String? @map("special_recognition")
   lastActiveDate            DateTime? @map("last_active_date")
   
+  // Notification preferences
+  emailNotificationsEnabled Boolean @default(true) @map("email_notifications_enabled")
+  inAppNotificationsEnabled Boolean @default(true) @map("in_app_notifications_enabled")
+  notifyOnTicketSubmitted   Boolean @default(true) @map("notify_on_ticket_submitted")
+  notifyOnStaffReply        Boolean @default(true) @map("notify_on_staff_reply")
+  notifyOnStatusChange      Boolean @default(true) @map("notify_on_status_change")
+  
   createdAt       DateTime        @default(now()) @map("created_at")
   updatedAt       DateTime        @updatedAt @map("updated_at")
   sentMessages    TicketMessage[]

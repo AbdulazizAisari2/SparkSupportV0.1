@@ -262,4 +262,86 @@ router.get('/staff/available', authenticateToken, async (req, res, next) => {
   }
 });
 
+// GET /api/users/notification-preferences - Get current user's notification preferences
+router.get('/notification-preferences', authenticateToken, async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.userId },
+      select: {
+        emailNotificationsEnabled: true,
+        inAppNotificationsEnabled: true,
+        notifyOnTicketSubmitted: true,
+        notifyOnStaffReply: true,
+        notifyOnStatusChange: true,
+      }
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// PUT /api/users/notification-preferences - Update current user's notification preferences
+router.put('/notification-preferences', authenticateToken, async (req, res, next) => {
+  try {
+    const {
+      emailNotificationsEnabled,
+      inAppNotificationsEnabled,
+      notifyOnTicketSubmitted,
+      notifyOnStaffReply,
+      notifyOnStatusChange
+    } = req.body;
+
+    // Validate that at least one field is provided
+    if (
+      emailNotificationsEnabled === undefined &&
+      inAppNotificationsEnabled === undefined &&
+      notifyOnTicketSubmitted === undefined &&
+      notifyOnStaffReply === undefined &&
+      notifyOnStatusChange === undefined
+    ) {
+      return res.status(400).json({ 
+        error: 'At least one notification preference must be provided' 
+      });
+    }
+
+    // Build update object with only provided fields
+    const updateData = {};
+    if (emailNotificationsEnabled !== undefined) updateData.emailNotificationsEnabled = Boolean(emailNotificationsEnabled);
+    if (inAppNotificationsEnabled !== undefined) updateData.inAppNotificationsEnabled = Boolean(inAppNotificationsEnabled);
+    if (notifyOnTicketSubmitted !== undefined) updateData.notifyOnTicketSubmitted = Boolean(notifyOnTicketSubmitted);
+    if (notifyOnStaffReply !== undefined) updateData.notifyOnStaffReply = Boolean(notifyOnStaffReply);
+    if (notifyOnStatusChange !== undefined) updateData.notifyOnStatusChange = Boolean(notifyOnStatusChange);
+
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.userId },
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        emailNotificationsEnabled: true,
+        inAppNotificationsEnabled: true,
+        notifyOnTicketSubmitted: true,
+        notifyOnStaffReply: true,
+        notifyOnStatusChange: true,
+      }
+    });
+
+    res.json({
+      message: 'Notification preferences updated successfully',
+      user: updatedUser
+    });
+
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

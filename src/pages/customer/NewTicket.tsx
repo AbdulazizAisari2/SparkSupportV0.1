@@ -9,6 +9,7 @@ import { useToast } from '../../context/ToastContext';
 import { useCreateTicket, useCategories } from '../../hooks/useApi';
 import { TicketTemplate } from '../../components/tickets/TicketTemplates';
 import { UploadedFile } from '../../components/ui/FileUpload';
+import { useNotificationService } from '../../hooks/useNotificationService';
 
 const ticketSchema = z.object({
   categoryId: z.string().min(1, 'Category is required'),
@@ -53,6 +54,7 @@ export const NewTicket: React.FC = () => {
   const navigate = useNavigate();
   const createTicketMutation = useCreateTicket();
   const { data: categories = [] } = useCategories();
+  const { sendNotification } = useNotificationService();
   
 
 
@@ -122,6 +124,20 @@ export const NewTicket: React.FC = () => {
       });
 
       console.log('✅ Ticket created:', result);
+      
+      // Send notification for ticket submission
+      if (result.ticket?.id) {
+        await sendNotification({
+          type: 'ticket_submitted',
+          ticketId: result.ticket.id,
+          ticketSubject: data.subject,
+          recipientUserId: user.id,
+          metadata: {
+            description: data.description
+          }
+        });
+      }
+      
       addToast(`🎉 Ticket ${result.ticket?.id} created successfully! Our team will respond soon.`, 'success');
       navigate('/my/tickets'); // Navigate to tickets list instead of detail page
     } catch (error) {

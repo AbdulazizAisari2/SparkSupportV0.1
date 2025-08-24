@@ -31,6 +31,7 @@ import { AdminCategories } from './pages/admin/AdminCategories';
 import { AdminStaff } from './pages/admin/AdminStaff';
 import { AdminSlack } from './pages/admin/AdminSlack';
 import { NotificationsPage } from './pages/NotificationsPage';
+import { NotificationPreferences } from './pages/NotificationPreferences';
 import { AISupport } from './pages/AISupport';
 import { Marketplace } from './pages/Marketplace';
 
@@ -173,6 +174,18 @@ function App() {
                                 <AppShell>
                                   <PageTransition>
                                     <NotificationsPage />
+                                  </PageTransition>
+                                </AppShell>
+                              </ProtectedRoute>
+                            } 
+                          />
+                          <Route 
+                            path="/my/notification-preferences" 
+                            element={
+                              <ProtectedRoute allowedRoles={['customer']}>
+                                <AppShell>
+                                  <PageTransition>
+                                    <NotificationPreferences />
                                   </PageTransition>
                                 </AppShell>
                               </ProtectedRoute>

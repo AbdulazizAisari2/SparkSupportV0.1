@@ -23,7 +23,11 @@ import {
   Award,
   Bot,
   MessageCircle,
-  ShoppingBag
+  ShoppingBag,
+  HelpCircle,
+  Home,
+  Search,
+  X,
 } from 'lucide-react';
 import { RoleBadge } from '../ui/Badge';
 import { SimpleThemeToggle } from '../ui/SimpleThemeToggle';
@@ -80,6 +84,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           { path: '/my/tickets/new', label: 'New Ticket', icon: Plus },
           { path: '/my/marketplace', label: 'Marketplace', icon: ShoppingBag },
           { path: '/my/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
+          { path: '/my/notification-preferences', label: 'Notification Settings', icon: Settings },
         ];
       case 'staff':
         return [
