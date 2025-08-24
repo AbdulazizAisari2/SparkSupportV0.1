@@ -159,7 +159,29 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
   }, [surveyData]);
 
   const updateFeedback = (field: keyof SurveyData, value: string) => {
-    setSurveyData(prev => ({ ...prev, [field]: value }));
+    console.log('📝 Feedback Updated:', { field, value });
+    setSurveyData(prev => {
+      const newData = { ...prev, [field]: value };
+      console.log('📊 New Survey Data (Feedback):', newData);
+      return newData;
+    });
+  };
+
+  const handleSubmitClick = () => {
+    console.log('🔥 SUBMIT BUTTON CLICKED!', {
+      currentStep,
+      isLastStep,
+      buttonValidation,
+      isSubmitting,
+      surveyData
+    });
+    
+    if (currentStep === 5 || isLastStep) {
+      console.log('✅ Conditions met, calling handleNext');
+      handleNext();
+    } else {
+      console.log('❌ Conditions not met for submission');
+    }
   };
 
   const handleNext = () => {
@@ -372,7 +394,13 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
                             rows={4}
                             placeholder="Tell us what you liked or what we could improve..."
                             value={surveyData.feedback}
-                            onChange={(e) => updateFeedback('feedback', e.target.value)}
+                            onChange={(e) => {
+                              console.log('📝 Typing in feedback:', e.target.value);
+                              updateFeedback('feedback', e.target.value);
+                            }}
+                            onFocus={() => console.log('🎯 Feedback textarea focused')}
+                            disabled={false}
+                            readOnly={false}
                           />
                         </div>
 
@@ -389,7 +417,13 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
                             rows={3}
                             placeholder="Suggestions for improvement..."
                             value={surveyData.improvements}
-                            onChange={(e) => updateFeedback('improvements', e.target.value)}
+                            onChange={(e) => {
+                              console.log('📝 Typing in improvements:', e.target.value);
+                              updateFeedback('improvements', e.target.value);
+                            }}
+                            onFocus={() => console.log('🎯 Improvements textarea focused')}
+                            disabled={false}
+                            readOnly={false}
                           />
                         </div>
 
@@ -495,7 +529,7 @@ export const SatisfactionSurveyModal: React.FC<SatisfactionSurveyModalProps> = (
 
                 <motion.button
                   key={`step-${currentStep}-${JSON.stringify(surveyData)}`}
-                  onClick={handleNext}
+                  onClick={handleSubmitClick}
                   disabled={!(buttonValidation || currentStep === 5) || isSubmitting}
                   className={`
                     px-8 py-3 rounded-xl font-medium transition-all duration-200
